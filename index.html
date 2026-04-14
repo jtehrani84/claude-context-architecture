@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching Claude Code to Remember | A Persistent Context Architecture for SEs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        navy: {
+                            900: '#0B1120',
+                            800: '#0F172A',
+                            700: '#1E293B',
+                            600: '#334155',
+                        },
+                        cyan: {
+                            400: '#22D3EE',
+                            500: '#06B6D4',
+                            600: '#0891B2',
+                        },
+                        amber: {
+                            400: '#FBBF24',
+                            500: '#F59E0B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0B1120;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #22D3EE, #818CF8, #F472B6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-text-cyan {
+            background: linear-gradient(135deg, #22D3EE, #67E8F9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Card glass effect */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(34, 211, 238, 0.1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(34, 211, 238, 0.25);
+        }
+
+        /* Glow effects */
+        .glow-cyan {
+            box-shadow: 0 0 40px rgba(34, 211, 238, 0.08);
+        }
+
+        .glow-cyan-hover:hover {
+            box-shadow: 0 0 60px rgba(34, 211, 238, 0.15);
+        }
+
+        /* Animated gradient border */
+        .animated-border {
+            position: relative;
+        }
+
+        .animated-border::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, #22D3EE, #818CF8, #F472B6, #22D3EE);
+            background-size: 300% 300%;
+            animation: borderGradient 6s ease infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        @keyframes borderGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Scroll-triggered fade-in */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-delay-1 { transition-delay: 0.1s; }
+        .fade-in-delay-2 { transition-delay: 0.2s; }
+        .fade-in-delay-3 { transition-delay: 0.3s; }
+        .fade-in-delay-4 { transition-delay: 0.4s; }
+
+        /* Architecture diagram */
+        .arch-node {
+            transition: all 0.3s ease;
+        }
+
+        .arch-node:hover {
+            transform: scale(1.03);
+        }
+
+        /* Comparison slider */
+        .comparison-container {
+            position: relative;
+        }
+
+        /* Counter animation */
+        .counter {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Expandable sections */
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .expandable-content.expanded {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: #0B1120;
+            border: 1px solid rgba(34, 211, 238, 0.15);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Pulse dot */
+        .pulse-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Flow line animation */
+        .flow-line {
+            stroke-dasharray: 8 4;
+            animation: flowDash 1.5s linear infinite;
+        }
+
+        @keyframes flowDash {
+            to { stroke-dashoffset: -12; }
+        }
+
+        /* Sticky nav */
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #22D3EE;
+            border-radius: 1px;
+        }
+
+        /* Metric card pulse */
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Timeline */
+        .timeline-line {
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #22D3EE, #818CF8, transparent);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0B1120; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Layer diagram */
+        .layer-bar {
+            transition: all 0.4s ease;
+        }
+
+        .layer-bar:hover {
+            transform: scaleX(1.02);
+            filter: brightness(1.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 backdrop-blur-xl bg-navy-900/80 border-b border-white/5">
+        <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-indigo-500 flex items-center justify-center">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <span class="font-semibold text-sm text-white/90">Claude Code Context Architecture</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-xs font-medium text-white/50">
+                <a href="#problem" class="nav-link hover:text-white/90 transition-colors">Problem</a>
+                <a href="#architecture" class="nav-link hover:text-white/90 transition-colors">Architecture</a>
+                <a href="#components" class="nav-link hover:text-white/90 transition-colors">Components</a>
+                <a href="#before-after" class="nav-link hover:text-white/90 transition-colors">Before/After</a>
+                <a href="#origin" class="nav-link hover:text-white/90 transition-colors">Origin</a>
+                <a href="#getting-started" class="nav-link hover:text-white/90 transition-colors">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="min-h-screen flex items-center justify-center relative pt-16">
+        <!-- Background gradient -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 pulse-dot"></span>
+                Claude Code Power User Guide
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+                <span class="text-white">Teaching Claude Code</span><br>
+                <span class="gradient-text">to Remember</span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed">
+                A persistent context architecture that turns Claude Code from a brilliant amnesiac into a teammate who knows your projects, remembers your preferences, and gets smarter every session.
+            </p>
+
+            <!-- Hero metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
+                <div class="metric-card glass-card rounded-xl p-5 glow-cyan">
+                    <div class="text-3xl font-bold text-cyan-400 counter" data-target="82">0</div>
+                    <div class="text-xs text-white/40 mt-1">% Context Reduction</div>
+                </div>
+                <div class="metric-card glass-card rounded-xl p-5">
+                    <div class="text-3xl font-bold text-indigo-400 counter" data-target="44">0</div>
+                    <div class="text-xs text-white/40 mt-1">Wiki Pages</div>
+                </div>
+                <div class="metric-card glass-card rounded-xl p-5">
+                    <div class="text-3xl font-bold text-pink-400 counter" data-target="127">0</div>
+                    <div class="text-xs text-white/40 mt-1">Memory Files</div>
+                </div>
+                <div class="metric-card glass-card rounded-xl p-5">
+                    <div class="text-3xl font-bold text-amber-400 counter" data-target="7">0</div>
+                    <div class="text-xs text-white/40 mt-1">Automated Hooks</div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div class="animate-bounce text-white/20">
+                <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem -->
+    <section id="problem" class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">The Problem</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    Every session starts from zero
+                </h2>
+                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
+                    Out of the box, Claude Code has no persistent memory. No matter how many hours you've spent together, tomorrow it won't remember a thing.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="fade-in fade-in-delay-1 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
+                    <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center mb-4">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v4M12 16h.01"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">Context Window Bloat</h3>
+                    <p class="text-sm text-white/40 leading-relaxed">
+                        A monolithic CLAUDE.md that dumps 15,000 tokens of instructions every session. Deployment details when you're writing emails. Slide rendering rules when you're debugging Apex. 30% of your context window gone before you type a word.
+                    </p>
+                </div>
+
+                <div class="fade-in fade-in-delay-2 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
+                    <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center mb-4">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round">
+                            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                            <line x1="2" y1="2" x2="22" y2="22"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">Groundhog Day</h3>
+                    <p class="text-sm text-white/40 leading-relaxed">
+                        "I'm a Solution Engineer working on Salesforce. Here's my project structure. Don't use these words. Remember the 70/30 rule..." Every. Single. Session. The first 10 minutes are always re-orientation.
+                    </p>
+                </div>
+
+                <div class="fade-in fade-in-delay-3 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
+                    <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center mb-4">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">No Compound Learning</h3>
+                    <p class="text-sm text-white/40 leading-relaxed">
+                        Claude makes the same mistake twice. Uses a deprecated product name you corrected last week. Suggests a pattern you've already rejected. Knowledge from yesterday's session vanishes overnight.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Pain point callout -->
+            <div class="fade-in mt-12 glass-card rounded-xl p-8 border-l-4 border-amber-500/50">
+                <p class="text-white/70 text-lg leading-relaxed">
+                    <span class="text-amber-400 font-semibold">The real cost isn't time.</span> It's that Claude can never get better at working with <em>you specifically</em>. Without persistent context, every session is a first date with a genius who has amnesia.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Architecture -->
+    <section id="architecture" class="py-24 px-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.02] to-transparent"></div>
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">The Solution</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    Five-tier persistent context
+                </h2>
+                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
+                    Instead of one massive instruction file, split context into five tiers. Load what you need, when you need it. The right information at the right time.
+                </p>
+            </div>
+
+            <!-- Architecture Diagram -->
+            <div class="fade-in glass-card rounded-2xl p-8 md:p-12 glow-cyan">
+                <!-- Tier pyramid -->
+                <div class="space-y-4">
+                    <!-- P1 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P1</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Identity &mdash; CLAUDE.md</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Always Loaded</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-cyan-400">~2,800 tokens</span>
+                                </div>
+                                <p class="text-sm text-white/40">Who you are, essential rules (anti-slop, anti-hallucination), wiki routing table. The irreducible minimum.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400" style="width: 100%"></div>
+                    </div>
+
+                    <!-- P2 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P2</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Session Init &mdash; Hooks</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Auto on Start</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-indigo-400">~200 tokens</span>
+                                </div>
+                                <p class="text-sm text-white/40">Python script analyzes your directory, git history, and branch name &rarr; suggests the right wiki pages to load.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400" style="width: 85%"></div>
+                    </div>
+
+                    <!-- P3 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P3</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Knowledge Base &mdash; Wiki</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">On Demand</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-violet-400">Variable</span>
+                                </div>
+                                <p class="text-sm text-white/40">44 pages of deep reference: architecture patterns, deployment runbooks, design systems. Loaded only when the task needs them.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-violet-500 to-violet-400" style="width: 70%"></div>
+                    </div>
+
+                    <!-- P4 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P4</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Long-Term Memory &mdash; Files</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">When Recalled</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-pink-400">~2,000 tokens</span>
+                                </div>
+                                <p class="text-sm text-white/40">127 topic files: decisions made, mistakes corrected, project status, feedback. MEMORY.md index auto-loaded, details read on demand.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-pink-500 to-pink-400" style="width: 55%"></div>
+                    </div>
+
+                    <!-- P5 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P5</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Behavioral Rules &mdash; Guardrails</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Always Active</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-amber-400">8 files</span>
+                                </div>
+                                <p class="text-sm text-white/40">Security governance, architecture standards, testing quality, communication style. Loaded from ~/.claude/rules/ every session.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-400" style="width: 40%"></div>
+                    </div>
+                </div>
+
+                <!-- Token budget visual -->
+                <div class="mt-10 pt-8 border-t border-white/5">
+                    <div class="flex items-center justify-between text-xs text-white/40 mb-3">
+                        <span>Context window usage at session start</span>
+                        <span class="font-mono">~5,000 of 200,000 tokens (2.5%)</span>
+                    </div>
+                    <div class="w-full h-4 rounded-full bg-navy-900 overflow-hidden">
+                        <div class="h-full rounded-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-violet-500" style="width: 2.5%"></div>
+                    </div>
+                    <p class="text-xs text-white/30 mt-2">Compare: a monolithic CLAUDE.md uses 7.5% before you type anything. That's 3x the overhead.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Before / After -->
+    <section id="before-after" class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Comparison</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    Before and after
+                </h2>
+                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
+                    The same person, the same projects, the same Claude Code. One has persistent context architecture. The other doesn't.
+                </p>
+            </div>
+
+            <!-- Full-width BEFORE architecture diagram -->
+            <div class="fade-in mb-12">
+                <div class="glass-card rounded-2xl overflow-hidden border-red-500/20">
+                    <div class="px-6 py-4 bg-red-500/5 border-b border-red-500/10 flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-red-500/60"></div>
+                        <span class="font-semibold text-sm text-red-400">Before &mdash; Out-of-the-Box Claude Code</span>
+                    </div>
+                    <div class="p-8">
+                        <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" class="w-full">
+                            <defs>
+                                <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#DC2626;stop-opacity:0.15"/>
+                                    <stop offset="100%" style="stop-color:#991B1B;stop-opacity:0.08"/>
+                                </linearGradient>
+                                <linearGradient id="redBorder" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#EF4444;stop-opacity:0.5"/>
+                                    <stop offset="100%" style="stop-color:#DC2626;stop-opacity:0.3"/>
+                                </linearGradient>
+                                <filter id="redGlow">
+                                    <feGaussianBlur stdDeviation="6" result="blur"/>
+                                    <feFlood flood-color="#EF4444" flood-opacity="0.15"/>
+                                    <feComposite in2="blur" operator="in"/>
+                                    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                            </defs>
+
+                            <!-- User icon -->
+                            <circle cx="450" cy="45" r="22" fill="none" stroke="#EF4444" stroke-width="1.5" opacity="0.4"/>
+                            <circle cx="450" cy="38" r="7" fill="none" stroke="#EF4444" stroke-width="1.5" opacity="0.4"/>
+                            <path d="M435 55 Q450 65 465 55" fill="none" stroke="#EF4444" stroke-width="1.5" opacity="0.4"/>
+                            <text x="450" y="82" text-anchor="middle" fill="#EF4444" font-size="11" font-family="Inter" opacity="0.6">You (every session)</text>
+
+                            <!-- Arrow down -->
+                            <line x1="450" y1="92" x2="450" y2="115" stroke="#EF4444" stroke-width="1.5" opacity="0.3"/>
+                            <polygon points="445,115 455,115 450,123" fill="#EF4444" opacity="0.3"/>
+
+                            <!-- Monolithic CLAUDE.md block -->
+                            <rect x="200" y="130" width="500" height="170" rx="12" fill="url(#redGrad)" stroke="url(#redBorder)" stroke-width="1.5" filter="url(#redGlow)"/>
+                            <text x="450" y="160" text-anchor="middle" fill="#EF4444" font-size="15" font-weight="600" font-family="Inter">CLAUDE.md</text>
+                            <text x="450" y="178" text-anchor="middle" fill="#EF4444" font-size="11" font-family="Inter" opacity="0.5">~15,000 tokens dumped every session</text>
+
+                            <!-- Content blocks inside -->
+                            <rect x="225" y="195" width="105" height="36" rx="6" fill="#991B1B" opacity="0.2" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+                            <text x="277" y="217" text-anchor="middle" fill="#FCA5A5" font-size="9" font-family="Inter">Identity &amp; Role</text>
+
+                            <rect x="340" y="195" width="105" height="36" rx="6" fill="#991B1B" opacity="0.2" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+                            <text x="392" y="217" text-anchor="middle" fill="#FCA5A5" font-size="9" font-family="Inter">All Projects</text>
+
+                            <rect x="455" y="195" width="105" height="36" rx="6" fill="#991B1B" opacity="0.2" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+                            <text x="507" y="217" text-anchor="middle" fill="#FCA5A5" font-size="9" font-family="Inter">Deploy Configs</text>
+
+                            <rect x="570" y="195" width="105" height="36" rx="6" fill="#991B1B" opacity="0.2" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+                            <text x="622" y="217" text-anchor="middle" fill="#FCA5A5" font-size="9" font-family="Inter">API Patterns</text>
+
+                            <rect x="225" y="240" width="105" height="36" rx="6" fill="#991B1B" opacity="0.2" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+                            <text x="277" y="262" text-anchor="middle" fill="#FCA5A5" font-size="9" font-family="Inter">Design Rules</text>
+
+                            <rect x="340" y="240" width="105" height="36" rx="6" fill="#991B1B" opacity="0.2" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+                            <text x="392" y="262" text-anchor="middle" fill="#FCA5A5" font-size="9" font-family="Inter">Voice Rules</text>
+
+                            <rect x="455" y="240" width="105" height="36" rx="6" fill="#991B1B" opacity="0.2" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+                            <text x="507" y="262" text-anchor="middle" fill="#FCA5A5" font-size="9" font-family="Inter">Security Rules</text>
+
+                            <rect x="570" y="240" width="105" height="36" rx="6" fill="#991B1B" opacity="0.2" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+                            <text x="622" y="262" text-anchor="middle" fill="#FCA5A5" font-size="9" font-family="Inter">Everything Else</text>
+
+                            <!-- Arrow down to Claude -->
+                            <line x1="450" y1="300" x2="450" y2="325" stroke="#EF4444" stroke-width="1.5" opacity="0.3"/>
+                            <polygon points="445,325 455,325 450,333" fill="#EF4444" opacity="0.3"/>
+
+                            <!-- Claude Code box -->
+                            <rect x="300" y="340" width="300" height="55" rx="10" fill="#0B1120" stroke="#EF4444" stroke-width="1" opacity="0.5"/>
+                            <text x="450" y="365" text-anchor="middle" fill="#F87171" font-size="13" font-weight="500" font-family="Inter">Claude Code Session</text>
+                            <text x="450" y="382" text-anchor="middle" fill="#EF4444" font-size="10" font-family="Inter" opacity="0.4">Context 7.5% full before you type a word</text>
+
+                            <!-- Red X marks on sides -->
+                            <text x="130" y="195" fill="#EF4444" font-size="10" font-family="Inter" opacity="0.5">No memory</text>
+                            <text x="130" y="220" fill="#EF4444" font-size="10" font-family="Inter" opacity="0.5">No wiki</text>
+                            <text x="130" y="245" fill="#EF4444" font-size="10" font-family="Inter" opacity="0.5">No hooks</text>
+                            <text x="130" y="270" fill="#EF4444" font-size="10" font-family="Inter" opacity="0.5">No routing</text>
+
+                            <!-- X marks -->
+                            <text x="115" y="196" fill="#EF4444" font-size="12" opacity="0.6">&#x2717;</text>
+                            <text x="115" y="221" fill="#EF4444" font-size="12" opacity="0.6">&#x2717;</text>
+                            <text x="115" y="246" fill="#EF4444" font-size="12" opacity="0.6">&#x2717;</text>
+                            <text x="115" y="271" fill="#EF4444" font-size="12" opacity="0.6">&#x2717;</text>
+                        </svg>
+
+                        <!-- Bullet points below diagram -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                            <div class="flex items-start gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                <span class="text-xs text-white/40">10 min ramp-up every session</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                <span class="text-xs text-white/40">Same corrections repeated</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                <span class="text-xs text-white/40">Context fills fast (3x sooner)</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                <span class="text-xs text-white/40">Quality varies session to session</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full-width AFTER architecture diagram -->
+            <div class="fade-in fade-in-delay-2">
+                <div class="glass-card rounded-2xl overflow-hidden animated-border" style="border-color: transparent;">
+                    <div class="px-6 py-4 bg-cyan-500/5 border-b border-cyan-500/10 flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-cyan-400 pulse-dot"></div>
+                        <span class="font-semibold text-sm text-cyan-400">After &mdash; Persistent Context Architecture</span>
+                    </div>
+                    <div class="p-8">
+                        <svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" class="w-full">
+                            <defs>
+                                <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#22D3EE;stop-opacity:0.12"/>
+                                    <stop offset="100%" style="stop-color:#0891B2;stop-opacity:0.06"/>
+                                </linearGradient>
+                                <linearGradient id="indigoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#818CF8;stop-opacity:0.12"/>
+                                    <stop offset="100%" style="stop-color:#6366F1;stop-opacity:0.06"/>
+                                </linearGradient>
+                                <linearGradient id="violetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:0.12"/>
+                                    <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.06"/>
+                                </linearGradient>
+                                <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#F472B6;stop-opacity:0.12"/>
+                                    <stop offset="100%" style="stop-color:#DB2777;stop-opacity:0.06"/>
+                                </linearGradient>
+                                <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:0.12"/>
+                                    <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.06"/>
+                                </linearGradient>
+                                <filter id="cyanGlow">
+                                    <feGaussianBlur stdDeviation="6" result="blur"/>
+                                    <feFlood flood-color="#22D3EE" flood-opacity="0.12"/>
+                                    <feComposite in2="blur" operator="in"/>
+                                    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                            </defs>
+
+                            <!-- User icon -->
+                            <circle cx="450" cy="35" r="20" fill="none" stroke="#22D3EE" stroke-width="1.5" opacity="0.5"/>
+                            <circle cx="450" cy="28" r="6" fill="none" stroke="#22D3EE" stroke-width="1.5" opacity="0.5"/>
+                            <path d="M437 45 Q450 54 463 45" fill="none" stroke="#22D3EE" stroke-width="1.5" opacity="0.5"/>
+                            <text x="450" y="70" text-anchor="middle" fill="#22D3EE" font-size="10" font-family="Inter" opacity="0.6">You</text>
+
+                            <!-- Arrow down -->
+                            <line x1="450" y1="78" x2="450" y2="92" stroke="#22D3EE" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 2"/>
+
+                            <!-- P1: CLAUDE.md (slim) -->
+                            <rect x="280" y="95" width="340" height="50" rx="10" fill="url(#cyanGrad)" stroke="#22D3EE" stroke-width="1" opacity="0.6" filter="url(#cyanGlow)"/>
+                            <text x="310" y="118" fill="#22D3EE" font-size="10" font-weight="700" font-family="JetBrains Mono">P1</text>
+                            <text x="340" y="118" fill="#67E8F9" font-size="12" font-weight="600" font-family="Inter">CLAUDE.md</text>
+                            <text x="340" y="133" fill="#22D3EE" font-size="9" font-family="Inter" opacity="0.5">Identity + routing table</text>
+                            <text x="580" y="125" text-anchor="end" fill="#22D3EE" font-size="9" font-family="JetBrains Mono" opacity="0.5">2,800 tokens</text>
+                            <text x="665" y="125" fill="#22D3EE" font-size="9" font-family="Inter" opacity="0.4">always loaded</text>
+
+                            <!-- Flow line P1 to P2 -->
+                            <line x1="450" y1="145" x2="450" y2="165" stroke="#818CF8" stroke-width="1" opacity="0.3" stroke-dasharray="4 2"/>
+                            <polygon points="446,163 454,163 450,169" fill="#818CF8" opacity="0.3"/>
+
+                            <!-- P2: Session Init -->
+                            <rect x="280" y="172" width="340" height="50" rx="10" fill="url(#indigoGrad)" stroke="#818CF8" stroke-width="1" opacity="0.6"/>
+                            <text x="310" y="195" fill="#818CF8" font-size="10" font-weight="700" font-family="JetBrains Mono">P2</text>
+                            <text x="340" y="195" fill="#A5B4FC" font-size="12" font-weight="600" font-family="Inter">Session Init Hook</text>
+                            <text x="340" y="210" fill="#818CF8" font-size="9" font-family="Inter" opacity="0.5">cwd + git + branch &rarr; wiki suggestions</text>
+                            <text x="580" y="202" text-anchor="end" fill="#818CF8" font-size="9" font-family="JetBrains Mono" opacity="0.5">200 tokens</text>
+                            <text x="665" y="202" fill="#818CF8" font-size="9" font-family="Inter" opacity="0.4">auto on start</text>
+
+                            <!-- Flow line P2 to P3 -->
+                            <line x1="450" y1="222" x2="450" y2="242" stroke="#A78BFA" stroke-width="1" opacity="0.3" stroke-dasharray="4 2"/>
+                            <polygon points="446,240 454,240 450,246" fill="#A78BFA" opacity="0.3"/>
+
+                            <!-- P3: Wiki -->
+                            <rect x="280" y="249" width="340" height="50" rx="10" fill="url(#violetGrad)" stroke="#A78BFA" stroke-width="1" opacity="0.6"/>
+                            <text x="310" y="272" fill="#A78BFA" font-size="10" font-weight="700" font-family="JetBrains Mono">P3</text>
+                            <text x="340" y="272" fill="#C4B5FD" font-size="12" font-weight="600" font-family="Inter">Wiki Knowledge Base</text>
+                            <text x="340" y="287" fill="#A78BFA" font-size="9" font-family="Inter" opacity="0.5">44 pages &mdash; concepts, projects, tools, insights</text>
+                            <text x="580" y="279" text-anchor="end" fill="#A78BFA" font-size="9" font-family="JetBrains Mono" opacity="0.5">variable</text>
+                            <text x="665" y="279" fill="#A78BFA" font-size="9" font-family="Inter" opacity="0.4">on demand</text>
+
+                            <!-- Branching lines from P3 to wiki pages -->
+                            <line x1="620" y1="264" x2="720" y2="250" stroke="#A78BFA" stroke-width="0.5" opacity="0.2"/>
+                            <line x1="620" y1="274" x2="720" y2="274" stroke="#A78BFA" stroke-width="0.5" opacity="0.2"/>
+                            <line x1="620" y1="284" x2="720" y2="298" stroke="#A78BFA" stroke-width="0.5" opacity="0.2"/>
+                            <rect x="722" y="241" width="90" height="18" rx="4" fill="#A78BFA" opacity="0.08" stroke="#A78BFA" stroke-width="0.5" opacity="0.2"/>
+                            <text x="767" y="254" text-anchor="middle" fill="#A78BFA" font-size="7" font-family="JetBrains Mono" opacity="0.5">pitch-craft.md</text>
+                            <rect x="722" y="265" width="90" height="18" rx="4" fill="#A78BFA" opacity="0.08" stroke="#A78BFA" stroke-width="0.5" opacity="0.2"/>
+                            <text x="767" y="278" text-anchor="middle" fill="#A78BFA" font-size="7" font-family="JetBrains Mono" opacity="0.5">security.md</text>
+                            <rect x="722" y="289" width="90" height="18" rx="4" fill="#A78BFA" opacity="0.08" stroke="#A78BFA" stroke-width="0.5" opacity="0.2"/>
+                            <text x="767" y="302" text-anchor="middle" fill="#A78BFA" font-size="7" font-family="JetBrains Mono" opacity="0.5">pipeline.md</text>
+
+                            <!-- Flow line P3 to P4 -->
+                            <line x1="450" y1="299" x2="450" y2="319" stroke="#F472B6" stroke-width="1" opacity="0.3" stroke-dasharray="4 2"/>
+                            <polygon points="446,317 454,317 450,323" fill="#F472B6" opacity="0.3"/>
+
+                            <!-- P4: Memory -->
+                            <rect x="280" y="326" width="340" height="50" rx="10" fill="url(#pinkGrad)" stroke="#F472B6" stroke-width="1" opacity="0.6"/>
+                            <text x="310" y="349" fill="#F472B6" font-size="10" font-weight="700" font-family="JetBrains Mono">P4</text>
+                            <text x="340" y="349" fill="#F9A8D4" font-size="12" font-weight="600" font-family="Inter">Long-Term Memory</text>
+                            <text x="340" y="364" fill="#F472B6" font-size="9" font-family="Inter" opacity="0.5">127 files &mdash; decisions, feedback, project state</text>
+                            <text x="580" y="356" text-anchor="end" fill="#F472B6" font-size="9" font-family="JetBrains Mono" opacity="0.5">~2,000 tokens</text>
+                            <text x="665" y="356" fill="#F472B6" font-size="9" font-family="Inter" opacity="0.4">index loaded</text>
+
+                            <!-- Flow line P4 to P5 -->
+                            <line x1="450" y1="376" x2="450" y2="396" stroke="#FBBF24" stroke-width="1" opacity="0.3" stroke-dasharray="4 2"/>
+                            <polygon points="446,394 454,394 450,400" fill="#FBBF24" opacity="0.3"/>
+
+                            <!-- P5: Rules -->
+                            <rect x="280" y="403" width="340" height="50" rx="10" fill="url(#amberGrad)" stroke="#FBBF24" stroke-width="1" opacity="0.6"/>
+                            <text x="310" y="426" fill="#FBBF24" font-size="10" font-weight="700" font-family="JetBrains Mono">P5</text>
+                            <text x="340" y="426" fill="#FDE68A" font-size="12" font-weight="600" font-family="Inter">Behavioral Rules</text>
+                            <text x="340" y="441" fill="#FBBF24" font-size="9" font-family="Inter" opacity="0.5">8 files &mdash; security, architecture, testing, voice</text>
+                            <text x="580" y="433" text-anchor="end" fill="#FBBF24" font-size="9" font-family="JetBrains Mono" opacity="0.5">8 files</text>
+                            <text x="665" y="433" fill="#FBBF24" font-size="9" font-family="Inter" opacity="0.4">always active</text>
+
+                            <!-- Bottom: Claude Code result -->
+                            <line x1="450" y1="453" x2="450" y2="473" stroke="#22D3EE" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 2"/>
+                            <polygon points="446,471 454,471 450,477" fill="#22D3EE" opacity="0.3"/>
+                            <rect x="300" y="480" width="300" height="30" rx="8" fill="#22D3EE" opacity="0.06" stroke="#22D3EE" stroke-width="1" opacity="0.3"/>
+                            <text x="450" y="500" text-anchor="middle" fill="#22D3EE" font-size="11" font-weight="500" font-family="Inter">Context 2.5% full &mdash; ready to work</text>
+
+                            <!-- Left side: loading indicators -->
+                            <rect x="88" y="100" width="148" height="28" rx="6" fill="#22D3EE" opacity="0.05" stroke="#22D3EE" stroke-width="0.5" opacity="0.15"/>
+                            <circle cx="104" cy="114" r="4" fill="#22D3EE" opacity="0.6"/>
+                            <text x="115" y="118" fill="#22D3EE" font-size="8" font-family="Inter" opacity="0.5">Loaded every session</text>
+
+                            <rect x="88" y="177" width="148" height="28" rx="6" fill="#818CF8" opacity="0.05" stroke="#818CF8" stroke-width="0.5" opacity="0.15"/>
+                            <circle cx="104" cy="191" r="4" fill="#818CF8" opacity="0.6"/>
+                            <text x="115" y="195" fill="#818CF8" font-size="8" font-family="Inter" opacity="0.5">Runs automatically</text>
+
+                            <rect x="88" y="254" width="148" height="28" rx="6" fill="#A78BFA" opacity="0.05" stroke="#A78BFA" stroke-width="0.5" opacity="0.15"/>
+                            <circle cx="104" cy="268" r="3" fill="#A78BFA" opacity="0.3"/><circle cx="104" cy="268" r="3" fill="none" stroke="#A78BFA" stroke-width="1" opacity="0.6"/>
+                            <text x="115" y="272" fill="#A78BFA" font-size="8" font-family="Inter" opacity="0.5">On-demand only</text>
+
+                            <rect x="88" y="331" width="148" height="28" rx="6" fill="#F472B6" opacity="0.05" stroke="#F472B6" stroke-width="0.5" opacity="0.15"/>
+                            <circle cx="104" cy="345" r="4" fill="#F472B6" opacity="0.4"/>
+                            <text x="115" y="349" fill="#F472B6" font-size="8" font-family="Inter" opacity="0.5">Index always, detail on demand</text>
+
+                            <rect x="88" y="408" width="148" height="28" rx="6" fill="#FBBF24" opacity="0.05" stroke="#FBBF24" stroke-width="0.5" opacity="0.15"/>
+                            <circle cx="104" cy="422" r="4" fill="#FBBF24" opacity="0.6"/>
+                            <text x="115" y="426" fill="#FBBF24" font-size="8" font-family="Inter" opacity="0.5">Always enforced</text>
+                        </svg>
+
+                        <!-- Bullet points below diagram -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                            <div class="flex items-start gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>
+                                <span class="text-xs text-white/40">Start working immediately</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>
+                                <span class="text-xs text-white/40">Corrections stick forever</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>
+                                <span class="text-xs text-white/40">3-4x longer conversations</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>
+                                <span class="text-xs text-white/40">Knowledge compounds every session</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Token comparison bar -->
+            <div class="fade-in mt-12 glass-card rounded-xl p-8">
+                <h3 class="text-sm font-semibold text-white/70 mb-6">Context Window Usage at Session Start</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-red-400">Monolithic CLAUDE.md</span>
+                            <span class="font-mono text-xs text-white/40">~15,000 tokens (7.5%)</span>
+                        </div>
+                        <div class="w-full h-6 rounded-full bg-navy-900 overflow-hidden">
+                            <div class="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400 flex items-center justify-end pr-3 transition-all duration-1000" style="width: 75%">
+                                <span class="text-[10px] font-mono text-white/80">15K tokens</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-cyan-400">Tiered Architecture</span>
+                            <span class="font-mono text-xs text-white/40">~5,000 tokens (2.5%)</span>
+                        </div>
+                        <div class="w-full h-6 rounded-full bg-navy-900 overflow-hidden">
+                            <div class="h-full rounded-full bg-gradient-to-r from-cyan-600 to-cyan-400 flex items-center justify-end pr-3 transition-all duration-1000" style="width: 25%">
+                                <span class="text-[10px] font-mono text-white/80">5K tokens</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-white/30 mt-4">Bars scaled to 200K token context window. Tiered approach loads P1 (CLAUDE.md) + P2 (session-init) + P4 (MEMORY.md index). P3 (wiki) and P5 (rules) are loaded contextually.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Components Deep Dive -->
+    <section id="components" class="py-24 px-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/[0.02] to-transparent"></div>
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Deep Dive</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    The five components
+                </h2>
+                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
+                    Each piece is simple on its own. Together they create a system that's genuinely smarter than the sum of its parts.
+                </p>
+            </div>
+
+            <!-- Component Cards -->
+            <div class="space-y-4">
+                <!-- 1. CLAUDE.md -->
+                <div class="fade-in glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp1')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">CLAUDE.md &mdash; The Identity Layer</h3>
+                            <p class="text-xs text-white/40 mt-0.5">182 lines. Your irreducible identity and a routing table to everything else.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp1-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp1" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="code-block p-4 text-xs">
+                                <div class="text-cyan-400/70 mb-2"># What goes in CLAUDE.md</div>
+                                <div class="text-white/50 space-y-1">
+                                    <div><span class="text-cyan-400">Section 1:</span> Owner identity (name, role, context)</div>
+                                    <div><span class="text-cyan-400">Section 2:</span> Environment (OS, editor, model, GCP project)</div>
+                                    <div><span class="text-cyan-400">Section 3:</span> Essential rules — only the ones Claude needs EVERY time</div>
+                                    <div class="ml-8 text-white/30">&bull; Anti-slop banned words (50+)</div>
+                                    <div class="ml-8 text-white/30">&bull; Anti-hallucination golden rule</div>
+                                    <div class="ml-8 text-white/30">&bull; Product name corrections</div>
+                                    <div class="ml-8 text-white/30">&bull; Visual design philosophy</div>
+                                    <div><span class="text-cyan-400">Section 4:</span> Wiki routing table (11 work contexts &rarr; wiki pages)</div>
+                                    <div><span class="text-cyan-400">Section 5:</span> Project inventory (names, repos, status only)</div>
+                                    <div><span class="text-cyan-400">Section 6:</span> Available commands (table format)</div>
+                                </div>
+                            </div>
+                            <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-cyan-400 font-semibold">Key principle:</span> CLAUDE.md answers "who am I and where do I look things up?" &mdash; not "here's everything I'll ever need." The routing table is the critical innovation: it tells Claude which wiki page to load for any given task, without loading the content upfront.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Wiki -->
+                <div class="fade-in fade-in-delay-1 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp2')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">Wiki &mdash; The Knowledge Base</h3>
+                            <p class="text-xs text-white/40 mt-0.5">44 pages across 7 categories. Claude's long-form reference library.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp2-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp2" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
+                                    <div class="text-2xl font-bold text-violet-400">6</div>
+                                    <div class="text-xs text-white/40">Projects</div>
+                                </div>
+                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
+                                    <div class="text-2xl font-bold text-violet-400">19</div>
+                                    <div class="text-xs text-white/40">Concepts</div>
+                                </div>
+                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
+                                    <div class="text-2xl font-bold text-violet-400">7</div>
+                                    <div class="text-xs text-white/40">Tools</div>
+                                </div>
+                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
+                                    <div class="text-2xl font-bold text-violet-400">5</div>
+                                    <div class="text-xs text-white/40">Insights</div>
+                                </div>
+                            </div>
+                            <div class="code-block p-4 text-xs">
+                                <div class="text-violet-400/70 mb-2"># wiki/ directory structure</div>
+                                <div class="text-white/50 space-y-1">
+                                    <div>wiki/</div>
+                                    <div>&nbsp;&nbsp;index.md&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Master catalog (auto-maintained)</span></div>
+                                    <div>&nbsp;&nbsp;inbox.md&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Auto-capture queue</span></div>
+                                    <div>&nbsp;&nbsp;concepts/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Architecture, patterns, systems</span></div>
+                                    <div>&nbsp;&nbsp;projects/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Project overviews and status</span></div>
+                                    <div>&nbsp;&nbsp;tools/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Tool configs, MCP servers, CLIs</span></div>
+                                    <div>&nbsp;&nbsp;entities/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Companies, people, accounts</span></div>
+                                    <div>&nbsp;&nbsp;insights/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Strategic observations, theses</span></div>
+                                </div>
+                            </div>
+                            <div class="bg-violet-500/5 rounded-lg p-4 border border-violet-500/10">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-violet-400 font-semibold">How it grows:</span> At the end of each session, Claude checks if it learned anything worth preserving. If so, it appends a one-liner to <code class="text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded">wiki/inbox.md</code>. The next session processes inbox items into proper wiki pages. Knowledge compounds automatically.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Memory -->
+                <div class="fade-in fade-in-delay-2 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp3')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">Memory &mdash; Cross-Session State</h3>
+                            <p class="text-xs text-white/40 mt-0.5">127 topic files. Decisions, feedback, project status that persists forever.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp3-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp3" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-pink-500/5 rounded-lg p-4 border border-pink-500/10">
+                                    <div class="text-sm font-semibold text-pink-400 mb-2">Memory Types</div>
+                                    <div class="space-y-2 text-xs text-white/50">
+                                        <div><span class="text-pink-400">user</span> &mdash; role, preferences, expertise level</div>
+                                        <div><span class="text-pink-400">feedback</span> &mdash; corrections and confirmed approaches</div>
+                                        <div><span class="text-pink-400">project</span> &mdash; status, decisions, deadlines</div>
+                                        <div><span class="text-pink-400">reference</span> &mdash; external resource pointers</div>
+                                    </div>
+                                </div>
+                                <div class="bg-pink-500/5 rounded-lg p-4 border border-pink-500/10">
+                                    <div class="text-sm font-semibold text-pink-400 mb-2">How It Works</div>
+                                    <div class="space-y-2 text-xs text-white/50">
+                                        <div><span class="text-white/70">MEMORY.md</span> &mdash; index loaded every session</div>
+                                        <div><span class="text-white/70">Topic files</span> &mdash; read on demand when relevant</div>
+                                        <div><span class="text-white/70">Auto-save</span> &mdash; Claude saves when it learns something</div>
+                                        <div><span class="text-white/70">Staleness</span> &mdash; old info verified before acting on it</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="code-block p-4 text-xs">
+                                <div class="text-pink-400/70 mb-2"># Example memory file</div>
+                                <div class="text-white/50">
+                                    <div>---</div>
+                                    <div>name: Product Name Verification</div>
+                                    <div>description: Never assume SF product names are correct</div>
+                                    <div>type: feedback</div>
+                                    <div>---</div>
+                                    <div class="mt-2">LLMs hallucinate plausible Salesforce product names.</div>
+                                    <div>Always verify against salesforce.com before using.</div>
+                                    <div class="mt-1"><span class="text-pink-400">**Why:**</span> Claude once wrote "System of Agency"</div>
+                                    <div>instead of "Agentforce" in a customer-facing deck.</div>
+                                    <div><span class="text-pink-400">**How to apply:**</span> Check salesforce.com before</div>
+                                    <div>using any product name. When in doubt, ask John.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Hooks -->
+                <div class="fade-in fade-in-delay-3 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp4')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">Hooks &mdash; The Automation Layer</h3>
+                            <p class="text-xs text-white/40 mt-0.5">7 hooks. Automated behaviors that fire on session events and tool calls.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp4-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp4" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">SessionStart</span>
+                                    <span class="text-sm text-white/60">session-init.py &mdash; creates session dir, wiki-aware context routing</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
+                                    <span class="text-sm text-white/60">SF CLI guardrail &mdash; warns on deprecated sfdx commands</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
+                                    <span class="text-sm text-white/60">SOQL schema check &mdash; validates queries before execution</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PostToolUse</span>
+                                    <span class="text-sm text-white/60">Validator &mdash; checks written code against naming/security standards</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PostToolUse</span>
+                                    <span class="text-sm text-white/60">Debug log analyzer &mdash; parses SF debug logs automatically</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">Stop</span>
+                                    <span class="text-sm text-white/60">Completion check &mdash; reviews for incomplete items before closing</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">Notification</span>
+                                    <span class="text-sm text-white/60">macOS notification &mdash; plays sound when Claude needs attention</span>
+                                </div>
+                            </div>
+                            <div class="bg-indigo-500/5 rounded-lg p-4 border border-indigo-500/10">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-indigo-400 font-semibold">The key insight:</span> Hooks run your code at specific moments in Claude's workflow. <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">SessionStart</code> is the most powerful &mdash; it's where context routing happens. But <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">PreToolUse</code> and <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">PostToolUse</code> are where you enforce quality standards automatically.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Rules -->
+                <div class="fade-in fade-in-delay-4 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp5')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">Rules &mdash; Behavioral Guardrails</h3>
+                            <p class="text-xs text-white/40 mt-0.5">8 files in ~/.claude/rules/. Standards Claude follows across every project.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp5-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp5" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">security-governance.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">architecture.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">testing-quality.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">communication.md</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">salesforce-instructions.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">salesforce-platform.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">tailwind-ui.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">slds2-lwc-ui.md</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-amber-500/5 rounded-lg p-4 border border-amber-500/10">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-amber-400 font-semibold">Rules vs. CLAUDE.md:</span> Rules files live in <code class="text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">~/.claude/rules/</code> and apply to <em>all</em> projects globally. CLAUDE.md is project-specific. Use rules for standards you want everywhere (security, architecture patterns, communication style). Use CLAUDE.md for project-specific context.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Together -->
+    <section class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">In Practice</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    A real session, step by step
+                </h2>
+                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
+                    You open Claude Code in your slide-generation project directory. Here's what happens before you type a single word.
+                </p>
+            </div>
+
+            <!-- Timeline -->
+            <div class="fade-in relative pl-12 space-y-8">
+                <div class="timeline-line"></div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-cyan-500/10 border-2 border-cyan-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-cyan-400">1</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-cyan-400 mb-1">CLAUDE.md loads (P1)</div>
+                        <p class="text-sm text-white/50">Claude learns your identity, role, and essential rules. Sees the routing table: "If working on slides &rarr; load pitch-craft.md and slide-visual-design.md." Cost: 2,800 tokens.</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-indigo-500/10 border-2 border-indigo-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-indigo-400">2</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-indigo-400 mb-1">session-init.py fires (P2)</div>
+                        <p class="text-sm text-white/50">Hook detects cwd contains "slides". Checks git log: recent commits mention "deck" and "slide." Outputs: "Relevant wiki pages: pitch-craft.md, slide-visual-design.md, golden-narrative-framework.md." Cost: 200 tokens.</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-pink-500/10 border-2 border-pink-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-pink-400">3</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-pink-400 mb-1">MEMORY.md index loads (P4)</div>
+                        <p class="text-sm text-white/50">Claude sees 127 memory entries. Relevant ones jump out: "feedback-imagen-cheesy.md &mdash; AI backgrounds look cheesy; solid = premium" and "feedback-seller-urgency-ban.md &mdash; Never use SF contract timelines as Why Now drivers." Cost: ~2,000 tokens.</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-violet-500/10 border-2 border-violet-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-violet-400">4</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-violet-400 mb-1">You say "Build me a Starbucks deck"</div>
+                        <p class="text-sm text-white/50">Claude reads pitch-craft.md (golden narrative framework), slide-visual-design.md (design tokens, layout library), and the Starbucks memory file. It already knows: solid backgrounds, 70/30 customer-to-Salesforce ratio, no banned words, brand color resolution. No setup. Just builds.</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-amber-400">5</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-amber-400 mb-1">PostToolUse hooks validate output</div>
+                        <p class="text-sm text-white/50">After Claude writes code, the validator hook checks naming conventions and security patterns automatically. No manual review of basics &mdash; the system catches the easy stuff.</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-green-400">6</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-green-400 mb-1">Session ends &rarr; knowledge captured</div>
+                        <p class="text-sm text-white/50">Claude learned that Starbucks uses a green-on-dark palette. It appends to wiki/inbox.md: "Starbucks brand colors resolved to #00704A." Next session processes this into a proper wiki entry. The system just got a little smarter.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Theoretical Foundation -->
+    <section id="origin" class="py-24 px-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/[0.02] to-transparent"></div>
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Origin</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    Standing on Karpathy's shoulders
+                </h2>
+                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
+                    This system implements the <span class="text-white/80">LLM Wiki pattern</span> that Andrej Karpathy described in early 2026: instead of re-deriving knowledge every query, have the LLM build and maintain a persistent wiki that compounds over time.
+                </p>
+            </div>
+
+            <div class="fade-in glass-card rounded-2xl p-8 md:p-10 glow-cyan">
+                <!-- Three-layer diagram -->
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <!-- Layer 1: Raw Sources -->
+                    <div class="relative">
+                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-violet-400 tracking-wider uppercase">Karpathy Layer 1</div>
+                        <div class="rounded-xl border border-violet-500/20 bg-violet-500/5 p-5 h-full">
+                            <h4 class="font-semibold text-violet-400 text-sm mb-1">Raw Sources</h4>
+                            <p class="text-xs text-white/40 mb-3">Immutable input. Human curates what goes in.</p>
+                            <div class="space-y-1.5 text-xs font-mono text-white/30">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
+                                    <span>intel-digests/</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
+                                    <span>X feed (GraphQL)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
+                                    <span>Exa search results</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
+                                    <span>Articles, docs, PDFs</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layer 2: Wiki -->
+                    <div class="relative">
+                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-cyan-400 tracking-wider uppercase">Karpathy Layer 2</div>
+                        <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 h-full">
+                            <h4 class="font-semibold text-cyan-400 text-sm mb-1">Wiki</h4>
+                            <p class="text-xs text-white/40 mb-3">Synthesized, interlinked. Claude maintains it.</p>
+                            <div class="space-y-1.5 text-xs font-mono text-white/30">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
+                                    <span>wiki/ (44 pages)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
+                                    <span>Cross-referenced</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
+                                    <span>Auto-indexed</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
+                                    <span>Lint-checked</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layer 3: Schema -->
+                    <div class="relative">
+                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-pink-400 tracking-wider uppercase">Karpathy Layer 3</div>
+                        <div class="rounded-xl border border-pink-500/20 bg-pink-500/5 p-5 h-full">
+                            <h4 class="font-semibold text-pink-400 text-sm mb-1">Schema</h4>
+                            <p class="text-xs text-white/40 mb-3">Structure and conventions. Human + Claude co-evolve.</p>
+                            <div class="space-y-1.5 text-xs font-mono text-white/30">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
+                                    <span>CLAUDE.md</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
+                                    <span>Auto-memory (127 files)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
+                                    <span>Wiki index + log</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
+                                    <span>Rules (8 files)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operations mapping -->
+                <div class="border-t border-white/5 pt-6">
+                    <h4 class="text-xs font-semibold text-white/40 tracking-wider uppercase mb-4">Operations &mdash; Karpathy Pattern &rarr; Our Implementation</h4>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="flex items-center gap-3 bg-white/[0.02] rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-violet-600/10 flex items-center justify-center flex-shrink-0">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-white/70">Ingest</div>
+                                <div class="text-[10px] text-white/30 font-mono">/ingest command</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white/[0.02] rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 flex items-center justify-center flex-shrink-0">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-white/70">Query</div>
+                                <div class="text-[10px] text-white/30 font-mono">Every conversation</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white/[0.02] rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500/20 to-pink-600/10 flex items-center justify-center flex-shrink-0">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F472B6" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-white/70">Lint</div>
+                                <div class="text-[10px] text-white/30 font-mono">/wiki-lint command</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key insight -->
+                <div class="mt-6 pt-6 border-t border-white/5">
+                    <p class="text-sm text-white/50 leading-relaxed">
+                        <span class="text-violet-400 font-semibold">The core Karpathy insight:</span> the maintenance burden is what kills every knowledge system. Claude handles all the bookkeeping &mdash; summarizing, cross-referencing, filing, consistency checking. Your job is sourcing, directing, and thinking. The wiki grows while you work. You never have to organize it.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Filesystem vs RAG callout -->
+            <div class="fade-in mt-8 glass-card rounded-xl p-6 border-l-4 border-violet-500/50">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-violet-400 mb-1">Why flat files, not vector embeddings?</h4>
+                        <p class="text-sm text-white/40 leading-relaxed">
+                            RAG (retrieval-augmented generation) retrieves by <em>meaning</em> &mdash; great for searching large datasets you didn't write. But for personal context &mdash; your preferences, your project state, your corrections &mdash; structured markdown files that Claude can directly read and update are simpler, faster, and don't lose fidelity. We use both: flat-file wiki for personal knowledge, pgvector RAG for corporate data (product names, customer stories, competitive intel).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section id="getting-started" class="py-24 px-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.02] to-transparent"></div>
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Get Started</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    Build your own in stages
+                </h2>
+                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
+                    You don't need to build the full system on day one. Start with CLAUDE.md, add layers as you go. Each stage delivers value on its own.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Stage 1 -->
+                <div class="fade-in glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-xs font-bold text-white">1</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Day One</div>
+                            <div class="text-xs text-green-400">30 minutes</div>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-white mb-3">CLAUDE.md + Rules</h3>
+                    <div class="space-y-2 text-sm text-white/50">
+                        <p>Create CLAUDE.md in your project root with:</p>
+                        <ul class="space-y-1 ml-3 text-xs">
+                            <li>&bull; Your name, role, and what you work on</li>
+                            <li>&bull; Your environment (OS, editor, key tools)</li>
+                            <li>&bull; 3-5 rules Claude should always follow</li>
+                            <li>&bull; Any words or patterns to avoid</li>
+                        </ul>
+                        <p class="text-xs text-green-400/60 mt-3">Add rules files to ~/.claude/rules/ for cross-project standards.</p>
+                    </div>
+                </div>
+
+                <!-- Stage 2 -->
+                <div class="fade-in fade-in-delay-1 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-xs font-bold text-white">2</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Week One</div>
+                            <div class="text-xs text-cyan-400">1-2 hours</div>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-white mb-3">Memory + Wiki Foundation</h3>
+                    <div class="space-y-2 text-sm text-white/50">
+                        <p>Enable auto-memory in CLAUDE.md instructions. Start a wiki/ directory with:</p>
+                        <ul class="space-y-1 ml-3 text-xs">
+                            <li>&bull; index.md (master catalog)</li>
+                            <li>&bull; 3-5 pages for your main topics</li>
+                            <li>&bull; inbox.md (auto-capture queue)</li>
+                        </ul>
+                        <p class="text-xs text-cyan-400/60 mt-3">Add a routing table to CLAUDE.md mapping work contexts to wiki pages.</p>
+                    </div>
+                </div>
+
+                <!-- Stage 3 -->
+                <div class="fade-in fade-in-delay-2 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-xs font-bold text-white">3</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Month One</div>
+                            <div class="text-xs text-violet-400">2-3 hours total</div>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-white mb-3">Hooks + Automation</h3>
+                    <div class="space-y-2 text-sm text-white/50">
+                        <p>Add hooks to settings.json for automated behaviors:</p>
+                        <ul class="space-y-1 ml-3 text-xs">
+                            <li>&bull; SessionStart: context routing script</li>
+                            <li>&bull; PostToolUse: code validation</li>
+                            <li>&bull; Notification: OS alerts</li>
+                        </ul>
+                        <p class="text-xs text-violet-400/60 mt-3">Slim down CLAUDE.md as your wiki grows. Move detail out, keep routing in.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick start code -->
+            <div class="fade-in mt-12 glass-card rounded-xl p-8">
+                <h3 class="text-sm font-semibold text-white/70 mb-4">Minimal CLAUDE.md to start with</h3>
+                <div class="code-block p-5 text-xs leading-relaxed overflow-x-auto">
+                    <pre class="text-white/60"><span class="text-cyan-400"># Project Context</span>
+
+<span class="text-cyan-400">## Owner</span>
+- <span class="text-white/80">Name:</span> [Your name]
+- <span class="text-white/80">Role:</span> [Your role and team]
+- <span class="text-white/80">Context:</span> [How you use Claude Code — what are you building?]
+
+<span class="text-cyan-400">## Environment</span>
+- <span class="text-white/80">OS:</span> macOS / Windows / Linux
+- <span class="text-white/80">Editor:</span> VS Code / JetBrains / Terminal
+- <span class="text-white/80">Key tools:</span> [sf CLI, npm, docker, etc.]
+
+<span class="text-cyan-400">## Rules (Always Follow)</span>
+1. [Your most important rule — e.g., "Never use deprecated APIs"]
+2. [Quality standard — e.g., "All Apex must be bulk-safe"]
+3. [Voice rule — e.g., "Write like an SE, not a marketing team"]
+4. [Safety rule — e.g., "Never hardcode IDs or credentials"]
+
+<span class="text-cyan-400">## Current Projects</span>
+- <span class="text-white/80">[Project 1]:</span> [One-line description + status]
+- <span class="text-white/80">[Project 2]:</span> [One-line description + status]
+
+<span class="text-cyan-400">## Preferences</span>
+- [How you like to work with Claude]
+- [What kind of output you expect]</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results -->
+    <section class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Results</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    What changes when Claude remembers
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="fade-in glass-card rounded-xl p-8">
+                    <div class="text-4xl font-bold gradient-text-cyan mb-2">82%</div>
+                    <div class="text-sm font-semibold text-white/70 mb-3">Less context overhead</div>
+                    <p class="text-sm text-white/40">15,000 tokens &rarr; 2,800 tokens loaded at session start. The rest comes in on demand. Your context window stays clear for actual work.</p>
+                </div>
+                <div class="fade-in fade-in-delay-1 glass-card rounded-xl p-8">
+                    <div class="text-4xl font-bold gradient-text-cyan mb-2">0 min</div>
+                    <div class="text-sm font-semibold text-white/70 mb-3">Ramp-up time</div>
+                    <p class="text-sm text-white/40">No more "here's my project, here are my rules, remember that thing from yesterday." Claude knows who you are, what you're working on, and what you've decided.</p>
+                </div>
+                <div class="fade-in fade-in-delay-2 glass-card rounded-xl p-8">
+                    <div class="text-4xl font-bold gradient-text-cyan mb-2">127</div>
+                    <div class="text-sm font-semibold text-white/70 mb-3">Decisions remembered</div>
+                    <p class="text-sm text-white/40">Every correction, every preference, every architectural decision &mdash; saved once, applied forever. Claude stops making the same mistake twice.</p>
+                </div>
+                <div class="fade-in fade-in-delay-3 glass-card rounded-xl p-8">
+                    <div class="text-4xl font-bold gradient-text-cyan mb-2">&infin;</div>
+                    <div class="text-sm font-semibold text-white/70 mb-3">Compound returns</div>
+                    <p class="text-sm text-white/40">The wiki grows every session. Memory accumulates. The system gets measurably better the more you use it. Session 100 is dramatically better than session 1.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section class="py-16 px-6 border-t border-white/5">
+        <div class="max-w-5xl mx-auto text-center">
+            <p class="text-white/30 text-sm mb-2">
+                Built by John Tehrani &mdash; Principal Solutions Engineer, Salesforce
+            </p>
+            <p class="text-white/20 text-xs">
+                This document was written collaboratively with Claude Code using the exact system it describes.
+            </p>
+        </div>
+    </section>
+
+    <script>
+        // Scroll-triggered animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Counter animation
+        function animateCounters() {
+            document.querySelectorAll('.counter').forEach(counter => {
+                const target = parseInt(counter.dataset.target);
+                const duration = 2000;
+                const startTime = performance.now();
+
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    counter.textContent = Math.round(eased * target);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        counter.textContent = target;
+                    }
+                }
+
+                requestAnimationFrame(update);
+            });
+        }
+
+        // Start counters when hero is visible
+        const heroObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                animateCounters();
+                heroObserver.disconnect();
+            }
+        }, { threshold: 0.3 });
+
+        const heroMetrics = document.querySelector('.grid.grid-cols-2');
+        if (heroMetrics) heroObserver.observe(heroMetrics);
+
+        // Expandable sections
+        function toggleExpand(id) {
+            const content = document.getElementById(id);
+            const arrow = document.getElementById(id + '-arrow');
+
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                // Close all others
+                document.querySelectorAll('.expandable-content.expanded').forEach(el => {
+                    el.classList.remove('expanded');
+                    const otherId = el.id;
+                    const otherArrow = document.getElementById(otherId + '-arrow');
+                    if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
+                });
+
+                content.classList.add('expanded');
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Active nav link
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Token bar animation
+        const barObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bars = entry.target.querySelectorAll('[style*="width"]');
+                    bars.forEach((bar, i) => {
+                        const width = bar.style.width;
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, 300 + i * 200);
+                    });
+                    barObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.space-y-4').forEach(el => {
+            if (el.querySelector('[style*="width: 75%"]')) {
+                barObserver.observe(el);
+            }
+        });
+    </script>
+</body>
+</html>
