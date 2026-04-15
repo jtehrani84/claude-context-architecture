@@ -362,35 +362,37 @@
 
             <!-- Progress indicator -->
             <div class="max-w-xl mx-auto mb-12" id="progress-bar">
-                <div class="flex items-center">
-                    <div class="flex flex-col items-center progress-step" data-stage="0">
-                        <div class="progress-dot w-3 h-3 rounded-full"></div>
-                        <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Prereqs</span>
-                    </div>
-                    <div class="progress-line h-0.5 flex-1"></div>
-                    <div class="flex flex-col items-center progress-step" data-stage="1">
-                        <div class="progress-dot w-3 h-3 rounded-full"></div>
-                        <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">CLAUDE.md</span>
-                    </div>
-                    <div class="progress-line h-0.5 flex-1"></div>
-                    <div class="flex flex-col items-center progress-step" data-stage="2">
-                        <div class="progress-dot w-3 h-3 rounded-full"></div>
-                        <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Rules</span>
-                    </div>
-                    <div class="progress-line h-0.5 flex-1"></div>
-                    <div class="flex flex-col items-center progress-step" data-stage="3">
-                        <div class="progress-dot w-3 h-3 rounded-full"></div>
-                        <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Wiki</span>
-                    </div>
-                    <div class="progress-line h-0.5 flex-1"></div>
-                    <div class="flex flex-col items-center progress-step" data-stage="4">
-                        <div class="progress-dot w-3 h-3 rounded-full"></div>
-                        <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Memory</span>
-                    </div>
-                    <div class="progress-line h-0.5 flex-1"></div>
-                    <div class="flex flex-col items-center progress-step" data-stage="5">
-                        <div class="progress-dot w-3 h-3 rounded-full"></div>
-                        <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Start Building</span>
+                <div class="relative">
+                    <!-- Continuous background line (from first dot center to last dot center) -->
+                    <div class="absolute top-1.5 h-0.5 bg-[#334155]" style="left: calc(100% / 12); right: calc(100% / 12);"></div>
+                    <!-- Filled progress line overlay -->
+                    <div class="absolute top-1.5 h-0.5 bg-gradient-to-r from-[#22C55E] to-[#22D3EE] transition-all duration-300" id="progress-fill" style="left: calc(100% / 12); width: 0%"></div>
+                    <!-- Steps on top (grid for predictable dot positions) -->
+                    <div class="relative grid grid-cols-6">
+                        <div class="flex flex-col items-center progress-step" data-stage="0">
+                            <div class="progress-dot w-3 h-3 rounded-full bg-[#334155] relative z-10"></div>
+                            <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Prereqs</span>
+                        </div>
+                        <div class="flex flex-col items-center progress-step" data-stage="1">
+                            <div class="progress-dot w-3 h-3 rounded-full bg-[#334155] relative z-10"></div>
+                            <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">CLAUDE.md</span>
+                        </div>
+                        <div class="flex flex-col items-center progress-step" data-stage="2">
+                            <div class="progress-dot w-3 h-3 rounded-full bg-[#334155] relative z-10"></div>
+                            <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Rules</span>
+                        </div>
+                        <div class="flex flex-col items-center progress-step" data-stage="3">
+                            <div class="progress-dot w-3 h-3 rounded-full bg-[#334155] relative z-10"></div>
+                            <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Wiki</span>
+                        </div>
+                        <div class="flex flex-col items-center progress-step" data-stage="4">
+                            <div class="progress-dot w-3 h-3 rounded-full bg-[#334155] relative z-10"></div>
+                            <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Memory</span>
+                        </div>
+                        <div class="flex flex-col items-center progress-step" data-stage="5">
+                            <div class="progress-dot w-3 h-3 rounded-full bg-[#334155] relative z-10"></div>
+                            <span class="text-[10px] text-white/30 mt-2 whitespace-nowrap">Start Building</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1180,25 +1182,31 @@ fi</pre>
         // Progress indicator
         function updateProgress(activeStage) {
             const steps = document.querySelectorAll('.progress-step');
-            const lines = document.querySelectorAll('.progress-line');
+            const fill = document.getElementById('progress-fill');
 
             steps.forEach(step => {
                 const stage = parseInt(step.dataset.stage);
+                const dot = step.querySelector('.progress-dot');
                 step.classList.remove('active', 'completed');
+                dot.style.background = '#334155';
+                dot.style.boxShadow = 'none';
                 if (stage === activeStage) {
                     step.classList.add('active');
+                    dot.style.background = '#22D3EE';
+                    dot.style.boxShadow = '0 0 12px rgba(34, 211, 238, 0.5)';
                 } else if (stage < activeStage) {
                     step.classList.add('completed');
+                    dot.style.background = '#22C55E';
                 }
             });
 
-            lines.forEach((line, i) => {
-                if (i < activeStage) {
-                    line.classList.add('filled');
-                } else {
-                    line.classList.remove('filled');
-                }
-            });
+            // Fill line to the active stage
+            // Track runs from 1/12 to 11/12 of container (5/6 total width)
+            // Each step is 1/6 apart, so stage N fills N/5 of the track
+            if (fill) {
+                var trackWidth = 5 / 6 * 100; // ~83.33%
+                fill.style.width = (activeStage / 5 * trackWidth) + '%';
+            }
         }
 
         // Copy code to clipboard
