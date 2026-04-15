@@ -4,6 +4,8 @@
 **Author:** John Tehrani, Principal SE | **Built during:** Meridian Platform (28 days, 199 commits)
 **Full interactive write-up:** https://jtehrani84.github.io/claude-context-architecture/
 
+> 📎 **INSERT IMAGE:** `screenshots/hero-section.png`
+
 ---
 
 ## The Problem
@@ -39,6 +41,8 @@ A `wiki/` directory in your repo with deep reference pages organized by topic. A
 ### P5: Behavioral Rules — Guardrails (Always Active | 10 files)
 Standards you want enforced everywhere: security governance, architecture patterns, testing quality, communication style. Loaded from `~/.claude/rules/` every session. Not project-specific — these apply to everything.
 
+> 📎 **INSERT IMAGE:** `screenshots/five-tier-architecture.png`
+
 **The key insight:** Don't put everything in CLAUDE.md. Put a routing table there and detail in the wiki. Load what you need, when you need it.
 
 ---
@@ -54,6 +58,10 @@ Standards you want enforced everywhere: security governance, architecture patter
 | **Context available for work** | 92.5% | 97.5% |
 
 **3x less overhead.** The remaining 97.5% of your context window is available for actual work — code, conversation, and output.
+
+> 📎 **INSERT IMAGE:** `screenshots/before-architecture.png` *(Before — monolithic CLAUDE.md)*
+> 📎 **INSERT IMAGE:** `screenshots/after-architecture.png` *(After — 5-tier waterfall)*
+> 📎 **INSERT IMAGE:** `screenshots/token-comparison.png` *(15K vs 5K token bars)*
 
 ---
 
@@ -93,6 +101,8 @@ The maintenance burden is what kills every knowledge system. Claude handles all 
 > — Andrej Karpathy, on the LLM Wiki pattern
 
 We took that seriously.
+
+> 📎 **INSERT IMAGE:** `screenshots/karpathy-pattern.png` *(Three-layer mapping)*
 
 ---
 

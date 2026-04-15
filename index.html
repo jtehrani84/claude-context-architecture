@@ -160,6 +160,7 @@
             border: 1px solid rgba(34, 211, 238, 0.15);
             border-radius: 12px;
             font-family: 'JetBrains Mono', monospace;
+            overflow-x: auto;
         }
 
         /* Pulse dot */
@@ -257,6 +258,20 @@
                 <a href="#getting-started" class="nav-link hover:text-white/90 transition-colors">Get Started</a>
                 <a href="getting-started.html" class="px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 transition-all duration-200 text-xs">Full Guide</a>
             </div>
+            <!-- Mobile menu toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-white/50 hover:text-white/90 transition-colors" aria-label="Toggle menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden hidden border-t border-white/5 px-6 py-3 space-y-2 text-xs font-medium text-white/50">
+            <a href="#problem" class="block py-1.5 hover:text-white/90 transition-colors">Problem</a>
+            <a href="#architecture" class="block py-1.5 hover:text-white/90 transition-colors">Architecture</a>
+            <a href="#components" class="block py-1.5 hover:text-white/90 transition-colors">Components</a>
+            <a href="#before-after" class="block py-1.5 hover:text-white/90 transition-colors">Before/After</a>
+            <a href="#origin" class="block py-1.5 hover:text-white/90 transition-colors">Origin</a>
+            <a href="#getting-started" class="block py-1.5 hover:text-white/90 transition-colors">Get Started</a>
+            <a href="getting-started.html" class="block py-1.5 text-cyan-400 hover:text-cyan-300 transition-colors">Full Guide →</a>
         </div>
     </nav>
 
@@ -1694,6 +1709,20 @@
                 barObserver.observe(el);
             }
         });
+
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileBtn && mobileMenu) {
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        }
     </script>
 </body>
 </html>
