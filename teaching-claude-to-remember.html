@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teaching Claude Code to Remember | John Tehrani</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        @page {
+            size: Letter;
+            margin: 0.75in 0.85in;
+            @bottom-center {
+                content: counter(page);
+                font-family: 'Inter', sans-serif;
+                font-size: 9px;
+                color: #94A3B8;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.65;
+            color: #1E293B;
+            background: #FFFFFF;
+        }
+
+        /* Page breaks */
+        .page-break { page-break-before: always; }
+        h2 { page-break-after: avoid; }
+        .no-break { page-break-inside: avoid; }
+
+        /* Cover page */
+        .cover {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 85vh;
+            page-break-after: always;
+        }
+
+        .cover-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            background: #F0F9FF;
+            color: #0891B2;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .cover h1 {
+            font-size: 36pt;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #0F172A;
+            margin-bottom: 8px;
+        }
+
+        .cover h1 span {
+            background: linear-gradient(135deg, #0891B2, #6366F1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cover-subtitle {
+            font-size: 14pt;
+            color: #64748B;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            max-width: 480px;
+        }
+
+        .cover-metrics {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .cover-metric {
+            text-align: center;
+        }
+
+        .cover-metric-value {
+            font-size: 28pt;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .cover-metric-value.cyan { color: #0891B2; }
+        .cover-metric-value.indigo { color: #6366F1; }
+        .cover-metric-value.pink { color: #DB2777; }
+        .cover-metric-value.amber { color: #D97706; }
+
+        .cover-metric-label {
+            font-size: 8px;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .cover-author {
+            font-size: 10pt;
+            color: #64748B;
+        }
+
+        .cover-author strong {
+            color: #1E293B;
+        }
+
+        .cover-url {
+            font-size: 9pt;
+            color: #0891B2;
+            margin-top: 8px;
+        }
+
+        /* Section headers */
+        h2 {
+            font-size: 18pt;
+            font-weight: 700;
+            color: #0F172A;
+            margin-top: 32px;
+            margin-bottom: 6px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        h2 .section-label {
+            display: block;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #0891B2;
+            margin-bottom: 4px;
+        }
+
+        h3 {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #0F172A;
+            margin-top: 20px;
+            margin-bottom: 6px;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            font-weight: 600;
+            color: #334155;
+            margin-top: 16px;
+            margin-bottom: 4px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            color: #334155;
+        }
+
+        strong { color: #0F172A; }
+
+        /* Cards */
+        .card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+        }
+
+        .card-title {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 4px;
+        }
+
+        .card p {
+            font-size: 9.5pt;
+            color: #475569;
+            margin-bottom: 0;
+        }
+
+        /* Problem cards */
+        .problem-cards {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .problem-card {
+            flex: 1;
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-radius: 8px;
+            padding: 14px 16px;
+            page-break-inside: avoid;
+        }
+
+        .problem-card .card-title {
+            color: #DC2626;
+            font-size: 10pt;
+        }
+
+        .problem-card p {
+            font-size: 9pt;
+            color: #7F1D1D;
+        }
+
+        /* Callout */
+        .callout {
+            background: #FFFBEB;
+            border-left: 4px solid #F59E0B;
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin: 16px 0;
+            page-break-inside: avoid;
+        }
+
+        .callout p {
+            margin-bottom: 0;
+            color: #78350F;
+        }
+
+        .callout strong { color: #92400E; }
+
+        /* Tier blocks */
+        .tier {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            page-break-inside: avoid;
+        }
+
+        .tier-badge {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 10pt;
+            color: white;
+        }
+
+        .tier-badge.p1 { background: linear-gradient(135deg, #06B6D4, #0891B2); }
+        .tier-badge.p2 { background: linear-gradient(135deg, #818CF8, #6366F1); }
+        .tier-badge.p3 { background: linear-gradient(135deg, #A78BFA, #7C3AED); }
+        .tier-badge.p4 { background: linear-gradient(135deg, #F472B6, #DB2777); }
+        .tier-badge.p5 { background: linear-gradient(135deg, #FBBF24, #D97706); }
+
+        .tier.p1-bg { background: #F0FDFA; border: 1px solid #99F6E4; }
+        .tier.p2-bg { background: #EEF2FF; border: 1px solid #C7D2FE; }
+        .tier.p3-bg { background: #F5F3FF; border: 1px solid #DDD6FE; }
+        .tier.p4-bg { background: #FDF2F8; border: 1px solid #FBCFE8; }
+        .tier.p5-bg { background: #FFFBEB; border: 1px solid #FDE68A; }
+
+        .tier-content { flex: 1; }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2px;
+        }
+
+        .tier-name {
+            font-weight: 600;
+            font-size: 10.5pt;
+            color: #0F172A;
+        }
+
+        .tier-tag {
+            font-size: 7.5pt;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .tier-tag.cyan { background: #ECFEFF; color: #0E7490; }
+        .tier-tag.indigo { background: #EEF2FF; color: #4338CA; }
+        .tier-tag.violet { background: #F5F3FF; color: #6D28D9; }
+        .tier-tag.pink { background: #FDF2F8; color: #BE185D; }
+        .tier-tag.amber { background: #FFFBEB; color: #B45309; }
+
+        .tier-tokens {
+            font-family: 'JetBrains Mono', 'SF Mono', monospace;
+            font-size: 8.5pt;
+            color: #64748B;
+        }
+
+        .tier-desc {
+            font-size: 9pt;
+            color: #475569;
+            margin-top: 2px;
+        }
+
+        /* Comparison bars */
+        .comparison-row {
+            margin-bottom: 14px;
+        }
+
+        .comparison-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .comparison-label-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .comparison-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .comparison-dot.red { background: #EF4444; }
+        .comparison-dot.cyan { background: #06B6D4; }
+
+        .comparison-name {
+            font-weight: 500;
+            font-size: 10pt;
+        }
+
+        .comparison-name.red { color: #DC2626; }
+        .comparison-name.cyan { color: #0891B2; }
+
+        .comparison-detail {
+            font-size: 8.5pt;
+            color: #94A3B8;
+        }
+
+        .comparison-tokens {
+            font-family: monospace;
+            font-size: 8.5pt;
+        }
+
+        .comparison-tokens.red { color: #DC2626; }
+        .comparison-tokens.cyan { color: #0891B2; }
+
+        .comparison-bar {
+            height: 18px;
+            border-radius: 9px;
+            background: #F1F5F9;
+            overflow: hidden;
+        }
+
+        .comparison-fill {
+            height: 100%;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+        }
+
+        .comparison-fill.red {
+            background: linear-gradient(90deg, #EF4444, #F87171);
+            width: 45%;
+        }
+
+        .comparison-fill.cyan {
+            background: linear-gradient(90deg, #06B6D4, #22D3EE);
+            width: 15%;
+        }
+
+        .comparison-fill-text {
+            font-size: 7pt;
+            font-weight: 500;
+            color: white;
+        }
+
+        .savings-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #F0FDFA;
+            border: 1px solid #99F6E4;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-top: 12px;
+        }
+
+        .savings-number {
+            font-size: 22pt;
+            font-weight: 700;
+            color: #0891B2;
+        }
+
+        .savings-text {
+            font-size: 9pt;
+            color: #475569;
+        }
+
+        /* Comparison table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 16px;
+            font-size: 9.5pt;
+        }
+
+        th {
+            background: #F1F5F9;
+            font-weight: 600;
+            text-align: left;
+            padding: 8px 12px;
+            border: 1px solid #E2E8F0;
+            color: #0F172A;
+            font-size: 9pt;
+        }
+
+        td {
+            padding: 8px 12px;
+            border: 1px solid #E2E8F0;
+            color: #334155;
+        }
+
+        tr:nth-child(even) td { background: #F8FAFC; }
+
+        /* Blockquote */
+        blockquote {
+            background: #F8FAFC;
+            border-left: 3px solid #0891B2;
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin: 16px 0;
+            page-break-inside: avoid;
+        }
+
+        blockquote p {
+            font-style: italic;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+
+        blockquote .attribution {
+            font-style: normal;
+            font-size: 9pt;
+            color: #64748B;
+        }
+
+        /* Origin story */
+        .origin-story {
+            background: #F0F9FF;
+            border: 1px solid #BAE6FD;
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin: 16px 0;
+        }
+
+        .origin-story p {
+            color: #0C4A6E;
+        }
+
+        .origin-story strong { color: #075985; }
+
+        /* Karpathy cards */
+        .karpathy-layers {
+            display: flex;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .karpathy-layer {
+            flex: 1;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 14px;
+            page-break-inside: avoid;
+        }
+
+        .karpathy-layer h4 {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748B;
+            margin-top: 0;
+            margin-bottom: 2px;
+        }
+
+        .karpathy-layer .layer-name {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 6px;
+        }
+
+        .karpathy-layer p {
+            font-size: 8.5pt;
+            color: #475569;
+            margin-bottom: 0;
+        }
+
+        /* Extension cards */
+        .extension {
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+
+        .extension h4 {
+            color: #0891B2;
+            margin-bottom: 2px;
+        }
+
+        .extension p {
+            font-size: 9.5pt;
+        }
+
+        /* Stages */
+        .stage {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid #F1F5F9;
+            page-break-inside: avoid;
+        }
+
+        .stage:last-child { border-bottom: none; }
+
+        .stage-number {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #0891B2;
+            color: white;
+            font-weight: 700;
+            font-size: 11pt;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stage-content h4 {
+            margin-top: 0;
+            margin-bottom: 2px;
+        }
+
+        .stage-time {
+            font-size: 8.5pt;
+            color: #0891B2;
+            font-weight: 500;
+        }
+
+        /* Lists */
+        ul {
+            margin: 6px 0 12px 20px;
+            color: #334155;
+        }
+
+        li {
+            margin-bottom: 4px;
+            font-size: 9.5pt;
+        }
+
+        /* Series list */
+        .series-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .series-part {
+            font-weight: 700;
+            font-size: 9pt;
+            color: #0891B2;
+            white-space: nowrap;
+        }
+
+        .series-desc {
+            font-size: 9.5pt;
+            color: #334155;
+        }
+
+        /* Decay table */
+        .decay-table {
+            margin: 8px 0;
+        }
+
+        .decay-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #F1F5F9;
+            font-size: 9.5pt;
+        }
+
+        .decay-type { color: #334155; font-weight: 500; }
+        .decay-time { color: #64748B; }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 16px;
+            border-top: 1px solid #E2E8F0;
+            font-size: 9pt;
+            color: #94A3B8;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #0891B2;
+            text-decoration: none;
+        }
+
+        /* Screenshot images */
+        .screenshot {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+            margin: 12px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .screenshot-caption {
+            font-size: 8.5pt;
+            color: #94A3B8;
+            text-align: center;
+            margin-top: -8px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- COVER PAGE -->
+    <div class="cover">
+        <div class="cover-badge">Claude Code Power User Guide</div>
+        <h1>Teaching Claude Code<br><span>to Remember</span></h1>
+        <p class="cover-subtitle">A persistent context architecture that turns Claude Code from a brilliant amnesiac into a teammate who knows your projects, remembers your preferences, and gets smarter every session.</p>
+
+        <div class="cover-metrics">
+            <div class="cover-metric">
+                <div class="cover-metric-value cyan">82%</div>
+                <div class="cover-metric-label">Context Reduction</div>
+            </div>
+            <div class="cover-metric">
+                <div class="cover-metric-value indigo">51</div>
+                <div class="cover-metric-label">Wiki Pages</div>
+            </div>
+            <div class="cover-metric">
+                <div class="cover-metric-value pink">128</div>
+                <div class="cover-metric-label">Memory Files</div>
+            </div>
+            <div class="cover-metric">
+                <div class="cover-metric-value amber">7</div>
+                <div class="cover-metric-label">Automated Hooks</div>
+            </div>
+        </div>
+
+        <p class="cover-author"><strong>John Tehrani</strong> &mdash; Principal Solutions Engineer, Salesforce</p>
+        <p class="cover-url">https://jtehrani84.github.io/claude-context-architecture/</p>
+    </div>
+
+    <!-- THE PROBLEM -->
+    <h2><span class="section-label">The Problem</span>Every session starts from zero</h2>
+
+    <p>Out of the box, Claude Code has no persistent memory. No matter how many hours you&rsquo;ve spent together, tomorrow it won&rsquo;t remember a thing.</p>
+
+    <div class="problem-cards">
+        <div class="problem-card no-break">
+            <div class="card-title">Context Window Bloat</div>
+            <p>A monolithic CLAUDE.md that dumps 15,000 tokens every session. Deployment details when you&rsquo;re writing emails. Slide rendering rules when you&rsquo;re debugging Apex.</p>
+        </div>
+        <div class="problem-card no-break">
+            <div class="card-title">Groundhog Day</div>
+            <p>&ldquo;I&rsquo;m a Solution Engineer working on Salesforce. Here&rsquo;s my project structure. Don&rsquo;t use these words.&rdquo; Every. Single. Session.</p>
+        </div>
+        <div class="problem-card no-break">
+            <div class="card-title">No Compound Learning</div>
+            <p>Claude makes the same mistake twice. Uses a deprecated product name you corrected last week. Knowledge from yesterday vanishes overnight.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <p><strong>The real cost isn&rsquo;t time.</strong> It&rsquo;s that Claude can never get better at working with <em>you specifically</em>. Without persistent context, every session is a first date with a genius who has amnesia.</p>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <h2 class="page-break"><span class="section-label">The Solution</span>Five-tier persistent context</h2>
+
+    <p>Instead of one massive instruction file, split context into five tiers. Load what you need, when you need it. The right information at the right time.</p>
+
+    <div class="tier p1-bg">
+        <div class="tier-badge p1">P1</div>
+        <div class="tier-content">
+            <div class="tier-header">
+                <div><span class="tier-name">Identity &mdash; CLAUDE.md</span><span class="tier-tag cyan">Always Loaded</span></div>
+                <span class="tier-tokens">~2,800 tokens</span>
+            </div>
+            <div class="tier-desc">Who you are, essential rules (anti-slop, anti-hallucination), wiki routing table. The irreducible minimum.</div>
+        </div>
+    </div>
+
+    <div class="tier p2-bg">
+        <div class="tier-badge p2">P2</div>
+        <div class="tier-content">
+            <div class="tier-header">
+                <div><span class="tier-name">Session Init &mdash; Hooks</span><span class="tier-tag indigo">Auto on Start</span></div>
+                <span class="tier-tokens">~200 tokens</span>
+            </div>
+            <div class="tier-desc">Python script analyzes your directory, git history, and branch name &rarr; suggests the right wiki pages to load.</div>
+        </div>
+    </div>
+
+    <div class="tier p3-bg">
+        <div class="tier-badge p3">P3</div>
+        <div class="tier-content">
+            <div class="tier-header">
+                <div><span class="tier-name">Knowledge Base &mdash; Wiki</span><span class="tier-tag violet">On Demand</span></div>
+                <span class="tier-tokens">Variable</span>
+            </div>
+            <div class="tier-desc">51 pages of deep reference: architecture patterns, deployment runbooks, design systems. Loaded only when the task needs them.</div>
+        </div>
+    </div>
+
+    <div class="tier p4-bg">
+        <div class="tier-badge p4">P4</div>
+        <div class="tier-content">
+            <div class="tier-header">
+                <div><span class="tier-name">Long-Term Memory &mdash; Files</span><span class="tier-tag pink">When Recalled</span></div>
+                <span class="tier-tokens">~2,000 tokens</span>
+            </div>
+            <div class="tier-desc">128 topic files: decisions made, mistakes corrected, project status, feedback. MEMORY.md index auto-loaded, details read on demand.</div>
+        </div>
+    </div>
+
+    <div class="tier p5-bg">
+        <div class="tier-badge p5">P5</div>
+        <div class="tier-content">
+            <div class="tier-header">
+                <div><span class="tier-name">Behavioral Rules &mdash; Guardrails</span><span class="tier-tag amber">Always Active</span></div>
+                <span class="tier-tokens">10 files</span>
+            </div>
+            <div class="tier-desc">Security governance, architecture standards, testing quality, communication style, context-mode policy, data protection. Loaded from ~/.claude/rules/ every session.</div>
+        </div>
+    </div>
+
+    <!-- Before/After bars -->
+    <h3 style="margin-top: 24px;">Context window at session start</h3>
+
+    <div class="comparison-row" style="margin-top: 12px;">
+        <div class="comparison-label">
+            <div class="comparison-label-left">
+                <div class="comparison-dot red"></div>
+                <span class="comparison-name red">Before</span>
+                <span class="comparison-detail">Monolithic CLAUDE.md</span>
+            </div>
+            <span class="comparison-tokens red">~15,000 tokens (7.5%)</span>
+        </div>
+        <div class="comparison-bar">
+            <div class="comparison-fill red">
+                <span class="comparison-fill-text">15K tokens burned upfront</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-row">
+        <div class="comparison-label">
+            <div class="comparison-label-left">
+                <div class="comparison-dot cyan"></div>
+                <span class="comparison-name cyan">After</span>
+                <span class="comparison-detail">Tiered architecture (P1 + P2 + P4 index)</span>
+            </div>
+            <span class="comparison-tokens cyan">~5,000 tokens (2.5%)</span>
+        </div>
+        <div class="comparison-bar">
+            <div class="comparison-fill cyan">
+                <span class="comparison-fill-text">5K</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="savings-box no-break">
+        <div class="savings-number">3x</div>
+        <div class="savings-text">less overhead. The remaining 97.5% of your context window is available for actual work &mdash; code, conversation, and output.</div>
+    </div>
+
+    <!-- BEFORE / AFTER TABLE -->
+    <h2><span class="section-label">Comparison</span>Before and after</h2>
+
+    <p>The same person, the same projects, the same Claude Code. One has persistent context architecture. The other doesn&rsquo;t.</p>
+
+    <table>
+        <thead>
+            <tr><th></th><th>Before</th><th>After</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Context at session start</strong></td><td>~15,000 tokens (7.5%)</td><td>~5,000 tokens (2.5%)</td></tr>
+            <tr><td><strong>Ramp-up time</strong></td><td>10 minutes of re-orientation</td><td>Instant &mdash; hooks auto-route context</td></tr>
+            <tr><td><strong>Corrections</strong></td><td>Lost overnight</td><td>Persisted in memory files</td></tr>
+            <tr><td><strong>Quality consistency</strong></td><td>Varies session to session</td><td>Compound learning across sessions</td></tr>
+            <tr><td><strong>Context for work</strong></td><td>92.5%</td><td>97.5%</td></tr>
+        </tbody>
+    </table>
+
+    <!-- ORIGIN STORY -->
+    <h2><span class="section-label">Origin</span>How I got here</h2>
+
+    <div class="origin-story">
+        <p>This came from building a real project &mdash; not a context management experiment. 28 days, 199 commits, 25 data connectors, 6 AI subagents, Cloud Run middleware, Apps Script, Agentforce, Slack, and Salesforce integrations. Before starting, I had zero understanding of how to best use Claude Code.</p>
+
+        <p>Everything started in one CLAUDE.md file. 15K tokens loading identically whether I was debugging a pipeline connector or drafting a customer deliverable. Corrections kept getting lost between sessions &mdash; things like &ldquo;clasp push doesn&rsquo;t deploy, you also need clasp deploy&rdquo; or &ldquo;JWT audience is login.salesforce.com, not My Domain URL.&rdquo; Small, critical, and gone the next morning.</p>
+
+        <p>The question that forced the architecture: <strong>what does Claude always need to know vs. what can it look up?</strong> Once I framed it that way, each tier fell out of a different type of knowledge I was losing. Reference docs load differently than corrections. Behavioral standards apply everywhere. And the manual overhead of choosing what to load each session burned the first 10 minutes &mdash; so I had Opus automate it with a hook that reads git state.</p>
+
+        <p><strong>Five tiers from five types of knowledge loss.</strong></p>
+    </div>
+
+    <!-- KARPATHY -->
+    <h2><span class="section-label">Foundation</span>The Karpathy connection</h2>
+
+    <p>This implements Andrej Karpathy&rsquo;s LLM Wiki pattern. The maintenance burden is what kills every knowledge system. Claude handles all the bookkeeping. Your job is sourcing, directing, and thinking.</p>
+
+    <div class="karpathy-layers">
+        <div class="karpathy-layer no-break">
+            <h4>Karpathy Layer 1</h4>
+            <div class="layer-name">Raw Sources</div>
+            <p>Immutable input. Human curates what goes in. Articles, docs, feed posts, PDFs.</p>
+        </div>
+        <div class="karpathy-layer no-break">
+            <h4>Karpathy Layer 2</h4>
+            <div class="layer-name">Wiki</div>
+            <p>Synthesized, interlinked. Claude maintains it. Cross-referenced, auto-indexed, lint-checked.</p>
+        </div>
+        <div class="karpathy-layer no-break">
+            <h4>Karpathy Layer 3</h4>
+            <div class="layer-name">Schema</div>
+            <p>Structure and conventions. Human + Claude co-evolve. CLAUDE.md, auto-memory, wiki index, rules.</p>
+        </div>
+    </div>
+
+    <h3>Where we went further</h3>
+
+    <div class="extension no-break">
+        <h4>Token economics</h4>
+        <p>Karpathy doesn&rsquo;t address context window costs. We engineered tiered loading: 2,800 tokens always-on, everything else on demand. 82% reduction vs. dumping everything into CLAUDE.md.</p>
+    </div>
+
+    <div class="extension no-break">
+        <h4>Automated routing</h4>
+        <p>Karpathy&rsquo;s workflow is manual &mdash; you tell the LLM what to do. Our session-init hook analyzes your git state and auto-suggests which wiki pages to load. No human in the loop for context selection.</p>
+    </div>
+
+    <div class="extension no-break">
+        <h4>Multi-modal persistence</h4>
+        <p>Karpathy has one artifact: the wiki. We separate four types &mdash; wiki (reference), memory (decisions), rules (standards), schema (routing) &mdash; each loaded at different times for different reasons.</p>
+    </div>
+
+    <div class="extension no-break">
+        <h4>Curation and lifecycle</h4>
+        <p>Karpathy describes Lint. We go further: a <code>/curate</code> command that scans memory for staleness, processes the wiki inbox, and flags what needs attention. Memory files have decay rates. His system grows but doesn&rsquo;t prune. Ours does.</p>
+    </div>
+
+    <blockquote class="no-break">
+        <p>&ldquo;I think there is room here for an incredible new product instead of a hacky collection of scripts.&rdquo;</p>
+        <div class="attribution">&mdash; Andrej Karpathy, on the LLM Wiki pattern</div>
+        <p style="font-style: normal; margin-top: 8px; margin-bottom: 0;">We took that seriously.</p>
+    </blockquote>
+
+    <!-- MAINTENANCE -->
+    <h2><span class="section-label">Maintenance</span>What about staleness?</h2>
+
+    <p>The question everyone asks: doesn&rsquo;t the wiki and memory get stale over time? Yes &mdash; if you don&rsquo;t curate.</p>
+
+    <p>I run a <code>/curate</code> command once a week. Takes 5 minutes. Claude does all the legwork &mdash; surfaces candidates, shows a one-line summary, asks keep/update/delete. You&rsquo;re the judge, not the janitor.</p>
+
+    <h4>Memory decay rates</h4>
+    <div class="decay-table">
+        <div class="decay-row"><span class="decay-type">Session logs</span><span class="decay-time">Stale after 2 weeks</span></div>
+        <div class="decay-row"><span class="decay-type">Project state</span><span class="decay-time">Stale after 1 month</span></div>
+        <div class="decay-row"><span class="decay-type">Feedback and decisions</span><span class="decay-time">Almost never stale</span></div>
+        <div class="decay-row"><span class="decay-type">Reference</span><span class="decay-time">Flag only if explicitly outdated</span></div>
+    </div>
+
+    <!-- GET STARTED -->
+    <h2><span class="section-label">Get Started</span>Build your own in stages</h2>
+
+    <p>You don&rsquo;t need the full system on day one. Start with CLAUDE.md, add layers as you go. Each stage delivers value on its own.</p>
+
+    <div class="stage">
+        <div class="stage-number">1</div>
+        <div class="stage-content">
+            <h4>Foundation <span class="stage-time">(30 minutes)</span></h4>
+            <p style="font-size: 9.5pt;">Create a slim CLAUDE.md with identity, key rules, and a routing table. Add 2&ndash;3 rules files in <code>~/.claude/rules/</code>. Start a <code>wiki/</code> directory with an <code>index.md</code>.</p>
+        </div>
+    </div>
+
+    <div class="stage">
+        <div class="stage-number">2</div>
+        <div class="stage-content">
+            <h4>Knowledge <span class="stage-time">(ongoing)</span></h4>
+            <p style="font-size: 9.5pt;">Add wiki pages as you work &mdash; Claude writes them, you curate. Set up auto-memory with topic files. Process your wiki inbox periodically.</p>
+        </div>
+    </div>
+
+    <div class="stage">
+        <div class="stage-number">3</div>
+        <div class="stage-content">
+            <h4>Automation <span class="stage-time">(1&ndash;2 hours)</span></h4>
+            <p style="font-size: 9.5pt;">Add a SessionStart hook for context routing. Set up <code>/curate</code> for weekly maintenance. Configure decay rates for different memory types.</p>
+        </div>
+    </div>
+
+    <div class="stage">
+        <div class="stage-number">4</div>
+        <div class="stage-content">
+            <h4>Curation <span class="stage-time">(5 min/week)</span></h4>
+            <p style="font-size: 9.5pt;">Run <code>/curate</code> weekly &mdash; Claude scans, you decide. Archive old session logs, keep decisions and feedback. Monitor MEMORY.md line count.</p>
+        </div>
+    </div>
+
+    <!-- SERIES -->
+    <h2><span class="section-label">What&rsquo;s Next</span>This is Part 1 of a series</h2>
+
+    <p>This document covers the persistent context architecture &mdash; how to make Claude Code remember across sessions. More coming:</p>
+
+    <div class="series-item"><span class="series-part">Part 1 (this one)</span><span class="series-desc">Memory, Wiki, CLAUDE.md, Hooks, Rules &mdash; the foundation</span></div>
+    <div class="series-item"><span class="series-part">Part 2</span><span class="series-desc">MCP Servers &mdash; extending what Claude can do (GitHub, search, browser, CRM data)</span></div>
+    <div class="series-item"><span class="series-part">Part 3</span><span class="series-desc">Custom Commands &mdash; SE-specific workflows (/account-prep, /deal-strategy, /deploy)</span></div>
+    <div class="series-item"><span class="series-part">Part 4</span><span class="series-desc">Plugins &mdash; context-mode (3&ndash;5x longer sessions), frontend-design, session analytics</span></div>
+    <div class="series-item"><span class="series-part">Part 5</span><span class="series-desc">Intelligence Pipeline &mdash; automated OSINT from X feed + web search</span></div>
+
+    <p style="margin-top: 12px;">Each builds on the last. Start with Part 1, get value immediately, add the rest over time.</p>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>Teaching Claude Code to Remember &mdash; John Tehrani, Principal Solutions Engineer, Salesforce</p>
+        <p><a href="https://jtehrani84.github.io/claude-context-architecture/">jtehrani84.github.io/claude-context-architecture</a></p>
+    </div>
+
+</body>
+</html>
