@@ -1342,6 +1342,50 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Beyond the pattern -->
+            <div class="fade-in mt-12">
+                <h3 class="text-xl font-bold text-white mb-2">Beyond the pattern</h3>
+                <p class="text-sm text-white/40 mb-8 max-w-2xl">Karpathy described the idea. We validated it, then extended it in three directions he hasn't addressed.</p>
+
+                <div class="grid md:grid-cols-3 gap-5">
+                    <!-- Extension 1: Token Economics -->
+                    <div class="glass-card rounded-xl p-5 border-t-2 border-cyan-500/50">
+                        <div class="w-9 h-9 rounded-lg bg-cyan-500/10 flex items-center justify-center mb-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <h4 class="text-sm font-semibold text-cyan-400 mb-2">Token economics</h4>
+                        <p class="text-xs text-white/40 leading-relaxed">Karpathy doesn't address context window costs. We engineered tiered loading: 2,800 tokens always-on, everything else on demand. <span class="text-cyan-400/70 font-semibold">82% reduction</span> vs. loading the full schema every session.</p>
+                    </div>
+
+                    <!-- Extension 2: Automated Routing -->
+                    <div class="glass-card rounded-xl p-5 border-t-2 border-violet-500/50">
+                        <div class="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center mb-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/></svg>
+                        </div>
+                        <h4 class="text-sm font-semibold text-violet-400 mb-2">Automated routing</h4>
+                        <p class="text-xs text-white/40 leading-relaxed">Karpathy's workflow is manual &mdash; you tell the LLM what to do. Our session-init hook <span class="text-violet-400/70 font-semibold">analyzes your git state</span> and auto-suggests which wiki pages to load. No human in the loop.</p>
+                    </div>
+
+                    <!-- Extension 3: Multi-Modal Persistence -->
+                    <div class="glass-card rounded-xl p-5 border-t-2 border-pink-500/50">
+                        <div class="w-9 h-9 rounded-lg bg-pink-500/10 flex items-center justify-center mb-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F472B6" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                        </div>
+                        <h4 class="text-sm font-semibold text-pink-400 mb-2">Multi-modal persistence</h4>
+                        <p class="text-xs text-white/40 leading-relaxed">Karpathy has one artifact: the wiki. We separate <span class="text-pink-400/70 font-semibold">four types</span> &mdash; wiki (reference), memory (decisions), rules (standards), schema (routing) &mdash; each loaded at different times for different reasons.</p>
+                    </div>
+                </div>
+
+                <!-- Karpathy quote -->
+                <div class="mt-8 glass-card rounded-xl p-6 bg-gradient-to-r from-violet-500/[0.04] to-pink-500/[0.04]">
+                    <blockquote class="text-sm text-white/60 leading-relaxed italic">
+                        &ldquo;I think there is room here for an incredible new product instead of a hacky collection of scripts.&rdquo;
+                    </blockquote>
+                    <div class="mt-2 text-xs text-white/30">&mdash; Andrej Karpathy, on the LLM Wiki pattern</div>
+                    <p class="mt-3 text-xs text-white/40">We took that seriously. Five named tiers, 19 commands, 10 MCP servers, automated context routing, tiered token loading. Not a product &mdash; but not a hacky collection of scripts either.</p>
+                </div>
+            </div>
         </div>
     </section>
 
