@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started | Claude Code Persistent Context Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        navy: {
+                            900: '#0B1120',
+                            800: '#0F172A',
+                            700: '#1E293B',
+                            600: '#334155',
+                        },
+                        cyan: {
+                            400: '#22D3EE',
+                            500: '#06B6D4',
+                            600: '#0891B2',
+                        },
+                        amber: {
+                            400: '#FBBF24',
+                            500: '#F59E0B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0B1120;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #22D3EE, #818CF8, #F472B6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-text-cyan {
+            background: linear-gradient(135deg, #22D3EE, #67E8F9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Card glass effect */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(34, 211, 238, 0.1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(34, 211, 238, 0.25);
+        }
+
+        /* Glow effects */
+        .glow-cyan {
+            box-shadow: 0 0 40px rgba(34, 211, 238, 0.08);
+        }
+
+        .glow-cyan-hover:hover {
+            box-shadow: 0 0 60px rgba(34, 211, 238, 0.15);
+        }
+
+        /* Scroll-triggered fade-in */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-delay-1 { transition-delay: 0.1s; }
+        .fade-in-delay-2 { transition-delay: 0.2s; }
+        .fade-in-delay-3 { transition-delay: 0.3s; }
+
+        /* Code blocks */
+        .code-block {
+            background: #0B1120;
+            border: 1px solid rgba(34, 211, 238, 0.15);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative;
+        }
+
+        .code-block pre {
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Copy button */
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            color: rgba(34, 211, 238, 0.7);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            background: rgba(34, 211, 238, 0.2);
+            color: #22D3EE;
+        }
+
+        .copy-btn.copied {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #22C55E;
+        }
+
+        /* Language label */
+        .lang-label {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            color: rgba(255, 255, 255, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Accordion */
+        .stage-section {
+            transition: all 0.3s ease;
+        }
+
+        .stage-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.3s ease, padding 0.3s ease;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .stage-content.expanded {
+            max-height: 5000px;
+            opacity: 1;
+            padding-top: 24px;
+            padding-bottom: 32px;
+        }
+
+        .stage-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .stage-arrow.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* Progress indicator */
+        .progress-step {
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .progress-dot {
+            background: #22D3EE;
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+        }
+
+        .progress-step.completed .progress-dot {
+            background: #22C55E;
+        }
+
+        .progress-step .progress-dot {
+            background: #334155;
+        }
+
+        .progress-line {
+            background: #334155;
+            transition: background 0.3s ease;
+        }
+
+        .progress-line.filled {
+            background: linear-gradient(90deg, #22C55E, #22D3EE);
+        }
+
+        /* Pulse dot */
+        .pulse-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Time badge */
+        .time-badge {
+            background: rgba(34, 211, 238, 0.08);
+            border: 1px solid rgba(34, 211, 238, 0.15);
+        }
+
+        /* Checklist */
+        .check-item input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #475569;
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .check-item input[type="checkbox"]:checked {
+            background: #22D3EE;
+            border-color: #22D3EE;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 4L5.5 9.5L3 7' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-size: 14px;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .check-item input[type="checkbox"]:checked + span {
+            text-decoration: line-through;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0B1120; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Sticky nav */
+        .nav-link { position: relative; }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #22D3EE;
+            border-radius: 1px;
+        }
+
+        /* Animated border */
+        .animated-border {
+            position: relative;
+        }
+        .animated-border::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, #22D3EE, #818CF8, #F472B6, #22D3EE);
+            background-size: 300% 300%;
+            animation: borderGradient 6s ease infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+        @keyframes borderGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 backdrop-blur-xl bg-navy-900/80 border-b border-white/5">
+        <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-indigo-500 flex items-center justify-center">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <span class="font-semibold text-sm text-white/90">Claude Code Context Architecture</span>
+                </a>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-xs font-medium text-white/50">
+                <a href="index.html" class="hover:text-white/90 transition-colors flex items-center gap-1">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    Main Write-Up
+                </a>
+                <a href="#stage-0" class="nav-link hover:text-white/90 transition-colors">Prerequisites</a>
+                <a href="#stage-1" class="nav-link hover:text-white/90 transition-colors">CLAUDE.md</a>
+                <a href="#stage-2" class="nav-link hover:text-white/90 transition-colors">Rules</a>
+                <a href="#stage-3" class="nav-link hover:text-white/90 transition-colors">Wiki</a>
+                <a href="#stage-4" class="nav-link hover:text-white/90 transition-colors">Memory</a>
+                <a href="#stage-5" class="nav-link hover:text-white/90 transition-colors">Level Up</a>
+            </div>
+            <!-- Mobile menu toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-white/50 hover:text-white/90 transition-colors" aria-label="Toggle menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden hidden border-t border-white/5 px-6 py-3 space-y-2 text-xs font-medium text-white/50">
+            <a href="index.html" class="block py-1.5 hover:text-white/90 transition-colors">Main Write-Up</a>
+            <a href="#stage-0" class="block py-1.5 hover:text-white/90 transition-colors">Prerequisites</a>
+            <a href="#stage-1" class="block py-1.5 hover:text-white/90 transition-colors">CLAUDE.md</a>
+            <a href="#stage-2" class="block py-1.5 hover:text-white/90 transition-colors">Rules</a>
+            <a href="#stage-3" class="block py-1.5 hover:text-white/90 transition-colors">Wiki</a>
+            <a href="#stage-4" class="block py-1.5 hover:text-white/90 transition-colors">Memory</a>
+            <a href="#stage-5" class="block py-1.5 hover:text-white/90 transition-colors">Level Up</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="min-h-[70vh] flex items-center justify-center relative pt-16">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 pulse-dot"></span>
+                Beginner-Friendly Guide &mdash; Part 1 of 5
+            </div>
+
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+                <span class="text-white">Getting Started with</span><br>
+                <span class="gradient-text">Persistent Context</span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-8 leading-relaxed">
+                Five stages, 30 minutes total. Go from a blank slate to a Claude that knows your projects, follows your rules, and remembers what you've taught it.
+            </p>
+
+            <!-- Progress indicator -->
+            <div class="flex items-center justify-center gap-0 max-w-xl mx-auto mb-12" id="progress-bar">
+                <div class="progress-step flex flex-col items-center" data-stage="0">
+                    <div class="progress-dot w-3 h-3 rounded-full"></div>
+                    <span class="text-[10px] text-white/30 mt-1.5 hidden sm:block">Prereqs</span>
+                </div>
+                <div class="progress-line h-0.5 flex-1"></div>
+                <div class="progress-step flex flex-col items-center" data-stage="1">
+                    <div class="progress-dot w-3 h-3 rounded-full"></div>
+                    <span class="text-[10px] text-white/30 mt-1.5 hidden sm:block">CLAUDE.md</span>
+                </div>
+                <div class="progress-line h-0.5 flex-1"></div>
+                <div class="progress-step flex flex-col items-center" data-stage="2">
+                    <div class="progress-dot w-3 h-3 rounded-full"></div>
+                    <span class="text-[10px] text-white/30 mt-1.5 hidden sm:block">Rules</span>
+                </div>
+                <div class="progress-line h-0.5 flex-1"></div>
+                <div class="progress-step flex flex-col items-center" data-stage="3">
+                    <div class="progress-dot w-3 h-3 rounded-full"></div>
+                    <span class="text-[10px] text-white/30 mt-1.5 hidden sm:block">Wiki</span>
+                </div>
+                <div class="progress-line h-0.5 flex-1"></div>
+                <div class="progress-step flex flex-col items-center" data-stage="4">
+                    <div class="progress-dot w-3 h-3 rounded-full"></div>
+                    <span class="text-[10px] text-white/30 mt-1.5 hidden sm:block">Memory</span>
+                </div>
+                <div class="progress-line h-0.5 flex-1"></div>
+                <div class="progress-step flex flex-col items-center" data-stage="5">
+                    <div class="progress-dot w-3 h-3 rounded-full"></div>
+                    <span class="text-[10px] text-white/30 mt-1.5 hidden sm:block">Level Up</span>
+                </div>
+            </div>
+
+            <a href="#stage-0" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-sm font-medium hover:bg-cyan-500/20 transition-all duration-200">
+                Start Building
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- The Problem (brief) -->
+    <section class="py-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="fade-in glass-card rounded-xl p-8">
+                <h2 class="text-xl font-bold text-white mb-4">Why bother?</h2>
+                <p class="text-white/50 leading-relaxed mb-4">
+                    Every time you start a Claude Code session, Claude has no idea who you are, what you're working on, or what you told it yesterday. It's a brilliant collaborator with total amnesia.
+                </p>
+                <p class="text-white/50 leading-relaxed mb-4">
+                    You end up repeating yourself. "I'm an SE." "This is a Salesforce project." "Don't use deprecated APIs." "Remember, we decided on approach B last week." Over and over.
+                </p>
+                <p class="text-white/50 leading-relaxed">
+                    This guide fixes that. You'll create a small set of files that Claude reads automatically at the start of every session. No plugins, no external tools, no coding required. Just files in the right places with the right content.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stage 0: Prerequisites -->
+    <section id="stage-0" class="px-6 pb-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="fade-in stage-section glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                <button onclick="toggleStage('stage-0-content')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">0</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-white">What You Need</h3>
+                        <p class="text-xs text-white/40 mt-0.5">Prerequisites before you start</p>
+                    </div>
+                    <span class="time-badge rounded-full px-3 py-1 text-xs text-cyan-400 font-medium flex-shrink-0">2 min</span>
+                    <svg class="w-5 h-5 text-white/30 stage-arrow flex-shrink-0" id="stage-0-content-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div id="stage-0-content" class="stage-content px-6">
+                    <div class="space-y-6">
+                        <!-- Requirements -->
+                        <div class="grid sm:grid-cols-3 gap-4">
+                            <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                    <span class="text-sm font-semibold text-white">Claude Code</span>
+                                </div>
+                                <p class="text-xs text-white/40">Installed as CLI (<code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">claude</code>) or VS Code extension. Either works.</p>
+                            </div>
+                            <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                                    <span class="text-sm font-semibold text-white">A project directory</span>
+                                </div>
+                                <p class="text-xs text-white/40">Any folder where you regularly use Claude Code. Could be a Salesforce project, a Node app, anything.</p>
+                            </div>
+                            <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    <span class="text-sm font-semibold text-white">30 minutes</span>
+                                </div>
+                                <p class="text-xs text-white/40">Stages 1&ndash;4 take about 30 minutes total. Stage 5 is optional and takes another 15.</p>
+                            </div>
+                        </div>
+
+                        <!-- Quick check -->
+                        <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10">
+                            <p class="text-sm text-white/60">
+                                <span class="text-cyan-400 font-semibold">Quick check:</span> Open your terminal, run <code class="text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">claude --version</code>. If you see a version number, you're good. If not, install Claude Code first at <a href="https://claude.ai/code" class="text-cyan-400 underline hover:text-cyan-300 transition-colors" target="_blank" rel="noopener noreferrer">claude.ai/code</a>.
+                            </p>
+                        </div>
+
+                        <!-- How it works -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">How Claude Code finds your files</h4>
+                            <p class="text-sm text-white/40 leading-relaxed mb-3">
+                                When Claude Code starts a session, it looks for configuration files in a specific order. You don't need to "register" or "import" anything. Just put the files in the right place and Claude reads them automatically.
+                            </p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">hierarchy</span>
+                                <div class="text-white/50 space-y-1 mt-4">
+                                    <div><span class="text-cyan-400">1.</span> <span class="text-white/70">~/.claude/rules/*.md</span> <span class="text-white/25">&larr; Global rules (all projects)</span></div>
+                                    <div><span class="text-cyan-400">2.</span> <span class="text-white/70">CLAUDE.md</span> <span class="text-white/25">&larr; Project-specific (in your project root)</span></div>
+                                    <div><span class="text-cyan-400">3.</span> <span class="text-white/70">CLAUDE.md in subdirectories</span> <span class="text-white/25">&larr; Nested overrides (optional)</span></div>
+                                    <div><span class="text-cyan-400">4.</span> <span class="text-white/70">Memory files</span> <span class="text-white/25">&larr; Auto-managed by Claude</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stage 1: Your First CLAUDE.md -->
+    <section id="stage-1" class="px-6 pb-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="fade-in stage-section glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                <button onclick="toggleStage('stage-1-content')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">1</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-white">Your First CLAUDE.md</h3>
+                        <p class="text-xs text-white/40 mt-0.5">The single most impactful file you can create</p>
+                    </div>
+                    <span class="time-badge rounded-full px-3 py-1 text-xs text-cyan-400 font-medium flex-shrink-0">10 min</span>
+                    <svg class="w-5 h-5 text-white/30 stage-arrow flex-shrink-0" id="stage-1-content-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div id="stage-1-content" class="stage-content px-6">
+                    <div class="space-y-6">
+                        <!-- What is it -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">What is CLAUDE.md?</h4>
+                            <p class="text-sm text-white/40 leading-relaxed">
+                                A markdown file in your project root that Claude reads at the start of every session. Think of it as a briefing document you'd hand a new teammate on their first day. "Here's who we are, here's what we're building, and here's how we work."
+                            </p>
+                        </div>
+
+                        <!-- Step 1: Create the file -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 1: Create the file</h4>
+                            <p class="text-xs text-white/40 mb-3">Navigate to your project root in the terminal and create the file:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4">cd ~/your-project
+touch CLAUDE.md</pre>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Add content -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 2: Paste the starter template</h4>
+                            <p class="text-xs text-white/40 mb-3">Open CLAUDE.md in your editor and paste this. Replace the bracketed content with your own details:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">markdown</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># Project Context</span>
+
+<span class="text-cyan-400">## Owner</span>
+- <span class="text-white/80">Name:</span> [Your name]
+- <span class="text-white/80">Role:</span> [Your title and team, e.g. "Senior SE, Enterprise West"]
+- <span class="text-white/80">Context:</span> [One line on how you use Claude Code]
+
+<span class="text-cyan-400">## What This Project Is</span>
+[2-3 sentences describing the project. What does it do? Who is it for?
+Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
+
+<span class="text-cyan-400">## Rules (Always Follow)</span>
+1. Never hardcode IDs, credentials, or environment-specific values
+2. Explain what you're changing and why before making edits
+3. Don't delete files or code without asking first
+4. Keep responses concise &mdash; skip the preamble
+5. [Add your own rules here]
+
+<span class="text-cyan-400">## Current Work</span>
+- [What you're actively working on right now]
+- [Any open questions or blockers]
+
+<span class="text-cyan-400">## Preferences</span>
+- [How you like Claude to communicate: brief? detailed? bullets?]
+- [Any output style preferences: "write like an SE, not a marketer"]</pre>
+                            </div>
+                        </div>
+
+                        <!-- What happens next -->
+                        <div class="bg-green-500/5 rounded-lg p-4 border border-green-500/10">
+                            <p class="text-sm text-white/60">
+                                <span class="text-green-400 font-semibold">What happens now:</span> The next time you start Claude Code in this project directory, it reads CLAUDE.md automatically. No configuration needed. Claude will know your name, your project, and your rules from the first message.
+                            </p>
+                        </div>
+
+                        <!-- Tips -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Tips</h4>
+                            <ul class="space-y-2 text-sm text-white/40">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-cyan-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span><span class="text-white/60 font-medium">Keep it under 200 lines.</span> CLAUDE.md loads into the context window every session. If it's too long, you're wasting tokens on setup instead of actual work. Move reference content to a wiki (Stage 3).</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-cyan-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span><span class="text-white/60 font-medium">Be specific with rules.</span> "Write good code" is useless. "All Apex must be bulk-safe and never perform SOQL inside loops" tells Claude exactly what to do.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-cyan-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span><span class="text-white/60 font-medium">Update it as your project evolves.</span> CLAUDE.md should reflect your current reality. If you finished a feature, remove it from "Current Work." If you discovered a new rule, add it.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-cyan-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span><span class="text-white/60 font-medium">Commit it to git.</span> CLAUDE.md belongs in source control. It's useful documentation even for human teammates.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stage 2: Rules Files -->
+    <section id="stage-2" class="px-6 pb-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="fade-in stage-section glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                <button onclick="toggleStage('stage-2-content')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">2</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-white">Rules Files</h3>
+                        <p class="text-xs text-white/40 mt-0.5">Standards that apply to every project you work on</p>
+                    </div>
+                    <span class="time-badge rounded-full px-3 py-1 text-xs text-cyan-400 font-medium flex-shrink-0">10 min</span>
+                    <svg class="w-5 h-5 text-white/30 stage-arrow flex-shrink-0" id="stage-2-content-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div id="stage-2-content" class="stage-content px-6">
+                    <div class="space-y-6">
+                        <!-- What are they -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">What are rules files?</h4>
+                            <p class="text-sm text-white/40 leading-relaxed">
+                                CLAUDE.md is project-specific. Rules files are global &mdash; they apply to every project on your machine. Security standards, coding conventions, how you want Claude to communicate. Write them once, and Claude follows them everywhere.
+                            </p>
+                        </div>
+
+                        <!-- Step 1: Create the directory -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 1: Create the rules directory</h4>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4">mkdir -p ~/.claude/rules</pre>
+                            </div>
+                        </div>
+
+                        <!-- Rule file 1: coding-standards.md -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 2: Create your first rule file</h4>
+                            <p class="text-xs text-white/40 mb-3">This one sets basic guardrails for how Claude writes and modifies code:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">~/.claude/rules/coding-standards.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># Coding Standards</span>
+
+<span class="text-cyan-400">## Before making changes</span>
+- Read the existing code first. Match the patterns already in the codebase.
+- Explain what you plan to change and why before editing.
+- Prefer small, reversible changes over large rewrites.
+
+<span class="text-cyan-400">## Code quality</span>
+- Write tests for new functionality.
+- Handle errors explicitly. Never swallow exceptions silently.
+- No hardcoded IDs, URLs, secrets, or environment-specific values.
+- Add comments only when the "why" isn't obvious from the code.
+
+<span class="text-cyan-400">## Safety</span>
+- Never delete files, functions, or data without asking first.
+- Don't push to remote repositories unless explicitly asked.
+- Don't modify git history (no force push, no rebase) without permission.
+- Never read or expose .env files, secrets, or credentials.</pre>
+                            </div>
+                        </div>
+
+                        <!-- Rule file 2: communication.md -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 3: Add a communication style rule</h4>
+                            <p class="text-xs text-white/40 mb-3">This controls how Claude talks to you:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">~/.claude/rules/communication.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># Communication Rules</span>
+
+<span class="text-cyan-400">## Response style</span>
+- Be direct. Start with the answer, then explain if needed.
+- Keep responses concise. No filler phrases or throat-clearing.
+- Use bullets and short paragraphs over walls of text.
+- When I ask a yes/no question, start with yes or no.
+
+<span class="text-cyan-400">## Things to avoid</span>
+- Don't start responses with "Great question!" or "Sure, I'd be happy to..."
+- Don't repeat my question back to me.
+- Don't add disclaimers unless there's a genuine risk.
+- Don't use jargon like "leverage," "utilize," or "facilitate." Use plain words.</pre>
+                            </div>
+                        </div>
+
+                        <!-- Rule file 3: optional SF-specific -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Optional: Salesforce-specific rules</h4>
+                            <p class="text-xs text-white/40 mb-3">If you work on Salesforce projects, add platform-specific guardrails:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">~/.claude/rules/salesforce.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># Salesforce Development Rules</span>
+
+<span class="text-cyan-400">## Apex</span>
+- All Apex must be bulk-safe. Never perform SOQL or DML inside loops.
+- One trigger per object. Keep triggers thin &mdash; put logic in service classes.
+- Enforce CRUD/FLS and sharing rules. State the sharing model for every class.
+- Handle governor limits explicitly. Comment when approaching known limits.
+
+<span class="text-cyan-400">## General</span>
+- Prefer declarative solutions (Flow, validation rules) over code when possible.
+- Use Lightning Web Components for UI work. No new Aura components.
+- Never assume org configuration. Check metadata before proposing changes.
+- Never rename standard fields or objects.</pre>
+                            </div>
+                        </div>
+
+                        <!-- How it works together -->
+                        <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10">
+                            <p class="text-sm text-white/60">
+                                <span class="text-cyan-400 font-semibold">How rules and CLAUDE.md work together:</span> Claude loads all <code class="text-cyan-400 bg-cyan-500/10 px-1 py-0.5 rounded">~/.claude/rules/*.md</code> files first, then your project's CLAUDE.md on top. If they conflict, rules files take priority. This means your security standards can't be overridden by project-specific settings.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stage 3: Wiki -->
+    <section id="stage-3" class="px-6 pb-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="fade-in stage-section glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                <button onclick="toggleStage('stage-3-content')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">3</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-white">Start a Wiki</h3>
+                        <p class="text-xs text-white/40 mt-0.5">A reference library Claude looks up on demand</p>
+                    </div>
+                    <span class="time-badge rounded-full px-3 py-1 text-xs text-cyan-400 font-medium flex-shrink-0">5 min</span>
+                    <svg class="w-5 h-5 text-white/30 stage-arrow flex-shrink-0" id="stage-3-content-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div id="stage-3-content" class="stage-content px-6">
+                    <div class="space-y-6">
+                        <!-- What is it -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">What is the wiki?</h4>
+                            <p class="text-sm text-white/40 leading-relaxed">
+                                A directory of markdown pages that Claude can look up when a task requires deeper context. Unlike CLAUDE.md, wiki pages are not loaded every session. They're pulled in on demand, which keeps your context window clean.
+                            </p>
+                            <p class="text-sm text-white/40 leading-relaxed mt-2">
+                                Think of CLAUDE.md as the table of contents. The wiki is the full book. Claude reads the table of contents every time, and opens specific chapters only when needed.
+                            </p>
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 1: Create the wiki directory and index</h4>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4">cd ~/your-project
+mkdir -p wiki
+touch wiki/index.md
+touch wiki/inbox.md</pre>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: index.md template -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 2: Set up the index</h4>
+                            <p class="text-xs text-white/40 mb-3">The index is a catalog of all wiki pages. Claude uses it to find what it needs:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">wiki/index.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># Wiki Index</span>
+
+Master catalog of reference pages. Claude reads this to find context for specific tasks.
+
+<span class="text-cyan-400">## Pages</span>
+
+| Page | Description | Last Updated |
+|------|-------------|--------------|
+| [architecture.md](architecture.md) | System architecture and design decisions | [date] |
+| [api-patterns.md](api-patterns.md) | API conventions and integration patterns | [date] |
+| [deployment.md](deployment.md) | How to deploy, environments, rollback steps | [date] |
+
+<span class="text-cyan-400">## Inbox</span>
+See [inbox.md](inbox.md) for items to be processed into wiki pages.</pre>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: inbox.md -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 3: Set up the inbox</h4>
+                            <p class="text-xs text-white/40 mb-3">The inbox is a scratch pad. When Claude learns something during a session, it drops a note here for later processing:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">wiki/inbox.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># Wiki Inbox</span>
+
+Items captured during sessions. Review periodically and promote to full wiki pages.
+
+<span class="text-white/30">&lt;!-- New items go below this line --&gt;</span></pre>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Add routing table -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 4: Add a routing table to CLAUDE.md</h4>
+                            <p class="text-xs text-white/40 mb-3">This is the key part. Add a table to your CLAUDE.md that tells Claude which wiki page to read for which kind of work:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">Add to CLAUDE.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400">## Knowledge Base</span>
+
+Reference pages are in `wiki/`. Load the relevant page when a task requires it.
+
+| Work Context | Wiki Page |
+|-------------|-----------|
+| Architecture decisions | `wiki/architecture.md` |
+| API work | `wiki/api-patterns.md` |
+| Deploying changes | `wiki/deployment.md` |</pre>
+                            </div>
+                        </div>
+
+                        <!-- How it grows -->
+                        <div class="bg-violet-500/5 rounded-lg p-4 border border-violet-500/10">
+                            <p class="text-sm text-white/60">
+                                <span class="text-violet-400 font-semibold">How the wiki grows:</span> You don't need to write all the pages yourself. When you learn something during a session &mdash; a tricky deployment step, a decision about architecture, a gotcha you hit &mdash; just tell Claude: "Add that to the wiki." Claude writes the page, updates the index, and it's there for next time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stage 4: Auto-Memory -->
+    <section id="stage-4" class="px-6 pb-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="fade-in stage-section glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                <button onclick="toggleStage('stage-4-content')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">4</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-white">Auto-Memory</h3>
+                        <p class="text-xs text-white/40 mt-0.5">Claude's built-in system for remembering corrections and preferences</p>
+                    </div>
+                    <span class="time-badge rounded-full px-3 py-1 text-xs text-cyan-400 font-medium flex-shrink-0">5 min</span>
+                    <svg class="w-5 h-5 text-white/30 stage-arrow flex-shrink-0" id="stage-4-content-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div id="stage-4-content" class="stage-content px-6">
+                    <div class="space-y-6">
+                        <!-- What is it -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">What is auto-memory?</h4>
+                            <p class="text-sm text-white/40 leading-relaxed">
+                                Claude Code has a built-in memory system. When you correct Claude, give it feedback, or make a decision it should remember, it can save that to a MEMORY.md file that persists across sessions. You don't need to install or configure anything &mdash; it's already there.
+                            </p>
+                        </div>
+
+                        <!-- Where it lives -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Where memory lives</h4>
+                            <p class="text-xs text-white/40 mb-3">Claude saves memory files in a project-scoped directory:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">paths</span>
+                                <div class="text-white/50 space-y-1 mt-4">
+                                    <div><span class="text-cyan-400">Project memory:</span> <span class="text-white/70">~/.claude/projects/&lt;path-hash&gt;/memory/MEMORY.md</span></div>
+                                    <div><span class="text-cyan-400">Topic files:</span> <span class="text-white/70">~/.claude/projects/&lt;path-hash&gt;/memory/*.md</span></div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-white/40 mt-3">
+                                You don't need to know the exact path. Claude manages these files. MEMORY.md is the index, and Claude creates topic files for specific subjects (like <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">deployment-gotchas.md</code> or <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">api-design-decisions.md</code>).
+                            </p>
+                        </div>
+
+                        <!-- How to use it -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">How to train Claude's memory</h4>
+                            <div class="space-y-4">
+                                <!-- Example 1 -->
+                                <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
+                                    <p class="text-xs text-cyan-400 font-semibold mb-2">When Claude makes a mistake:</p>
+                                    <div class="bg-navy-900 rounded-lg p-3 text-xs text-white/50 font-mono">
+                                        "That's wrong &mdash; we use v2 of the API, not v1. Remember this for next time."
+                                    </div>
+                                    <p class="text-xs text-white/30 mt-2">Claude saves: "Always use API v2, not v1."</p>
+                                </div>
+                                <!-- Example 2 -->
+                                <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
+                                    <p class="text-xs text-pink-400 font-semibold mb-2">When you make a decision:</p>
+                                    <div class="bg-navy-900 rounded-lg p-3 text-xs text-white/50 font-mono">
+                                        "We decided to use PostgreSQL instead of MongoDB for this project. Save that."
+                                    </div>
+                                    <p class="text-xs text-white/30 mt-2">Claude saves: "Database: PostgreSQL (not MongoDB). Decision made [date]."</p>
+                                </div>
+                                <!-- Example 3 -->
+                                <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
+                                    <p class="text-xs text-green-400 font-semibold mb-2">When Claude does something right:</p>
+                                    <div class="bg-navy-900 rounded-lg p-3 text-xs text-white/50 font-mono">
+                                        "That's exactly the format I want for test data. Remember to keep doing this."
+                                    </div>
+                                    <p class="text-xs text-white/30 mt-2">Positive feedback compounds. Claude stops second-guessing what works.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tips -->
+                        <div class="bg-pink-500/5 rounded-lg p-4 border border-pink-500/10">
+                            <p class="text-sm text-white/60">
+                                <span class="text-pink-400 font-semibold">Key insight:</span> Memory works best for corrections and preferences. "Always use tabs, not spaces." "My team prefers verbose commit messages." "The staging environment URL is X." These are the kinds of things that save you time when Claude remembers them.
+                            </p>
+                        </div>
+
+                        <!-- What not to do -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">What NOT to put in memory</h4>
+                            <ul class="space-y-2 text-sm text-white/40">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-pink-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span><span class="text-white/60 font-medium">Long reference documents.</span> Those go in the wiki. Memory is for short, specific facts.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-pink-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span><span class="text-white/60 font-medium">Temporary context.</span> "I'm debugging the login flow" doesn't need to be saved. It's only relevant right now.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-pink-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span><span class="text-white/60 font-medium">Secrets or credentials.</span> Never ask Claude to remember passwords, API keys, or tokens.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stage 5: Level Up -->
+    <section id="stage-5" class="px-6 pb-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="fade-in stage-section glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300 border border-amber-500/20">
+                <button onclick="toggleStage('stage-5-content')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">5</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-white">Level Up</h3>
+                        <p class="text-xs text-white/40 mt-0.5">Optional: automation, hooks, and maintenance</p>
+                    </div>
+                    <span class="time-badge rounded-full px-3 py-1 text-xs text-amber-400 font-medium flex-shrink-0">15 min</span>
+                    <svg class="w-5 h-5 text-white/30 stage-arrow flex-shrink-0" id="stage-5-content-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div id="stage-5-content" class="stage-content px-6">
+                    <div class="space-y-6">
+                        <!-- Intro -->
+                        <div>
+                            <p class="text-sm text-white/40 leading-relaxed">
+                                If Stages 1&ndash;4 are working for you, these additions take your setup further. None of them are required, but each one reduces friction.
+                            </p>
+                        </div>
+
+                        <!-- SessionStart hook -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">SessionStart Hook: Automated Context Routing</h4>
+                            <p class="text-xs text-white/40 mb-3">
+                                A hook is a script that runs automatically at specific points in Claude's lifecycle. A SessionStart hook runs when you start a new session. You can use it to inject recent git activity, open issues, or other context that changes between sessions.
+                            </p>
+                            <p class="text-xs text-white/40 mb-3">
+                                Create the hook script:
+                            </p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">~/.claude/hooks/session-init.sh</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-white/30">#!/bin/bash</span>
+<span class="text-white/30"># Session init hook: shows recent git activity at session start</span>
+
+echo "## Recent Activity"
+echo ""
+
+<span class="text-white/30"># Show last 5 commits</span>
+echo "### Last 5 Commits"
+git log --oneline -5 2>/dev/null || echo "Not a git repo"
+echo ""
+
+<span class="text-white/30"># Show uncommitted changes</span>
+CHANGES=$(git status --short 2>/dev/null)
+if [ -n "$CHANGES" ]; then
+    echo "### Uncommitted Changes"
+    echo "$CHANGES"
+fi</pre>
+                            </div>
+                            <p class="text-xs text-white/40 mt-3 mb-3">
+                                Make it executable and register it in your Claude settings:
+                            </p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4">chmod +x ~/.claude/hooks/session-init.sh</pre>
+                            </div>
+                            <p class="text-xs text-white/40 mt-3 mb-3">
+                                Then add this to your <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">~/.claude/settings.json</code> (create it if it doesn't exist):
+                            </p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">~/.claude/settings.json</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4">{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "~/.claude/hooks/session-init.sh"
+      }
+    ]
+  }
+}</pre>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Weekly Maintenance</h4>
+                            <p class="text-xs text-white/40 mb-3">
+                                Knowledge bases get stale. Once a week (or whenever you think of it), do a quick review:
+                            </p>
+                            <ul class="space-y-2 text-sm text-white/40">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span>Check <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">wiki/inbox.md</code> &mdash; anything there worth promoting to a full page?</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span>Skim CLAUDE.md &mdash; is the "Current Work" section still accurate?</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    <span>Scan memory files &mdash; any facts that have changed? Old project decisions that no longer apply?</span>
+                                </li>
+                            </ul>
+                            <p class="text-xs text-white/40 mt-3">
+                                You can even ask Claude to help: "Review my wiki index and flag anything that looks outdated." Claude reads the files, checks dates, and reports back.
+                            </p>
+                        </div>
+
+                        <!-- What's next -->
+                        <div class="bg-amber-500/5 rounded-lg p-4 border border-amber-500/10">
+                            <p class="text-sm text-white/60 mb-3">
+                                <span class="text-amber-400 font-semibold">Where to go from here:</span>
+                            </p>
+                            <ul class="space-y-2 text-sm text-white/40">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5 flex-shrink-0">&rarr;</span>
+                                    <span>Read the <a href="index.html" class="text-cyan-400 underline hover:text-cyan-300 transition-colors">full architecture write-up</a> to understand the advanced system this guide is building toward</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5 flex-shrink-0">&rarr;</span>
+                                    <span>This is Part 1 of a 5-part series: Foundation, MCP Servers, Custom Commands, Plugins, and Intelligence Pipeline</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5 flex-shrink-0">&rarr;</span>
+                                    <span>Once you're comfortable with the basics, explore custom commands (<code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">.claude/commands/</code>) and MCP servers for connecting external data sources</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Completion Checklist -->
+    <section class="py-16 px-6" id="checklist">
+        <div class="max-w-4xl mx-auto">
+            <div class="fade-in">
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Your Progress</div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-8 tracking-tight">Completion Checklist</h2>
+            </div>
+
+            <div class="fade-in glass-card rounded-xl p-8 animated-border">
+                <div class="space-y-4">
+                    <label class="check-item flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="check-0">
+                        <span class="text-sm text-white/60">Claude Code installed and working (<code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded text-xs">claude --version</code>)</span>
+                    </label>
+                    <label class="check-item flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="check-1">
+                        <span class="text-sm text-white/60">CLAUDE.md created in your project root</span>
+                    </label>
+                    <label class="check-item flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="check-2">
+                        <span class="text-sm text-white/60">At least one rule file in <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded text-xs">~/.claude/rules/</code></span>
+                    </label>
+                    <label class="check-item flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="check-3">
+                        <span class="text-sm text-white/60">Wiki directory created with index.md and inbox.md</span>
+                    </label>
+                    <label class="check-item flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="check-4">
+                        <span class="text-sm text-white/60">Routing table added to CLAUDE.md</span>
+                    </label>
+                    <label class="check-item flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="check-5">
+                        <span class="text-sm text-white/60">Tested memory by correcting Claude and saying "remember this"</span>
+                    </label>
+                    <label class="check-item flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="check-6">
+                        <span class="text-sm text-white/60">Started a new session and verified Claude knows your context</span>
+                    </label>
+
+                    <div class="border-t border-white/5 pt-4 mt-4">
+                        <label class="check-item flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="check-7">
+                            <span class="text-sm text-amber-400/60">Bonus: SessionStart hook configured</span>
+                        </label>
+                        <label class="check-item flex items-center gap-3 cursor-pointer mt-3">
+                            <input type="checkbox" id="check-8">
+                            <span class="text-sm text-amber-400/60">Bonus: First wiki page written by Claude during a session</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Progress counter -->
+                <div class="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
+                    <span class="text-sm text-white/30" id="checklist-progress">0 of 9 complete</span>
+                    <span class="text-xs text-white/20" id="checklist-status"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section class="py-16 px-6 border-t border-white/5">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="text-center sm:text-left">
+                    <p class="text-white/30 text-sm mb-1">
+                        Built by John Tehrani &mdash; Principal Solutions Engineer, Salesforce
+                    </p>
+                    <p class="text-white/20 text-xs">
+                        Part 1 of 5: Foundation. Written collaboratively with Claude Code.
+                    </p>
+                </div>
+                <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white/50 text-sm hover:bg-white/10 hover:text-white/80 transition-all duration-200">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    Read the Full Architecture Write-Up
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Scroll-triggered animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Accordion toggle
+        function toggleStage(id) {
+            const content = document.getElementById(id);
+            const arrow = document.getElementById(id + '-arrow');
+
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                arrow.classList.remove('rotated');
+            } else {
+                // Collapse all others
+                document.querySelectorAll('.stage-content.expanded').forEach(el => {
+                    el.classList.remove('expanded');
+                    const otherId = el.id;
+                    const otherArrow = document.getElementById(otherId + '-arrow');
+                    if (otherArrow) otherArrow.classList.remove('rotated');
+                });
+                content.classList.add('expanded');
+                arrow.classList.add('rotated');
+
+                // Update progress indicator
+                const stageNum = parseInt(id.replace('stage-', '').replace('-content', ''));
+                updateProgress(stageNum);
+
+                // Scroll to the section smoothly
+                setTimeout(() => {
+                    const section = content.closest('section');
+                    if (section) {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 100);
+            }
+        }
+
+        // Progress indicator
+        function updateProgress(activeStage) {
+            const steps = document.querySelectorAll('.progress-step');
+            const lines = document.querySelectorAll('.progress-line');
+
+            steps.forEach(step => {
+                const stage = parseInt(step.dataset.stage);
+                step.classList.remove('active', 'completed');
+                if (stage === activeStage) {
+                    step.classList.add('active');
+                } else if (stage < activeStage) {
+                    step.classList.add('completed');
+                }
+            });
+
+            lines.forEach((line, i) => {
+                if (i < activeStage) {
+                    line.classList.add('filled');
+                } else {
+                    line.classList.remove('filled');
+                }
+            });
+        }
+
+        // Copy code to clipboard
+        function copyCode(btn) {
+            const codeBlock = btn.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const text = pre ? pre.textContent : codeBlock.textContent;
+
+            navigator.clipboard.writeText(text.trim()).then(() => {
+                btn.textContent = 'Copied';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Checklist persistence (localStorage)
+        function initChecklist() {
+            const saved = JSON.parse(localStorage.getItem('cc-getting-started-checklist') || '{}');
+            for (let i = 0; i <= 8; i++) {
+                const cb = document.getElementById('check-' + i);
+                if (cb && saved['check-' + i]) {
+                    cb.checked = true;
+                }
+                if (cb) {
+                    cb.addEventListener('change', () => {
+                        saveChecklist();
+                        updateChecklistProgress();
+                    });
+                }
+            }
+            updateChecklistProgress();
+        }
+
+        function saveChecklist() {
+            const data = {};
+            for (let i = 0; i <= 8; i++) {
+                const cb = document.getElementById('check-' + i);
+                if (cb) data['check-' + i] = cb.checked;
+            }
+            localStorage.setItem('cc-getting-started-checklist', JSON.stringify(data));
+        }
+
+        function updateChecklistProgress() {
+            let total = 0;
+            let checked = 0;
+            for (let i = 0; i <= 8; i++) {
+                const cb = document.getElementById('check-' + i);
+                if (cb) {
+                    total++;
+                    if (cb.checked) checked++;
+                }
+            }
+            const progress = document.getElementById('checklist-progress');
+            const status = document.getElementById('checklist-status');
+            if (progress) progress.textContent = checked + ' of ' + total + ' complete';
+            if (status) {
+                if (checked === total) {
+                    status.textContent = 'You\'re all set. Read the full architecture write-up next.';
+                    status.style.color = 'rgba(34, 197, 94, 0.7)';
+                } else if (checked >= 7) {
+                    status.textContent = 'Almost there. The bonus items are optional.';
+                    status.style.color = 'rgba(34, 211, 238, 0.5)';
+                } else {
+                    status.textContent = '';
+                }
+            }
+        }
+
+        // Active nav link
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileBtn && mobileMenu) {
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            // Close menu when a link is clicked
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        }
+
+        // Initialize
+        initChecklist();
+    </script>
+</body>
+</html>
