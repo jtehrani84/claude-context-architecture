@@ -305,7 +305,7 @@
                     <div class="text-xs text-white/40 mt-1">% Context Reduction</div>
                 </div>
                 <div class="metric-card glass-card rounded-xl p-5">
-                    <div class="text-3xl font-bold text-indigo-400 counter" data-target="51">0</div>
+                    <div class="text-3xl font-bold text-indigo-400 counter" data-target="59">0</div>
                     <div class="text-xs text-white/40 mt-1">Wiki Pages</div>
                 </div>
                 <div class="metric-card glass-card rounded-xl p-5">
@@ -313,7 +313,7 @@
                     <div class="text-xs text-white/40 mt-1">Memory Files</div>
                 </div>
                 <div class="metric-card glass-card rounded-xl p-5">
-                    <div class="text-3xl font-bold text-amber-400 counter" data-target="7">0</div>
+                    <div class="text-3xl font-bold text-amber-400 counter" data-target="8">0</div>
                     <div class="text-xs text-white/40 mt-1">Automated Hooks</div>
                 </div>
             </div>
@@ -1014,7 +1014,7 @@
                         </div>
                         <div class="flex-1">
                             <h3 class="font-semibold text-white">Hooks &mdash; The Automation Layer</h3>
-                            <p class="text-xs text-white/40 mt-0.5">7 hooks. Automated behaviors that fire on session events and tool calls.</p>
+                            <p class="text-xs text-white/40 mt-0.5">8 hooks. Automated behaviors that fire on session events and tool calls.</p>
                         </div>
                         <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp4-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
@@ -1032,6 +1032,10 @@
                                 <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
                                     <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
                                     <span class="text-sm text-white/60">SOQL schema check &mdash; validates queries before execution</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
+                                    <span class="text-sm text-white/60">Architecture guardrail &mdash; surfaces infrastructure constraints + ADRs before editing constrained files</span>
                                 </div>
                                 <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
                                     <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PostToolUse</span>
@@ -1067,7 +1071,7 @@
                         </div>
                         <div class="flex-1">
                             <h3 class="font-semibold text-white">Rules &mdash; Behavioral Guardrails</h3>
-                            <p class="text-xs text-white/40 mt-0.5">10 files in ~/.claude/rules/. Standards Claude follows across every project.</p>
+                            <p class="text-xs text-white/40 mt-0.5">11 files in ~/.claude/rules/. Standards Claude follows across every project. Includes infrastructure constraints (P1 Identity &mdash; never cut).</p>
                         </div>
                         <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp5-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
@@ -1108,6 +1112,10 @@
                                     <div class="flex items-center gap-2 text-sm">
                                         <div class="w-2 h-2 rounded-full bg-amber-400"></div>
                                         <span class="text-white/60">slds2-lwc-ui.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-red-400"></div>
+                                        <span class="text-white/60 font-medium">infrastructure-constraints.md</span>
                                     </div>
                                 </div>
                             </div>
@@ -1362,7 +1370,7 @@
             <!-- Beyond the pattern -->
             <div class="fade-in mt-12">
                 <h3 class="text-xl font-bold text-white mb-2">Beyond the pattern</h3>
-                <p class="text-sm text-white/40 mb-8 max-w-2xl">Karpathy described the idea. We validated it, then extended it in three directions he hasn't addressed.</p>
+                <p class="text-sm text-white/40 mb-8 max-w-2xl">Karpathy described the idea. We validated it, then extended it in five directions he hasn't addressed.</p>
 
                 <div class="grid md:grid-cols-3 gap-5">
                     <!-- Extension 1: Token Economics -->
@@ -1393,13 +1401,34 @@
                     </div>
                 </div>
 
+                <!-- Extensions 4 & 5 -->
+                <div class="grid md:grid-cols-2 gap-5 mt-5">
+                    <!-- Extension 4: Curation & Lifecycle -->
+                    <div class="glass-card rounded-xl p-5 border-t-2 border-amber-500/50">
+                        <div class="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center mb-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                        </div>
+                        <h4 class="text-sm font-semibold text-amber-400 mb-2">Curation &amp; lifecycle</h4>
+                        <p class="text-xs text-white/40 leading-relaxed">Karpathy describes Lint. We go further: a <span class="text-amber-400/70 font-semibold">/curate command</span> that scans memory for staleness, processes the wiki inbox, and flags what needs attention. Memory files have decay rates. His system grows but doesn&rsquo;t prune. Ours does.</p>
+                    </div>
+
+                    <!-- Extension 5: Voluntary to Intrinsic (DDR-001) -->
+                    <div class="glass-card rounded-xl p-5 border-t-2 border-red-500/50">
+                        <div class="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center mb-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+                        </div>
+                        <h4 class="text-sm font-semibold text-red-400 mb-2">Voluntary &rarr; intrinsic memory</h4>
+                        <p class="text-xs text-white/40 leading-relaxed">Karpathy&rsquo;s system relies on the LLM voluntarily looking things up. We applied DDR-001 from the Agentforce Agent Harness: <span class="text-red-400/70 font-semibold">&ldquo;agents forget to remember.&rdquo;</span> Infrastructure constraints load as rules (always). PreToolUse hooks surface ADRs before editing constrained files. The information is in your face when it matters.</p>
+                    </div>
+                </div>
+
                 <!-- Karpathy quote -->
                 <div class="mt-8 glass-card rounded-xl p-6 bg-gradient-to-r from-violet-500/[0.04] to-pink-500/[0.04]">
                     <blockquote class="text-sm text-white/60 leading-relaxed italic">
                         &ldquo;I think there is room here for an incredible new product instead of a hacky collection of scripts.&rdquo;
                     </blockquote>
                     <div class="mt-2 text-xs text-white/30">&mdash; Andrej Karpathy, on the LLM Wiki pattern</div>
-                    <p class="mt-3 text-xs text-white/40">We took that seriously. Five named tiers, 19 commands, 10 MCP servers, automated context routing, tiered token loading. Not a product &mdash; but not a hacky collection of scripts either.</p>
+                    <p class="mt-3 text-xs text-white/40">We took that seriously. Five named tiers, 19 commands, 10 MCP servers, automated context routing, tiered token loading, architecture guardrail hooks, and ADRs. Not a product &mdash; but not a hacky collection of scripts either.</p>
                 </div>
             </div>
         </div>

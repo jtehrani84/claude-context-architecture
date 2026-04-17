@@ -656,7 +656,7 @@
                 <div class="cover-metric-label">Context Reduction</div>
             </div>
             <div class="cover-metric">
-                <div class="cover-metric-value indigo">51</div>
+                <div class="cover-metric-value indigo">59</div>
                 <div class="cover-metric-label">Wiki Pages</div>
             </div>
             <div class="cover-metric">
@@ -664,7 +664,7 @@
                 <div class="cover-metric-label">Memory Files</div>
             </div>
             <div class="cover-metric">
-                <div class="cover-metric-value amber">7</div>
+                <div class="cover-metric-value amber">8</div>
                 <div class="cover-metric-label">Automated Hooks</div>
             </div>
         </div>
@@ -731,7 +731,7 @@
                 <div><span class="tier-name">Knowledge Base &mdash; Wiki</span><span class="tier-tag violet">On Demand</span></div>
                 <span class="tier-tokens">Variable</span>
             </div>
-            <div class="tier-desc">51 pages of deep reference: architecture patterns, deployment runbooks, design systems. Loaded only when the task needs them.</div>
+            <div class="tier-desc">59 pages of deep reference: architecture patterns, deployment runbooks, design systems. Plus <strong>Architectural Decision Records (ADRs)</strong> that preserve the reasoning behind critical choices. Loaded only when the task needs them.</div>
         </div>
     </div>
 
@@ -751,9 +751,9 @@
         <div class="tier-content">
             <div class="tier-header">
                 <div><span class="tier-name">Behavioral Rules &mdash; Guardrails</span><span class="tier-tag amber">Always Active</span></div>
-                <span class="tier-tokens">10 files</span>
+                <span class="tier-tokens">11 files</span>
             </div>
-            <div class="tier-desc">Security governance, architecture standards, testing quality, communication style, context-mode policy, data protection. Loaded from ~/.claude/rules/ every session.</div>
+            <div class="tier-desc">Security governance, architecture standards, <strong>infrastructure constraints</strong>, testing quality, communication style, context-mode policy, data protection. Loaded from ~/.claude/rules/ every session. Includes hard constraints (e.g., &ldquo;Org62 = CLI only&rdquo;) that can never be overridden.</div>
         </div>
     </div>
 
@@ -873,6 +873,11 @@
         <p>Karpathy describes Lint. We go further: a <code>/curate</code> command that scans memory for staleness, processes the wiki inbox, and flags what needs attention. Memory files have decay rates. His system grows but doesn&rsquo;t prune. Ours does.</p>
     </div>
 
+    <div class="extension no-break">
+        <h4>From voluntary to intrinsic memory (DDR-001)</h4>
+        <p>Karpathy&rsquo;s system relies on the LLM voluntarily looking up the right page. If it pattern-matches on local code instead of checking the wiki, the wrong decision gets made. We applied DDR-001 from the Agentforce Agent Harness: &ldquo;agents forget to remember.&rdquo; The fix: <strong>make constraint awareness intrinsic, not voluntary.</strong> Infrastructure constraints load automatically as rules (P1). A PreToolUse hook surfaces relevant ADRs before editing constrained files. Session-init injects decision context when git changes touch sensitive areas. The information is in your face when it matters &mdash; not just available if you happen to look.</p>
+    </div>
+
     <blockquote class="no-break">
         <p>&ldquo;I think there is room here for an incredible new product instead of a hacky collection of scripts.&rdquo;</p>
         <div class="attribution">&mdash; Andrej Karpathy, on the LLM Wiki pattern</div>
@@ -919,7 +924,7 @@
         <div class="stage-number">3</div>
         <div class="stage-content">
             <h4>Automation <span class="stage-time">(1&ndash;2 hours)</span></h4>
-            <p style="font-size: 9.5pt;">Add a SessionStart hook for context routing. Set up <code>/curate</code> for weekly maintenance. Configure decay rates for different memory types.</p>
+            <p style="font-size: 9.5pt;">Add a SessionStart hook for context routing. Create a <code>decisions/</code> directory for ADRs. Add PreToolUse hooks to surface constraints before editing critical files. Set up <code>/curate</code> for weekly maintenance.</p>
         </div>
     </div>
 

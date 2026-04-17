@@ -357,7 +357,7 @@
             </h1>
 
             <p class="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-8 leading-relaxed">
-                Five stages, 30 minutes total. Go from a blank slate to a Claude that knows your projects, follows your rules, and remembers what you've taught it.
+                Five stages, 30 minutes total. Go from a blank slate to a Claude that knows your projects, follows your rules, remembers what you've taught it, and catches architectural mistakes before they happen.
             </p>
 
             <!-- Progress indicator -->
@@ -680,7 +680,35 @@ Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
                             </div>
                         </div>
 
-                        <!-- Rule file 3: optional SF-specific -->
+                        <!-- Rule file 3: infrastructure constraints -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Step 4: Add infrastructure constraints (the most important rule file)</h4>
+                            <p class="text-xs text-white/40 mb-3">This one prevents architectural mistakes &mdash; the kind where Claude builds code that can never work because it violates a hard infrastructure boundary. These constraints are <strong>always loaded, never cut</strong> from context:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">~/.claude/rules/infrastructure-constraints.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># Infrastructure Constraints</span>
+
+<span class="text-cyan-400">## Hard Rules (never override)</span>
+- [Service A] can only be accessed via [method]. No direct API/JWT/OAuth.
+- [Database] is VPC-only. Cannot be reached from local machines.
+- [Deployment target] requires [specific process]. No shortcuts.
+
+<span class="text-cyan-400">## Decision Gate</span>
+Before adding new auth, connectors, or infrastructure code:
+1. Check this file first
+2. Check decisions/ directory for relevant ADRs
+3. Verify MCP or existing tooling doesn't already connect
+4. If unsure, ask &mdash; don't build and find out later</pre>
+                            </div>
+                            <div class="bg-red-500/5 rounded-lg p-4 border border-red-500/10 mt-3">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-red-400 font-semibold">Why this matters:</span> Without constraints rules, Claude will pattern-match on local code and build auth/integration paths that look correct but violate infrastructure realities. I learned this the hard way &mdash; Claude built an entire JWT authentication flow to a system that had no Connected App and never could have one. The constraint rule would have prevented it before a single line was written.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Rule file 4: optional SF-specific -->
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Optional: Salesforce-specific rules</h4>
                             <p class="text-xs text-white/40 mb-3">If you work on Salesforce projects, add platform-specific guardrails:</p>
@@ -1004,6 +1032,87 @@ fi</pre>
                             </div>
                         </div>
 
+                        <!-- ADRs -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Architectural Decision Records (ADRs)</h4>
+                            <p class="text-xs text-white/40 mb-3">
+                                When you make a critical architecture decision, capture the <em>why</em> &mdash; not just the <em>what</em>. ADRs prevent future sessions from re-deriving decisions and getting them wrong.
+                            </p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4">mkdir -p decisions
+touch decisions/INDEX.md</pre>
+                            </div>
+                            <p class="text-xs text-white/40 mt-3 mb-3">Each ADR captures the decision, what you rejected, and why:</p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">decisions/ADR-001-example.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># ADR-001: [Title of decision]</span>
+<span class="text-white/80">Status:</span> Accepted
+<span class="text-white/80">Date:</span> [YYYY-MM-DD]
+
+<span class="text-cyan-400">## Context</span>
+[What problem were you solving? What constraints exist?]
+
+<span class="text-cyan-400">## Decision</span>
+[What you decided to do]
+
+<span class="text-cyan-400">## Alternatives Rejected</span>
+| Option | Why Rejected |
+|--------|-------------|
+| [Alt A] | [Reason] |
+| [Alt B] | [Reason] |
+
+<span class="text-cyan-400">## Consequences</span>
+[What this means going forward &mdash; constraints it creates]</pre>
+                            </div>
+                            <div class="bg-violet-500/5 rounded-lg p-4 border border-violet-500/10 mt-3">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-violet-400 font-semibold">When to write an ADR:</span> When choosing between approaches where the wrong choice produces dead code, violates infrastructure constraints, or would take significant effort to reverse. Not every decision needs one &mdash; just the ones where the reasoning needs to survive across sessions.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- PreToolUse hooks -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">PreToolUse Hook: Architecture Guardrail</h4>
+                            <p class="text-xs text-white/40 mb-3">
+                                A SessionStart hook runs at the beginning. A <strong>PreToolUse</strong> hook runs <em>before</em> Claude edits a file. This is where you catch architectural mistakes at the moment of action &mdash; before code is written, not after.
+                            </p>
+                            <p class="text-xs text-white/40 mb-3">
+                                The concept: map file patterns to constraints. When Claude is about to edit <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">salesforce.ts</code>, the hook surfaces &ldquo;Org62 = CLI only.&rdquo; When Claude edits a deployment config, the hook surfaces the VPC constraint. The constraint appears in context <em>at the moment it matters.</em>
+                            </p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">~/.claude/settings.json (add to hooks)</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4">{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/scripts/architecture-guardrail.py",
+            "timeout": 3000
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+                            </div>
+                            <p class="text-xs text-white/40 mt-3">
+                                The script reads the file path from stdin (JSON with the tool input), checks it against a registry of constrained file patterns, and prints the relevant constraints + ADR references. Claude sees this output before proceeding with the edit.
+                            </p>
+                            <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10 mt-3">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-cyan-400 font-semibold">DDR-001 principle:</span> This applies a lesson from the Agentforce Agent Harness &mdash; &ldquo;agents forget to remember.&rdquo; Memory retrieval must be <strong>intrinsic</strong> (automatic), not <strong>voluntary</strong> (the agent chooses to look). Constraints rules load automatically. The hook fires automatically. The information is in Claude&rsquo;s face when it matters, not buried in a wiki page it might not read.
+                                </p>
+                            </div>
+                        </div>
+
                         <!-- Maintenance -->
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Weekly Maintenance</h4>
@@ -1045,7 +1154,11 @@ fi</pre>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-amber-400 mt-0.5 flex-shrink-0">&rarr;</span>
-                                    <span>Once you're comfortable with the basics, explore custom commands (<code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">.claude/commands/</code>) and MCP servers for connecting external data sources</span>
+                                    <span>Once you're comfortable with the basics, explore custom commands (<code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">.claude/commands/</code>), MCP servers for connecting external data sources, and PreToolUse hooks for architecture guardrails</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5 flex-shrink-0">&rarr;</span>
+                                    <span>The key insight: memory must be <strong class="text-amber-400/80">intrinsic</strong> (loaded automatically), not voluntary (Claude chooses to look). Constraints rules, ADRs, and PreToolUse hooks make critical knowledge unavoidable</span>
                                 </li>
                             </ul>
                         </div>
@@ -1103,12 +1216,24 @@ fi</pre>
                             <input type="checkbox" id="check-8">
                             <span class="text-sm text-amber-400/60">Bonus: First wiki page written by Claude during a session</span>
                         </label>
+                        <label class="check-item flex items-center gap-3 cursor-pointer mt-3">
+                            <input type="checkbox" id="check-9">
+                            <span class="text-sm text-amber-400/60">Bonus: Infrastructure constraints rule file created</span>
+                        </label>
+                        <label class="check-item flex items-center gap-3 cursor-pointer mt-3">
+                            <input type="checkbox" id="check-10">
+                            <span class="text-sm text-amber-400/60">Bonus: First ADR written in decisions/ directory</span>
+                        </label>
+                        <label class="check-item flex items-center gap-3 cursor-pointer mt-3">
+                            <input type="checkbox" id="check-11">
+                            <span class="text-sm text-amber-400/60">Bonus: PreToolUse architecture guardrail hook configured</span>
+                        </label>
                     </div>
                 </div>
 
                 <!-- Progress counter -->
                 <div class="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span class="text-sm text-white/30" id="checklist-progress">0 of 9 complete</span>
+                    <span class="text-sm text-white/30" id="checklist-progress">0 of 12 complete</span>
                     <span class="text-xs text-white/20" id="checklist-status"></span>
                 </div>
             </div>
@@ -1228,7 +1353,7 @@ fi</pre>
         // Checklist persistence (localStorage)
         function initChecklist() {
             const saved = JSON.parse(localStorage.getItem('cc-getting-started-checklist') || '{}');
-            for (let i = 0; i <= 8; i++) {
+            for (let i = 0; i <= 11; i++) {
                 const cb = document.getElementById('check-' + i);
                 if (cb && saved['check-' + i]) {
                     cb.checked = true;
@@ -1245,7 +1370,7 @@ fi</pre>
 
         function saveChecklist() {
             const data = {};
-            for (let i = 0; i <= 8; i++) {
+            for (let i = 0; i <= 11; i++) {
                 const cb = document.getElementById('check-' + i);
                 if (cb) data['check-' + i] = cb.checked;
             }
@@ -1255,7 +1380,7 @@ fi</pre>
         function updateChecklistProgress() {
             let total = 0;
             let checked = 0;
-            for (let i = 0; i <= 8; i++) {
+            for (let i = 0; i <= 11; i++) {
                 const cb = document.getElementById('check-' + i);
                 if (cb) {
                     total++;
@@ -1269,7 +1394,7 @@ fi</pre>
                 if (checked === total) {
                     status.textContent = 'You\'re all set. Read the full architecture write-up next.';
                     status.style.color = 'rgba(34, 197, 94, 0.7)';
-                } else if (checked >= 7) {
+                } else if (checked >= 9) {
                     status.textContent = 'Almost there. The bonus items are optional.';
                     status.style.color = 'rgba(34, 211, 238, 0.5)';
                 } else {
