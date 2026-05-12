@@ -1329,6 +1329,37 @@
         </div>
     </section>
 
+    <!-- CASE STUDY: CONTEXT vs NO CONTEXT -->
+    <section>
+        <div class="container">
+            <h2 class="fade-in"><span class="section-label">Case Study</span>What context actually buys you</h2>
+
+            <p class="fade-in">I shared this article with a competing frontier model (Gemini Pro) and asked it to audit my setup. It gave 10 confident recommendations. Here's what happened:</p>
+
+            <table class="fade-in">
+                <thead>
+                    <tr><th>Gemini's Recommendation</th><th>Reality</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>"You need a deprecation/garbage collection layer"</td><td class="highlight">Already built. /curate runs weekly with decay rates and prune cycles.</td></tr>
+                    <tr><td>"Risk of over-constraint paralysis from hooks"</td><td class="highlight">Claude Code's permission system already has bypass. Not a rigid rule engine.</td></tr>
+                    <tr><td>"Graph indexing will cause startup latency"</td><td class="highlight">Already measured: 61ms per file, 151ms session-init. Imperceptible.</td></tr>
+                    <tr><td>"Users will have dependency conflicts"</td><td class="highlight">Starter kit is a clean template. No machine-specific paths.</td></tr>
+                    <tr><td>"You need an auth onboarding wizard"</td><td class="highlight">Recipients are Salesforce employees with sf CLI already authenticated.</td></tr>
+                    <tr><td>"Risk of identity/state bleed in the repo"</td><td class="highlight">Starter kit is already scrubbed. Personal data never ships.</td></tr>
+                </tbody>
+            </table>
+
+            <p class="fade-in"><strong>9 out of 10 recommendations were already solved.</strong> The model gave confident, well-structured advice that would have been correct for a generic setup &mdash; but wrong for mine. It couldn't know because it had no context.</p>
+
+            <p class="fade-in">Meanwhile, my local Claude &mdash; with 60 days of compound memory, the full wiki, every decision record, and the actual implementation details &mdash; knew instantly what was solved, what was measured, and what the real architecture looks like. No hallucination. No generic heuristics. Just answers grounded in accumulated context.</p>
+
+            <div class="callout fade-in">
+                <p><strong>This is the point of the entire architecture.</strong> A frontier model with zero context gives you plausible-sounding advice that's mostly wrong. The same class of model with 60 days of compound context gives you precise, verified answers. The gap isn't intelligence &mdash; it's context. And context is exactly what this system accumulates.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- RECIPE CARD -->
     <section>
         <div class="container">
