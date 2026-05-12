@@ -502,6 +502,84 @@
 
         .callout-amber strong { color: #FBBF24; }
 
+        /* Case Study Tabs */
+        .case-tabs {
+            display: flex;
+            gap: 4px;
+            margin: 32px 0 0;
+            border-bottom: 1px solid #334155;
+        }
+
+        .case-tab {
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748B;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .case-tab:hover { color: #CBD5E1; }
+        .case-tab.active { color: #22D3EE; border-bottom-color: #22D3EE; }
+        .case-tab { -webkit-user-select: none; }
+
+        .case-panel {
+            display: none;
+            padding-top: 32px;
+            animation: caseFadeIn 0.3s ease;
+        }
+
+        .case-panel.active { display: block; }
+
+        @keyframes caseFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .case-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .case-metric {
+            background: #1E293B;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .case-metric-value {
+            display: block;
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .case-metric-value.cyan { color: #22D3EE; }
+        .case-metric-value.green { color: #34D399; }
+        .case-metric-value.indigo { color: #818CF8; }
+        .case-metric-value.amber { color: #FBBF24; }
+
+        .case-metric-label {
+            display: block;
+            font-size: 10px;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 640px) {
+            .case-tabs { overflow-x: auto; }
+            .case-tab { padding: 12px 16px; white-space: nowrap; }
+            .case-metrics { grid-template-columns: repeat(2, 1fr); }
+        }
+
         /* Table */
         table {
             width: 100%;
@@ -1329,33 +1407,109 @@
         </div>
     </section>
 
-    <!-- CASE STUDY: CONTEXT vs NO CONTEXT -->
+    <!-- CASE STUDIES: TABBED -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Case Study</span>What context actually buys you</h2>
+            <h2 class="fade-in"><span class="section-label">Case Studies</span>What context actually buys you</h2>
 
-            <p class="fade-in">I shared this article with a competing frontier model (Gemini Pro) and asked it to audit my setup. It gave 10 confident recommendations. Here's what happened:</p>
+            <p class="fade-in">Two proof points. One about intelligence. One about autonomy.</p>
 
-            <table class="fade-in">
-                <thead>
-                    <tr><th>Gemini's Recommendation</th><th>Reality</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>"You need a deprecation/garbage collection layer"</td><td class="highlight">Already built. /curate runs weekly with decay rates and prune cycles.</td></tr>
-                    <tr><td>"Risk of over-constraint paralysis from hooks"</td><td class="highlight">Claude Code's permission system already has bypass. Not a rigid rule engine.</td></tr>
-                    <tr><td>"Graph indexing will cause startup latency"</td><td class="highlight">Already measured: 61ms per file, 151ms session-init. Imperceptible.</td></tr>
-                    <tr><td>"Users will have dependency conflicts"</td><td class="highlight">Starter kit is a clean template. No machine-specific paths.</td></tr>
-                    <tr><td>"You need an auth onboarding wizard"</td><td class="highlight">Recipients are Salesforce employees with sf CLI already authenticated.</td></tr>
-                    <tr><td>"Risk of identity/state bleed in the repo"</td><td class="highlight">Starter kit is already scrubbed. Personal data never ships.</td></tr>
-                </tbody>
-            </table>
+            <div class="case-tabs fade-in">
+                <div class="case-tab active" data-case="intelligence">The Intelligence Gap</div>
+                <div class="case-tab" data-case="autonomy">The Autonomy Gap</div>
+            </div>
 
-            <p class="fade-in"><strong>9 out of 10 recommendations were already solved.</strong> These are 6 of the 10 &mdash; the pattern held across all of them. Confident, well-structured advice that would have been correct for a generic setup &mdash; but wrong for mine. It couldn't know because it had no context.</p>
+            <!-- TAB 1: Intelligence Gap (Gemini) -->
+            <div class="case-panel active" id="case-intelligence">
+                <h3>A frontier model audits my setup. 9 of 10 recommendations were already solved.</h3>
 
-            <p class="fade-in">Meanwhile, my local Claude &mdash; with 60 days of compound memory, the full wiki, every decision record, and the actual implementation details &mdash; knew instantly what was solved, what was measured, and what the real architecture looks like. No hallucination. No generic heuristics. Just answers grounded in accumulated context.</p>
+                <p>I shared this article with Gemini Pro and asked it to audit my setup. It gave 10 confident recommendations:</p>
 
-            <div class="callout fade-in">
-                <p><strong>The gap isn't intelligence &mdash; it's context.</strong> And context is exactly what this system accumulates.</p>
+                <table>
+                    <thead>
+                        <tr><th>Gemini's Recommendation</th><th>Reality</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>"You need a deprecation/garbage collection layer"</td><td class="highlight">Already built. /curate runs weekly with decay rates and prune cycles.</td></tr>
+                        <tr><td>"Risk of over-constraint paralysis from hooks"</td><td class="highlight">Claude Code's permission system already has bypass. Not a rigid rule engine.</td></tr>
+                        <tr><td>"Graph indexing will cause startup latency"</td><td class="highlight">Already measured: 61ms per file, 151ms session-init. Imperceptible.</td></tr>
+                        <tr><td>"Users will have dependency conflicts"</td><td class="highlight">Starter kit is a clean template. No machine-specific paths.</td></tr>
+                        <tr><td>"You need an auth onboarding wizard"</td><td class="highlight">Recipients are Salesforce employees with sf CLI already authenticated.</td></tr>
+                        <tr><td>"Risk of identity/state bleed in the repo"</td><td class="highlight">Starter kit is already scrubbed. Personal data never ships.</td></tr>
+                    </tbody>
+                </table>
+
+                <p>Confident, well-structured advice that would have been correct for a generic setup &mdash; but wrong for mine. It couldn't know because it had no context.</p>
+
+                <div class="callout">
+                    <p><strong>The gap isn't intelligence &mdash; it's context.</strong> Same model family, same parameters. The difference is what the system remembers about YOUR specific situation.</p>
+                </div>
+            </div>
+
+            <!-- TAB 2: Autonomy Gap (Overnight Build) -->
+            <div class="case-panel" id="case-autonomy">
+                <h3>I approved a plan at 10 PM. By 7 AM, it was deployed to production.</h3>
+
+                <p>The first case study showed context makes AI smarter. This one shows it makes AI <strong>autonomous</strong>. It doesn't just answer better. It operates independently.</p>
+
+                <p>I had a 7-pillar architecture plan for transforming a production intelligence platform. Three rounds of architectural audit. 14 accepted fixes. 6 rejected findings with documented rationale. Approved at 10 PM. I said: <strong>"Build overnight. Don't stop."</strong> Then I went to sleep.</p>
+
+                <div class="case-metrics">
+                    <div class="case-metric"><span class="case-metric-value cyan">19</span><span class="case-metric-label">Files Created</span></div>
+                    <div class="case-metric"><span class="case-metric-value green">375</span><span class="case-metric-label">Tests Passing</span></div>
+                    <div class="case-metric"><span class="case-metric-value indigo">22</span><span class="case-metric-label">Components Deployed</span></div>
+                    <div class="case-metric"><span class="case-metric-value amber">25x</span><span class="case-metric-label">Compression</span></div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr><th>Phase</th><th>Original Estimate</th><th>Actual</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Salesforce metadata (object + 12 fields + event + service + tests)</td><td>3-4 days</td><td class="highlight">~2 hours</td></tr>
+                        <tr><td>Pipeline infrastructure (types, extractor, evaluator, connector)</td><td>3-4 days</td><td class="highlight">~1.5 hours</td></tr>
+                        <tr><td>Three API endpoints (competitive, risk, temporal)</td><td>2-3 days</td><td class="highlight">~45 minutes</td></tr>
+                        <tr><td>Brand design system provider</td><td>3-4 days</td><td class="highlight">~30 minutes</td></tr>
+                        <tr><td>Conversational Agent Router</td><td>4-5 days</td><td class="highlight">~30 minutes</td></tr>
+                        <tr><td><strong>Total (4 phases)</strong></td><td><strong>15-20 days</strong></td><td class="highlight"><strong>~5 hours</strong></td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Why this was possible</h4>
+
+                <p>This wasn't just "AI writes code fast." Any frontier model can generate files. The reason it shipped as a <strong>coherent system</strong> &mdash; not disconnected fragments &mdash; is the operating system underneath:</p>
+
+                <table>
+                    <thead>
+                        <tr><th>OS Layer</th><th>What It Contributed</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Memory</strong></td><td>Knew the entire architecture, 196 cached accounts, data model history, deployment patterns &mdash; no re-briefing needed</td></tr>
+                        <tr><td><strong>Rules</strong></td><td>Security governance, architecture patterns, voice standards &mdash; all enforced automatically on every file written</td></tr>
+                        <tr><td><strong>Plan</strong></td><td>3-round audited plan with explicit file paths, interface contracts, dependency graph &mdash; zero ambiguity</td></tr>
+                        <tr><td><strong>Wiki</strong></td><td>60+ pages of project knowledge, integration topology, platform constraints &mdash; answered questions without asking</td></tr>
+                        <tr><td><strong>Hooks</strong></td><td>Metadata validators scored every file (90-120/120). Caught issues at write-time, not deploy-time</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>What the human actually did</h4>
+
+                <table>
+                    <thead>
+                        <tr><th>Role</th><th>Time</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Approve the plan (after 3 audit rounds)</td><td>30 min</td></tr>
+                        <tr><td>Say "build overnight"</td><td>5 seconds</td></tr>
+                        <tr><td>Sleep</td><td>8 hours</td></tr>
+                        <tr><td>Verify build + tests + deploy next morning</td><td>10 min</td></tr>
+                        <tr><td><strong>Total human involvement</strong></td><td><strong>~45 minutes</strong></td></tr>
+                    </tbody>
+                </table>
+
+                <div class="callout">
+                    <p><strong>The gap isn't speed &mdash; it's autonomy.</strong> Context architecture doesn't just make AI faster at answering questions. It makes AI capable of independent execution. The human role shifts from "writing code" to "approving plans and verifying outcomes."</p>
+                </div>
             </div>
         </div>
     </section>
@@ -1548,6 +1702,16 @@
         // Start counter on page load
         window.addEventListener('load', () => {
             setTimeout(animateCounters, 500);
+        });
+
+        // Case study tab switching
+        document.querySelectorAll('.case-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.case-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.case-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('case-' + tab.dataset.case).classList.add('active');
+            });
         });
     </script>
 
