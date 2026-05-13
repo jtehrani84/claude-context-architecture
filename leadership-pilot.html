@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Context Engineering — Leadership Pilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0F172A; color: #E2E8F0; }
+        .glass { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(12px); border: 1px solid rgba(148, 163, 184, 0.1); }
+        .gradient-text { background: linear-gradient(135deg, #22D3EE, #818CF8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tab-active { background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.5); color: #22D3EE; }
+        .tab-inactive { border-color: transparent; color: #64748B; }
+        .tab-inactive:hover { color: #94A3B8; border-color: rgba(148, 163, 184, 0.2); }
+        .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        .metric-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .metric-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .comparison-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(148, 163, 184, 0.1); }
+        .comparison-cell { padding: 16px 20px; background: #1E293B; }
+        .win { border-left: 3px solid #22D3EE; }
+        .neutral { border-left: 3px solid #64748B; }
+        .timeline-line { position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: rgba(34, 211, 238, 0.2); }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- HERO -->
+    <div class="max-w-5xl mx-auto px-6 py-16">
+        <div class="text-center mb-16 fade-in">
+            <div class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6" style="background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); color: #22D3EE; width: fit-content;">
+                SE Leadership Pilot — Context Engineering
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                Start at <span class="gradient-text">Day 30</span>, not Day 0
+            </h1>
+            <p class="text-lg text-slate-400 max-w-2xl mx-auto">
+                A structured 2-week pilot to validate whether context-engineered Claude Code fundamentally changes SE output quality and velocity.
+            </p>
+        </div>
+
+        <!-- TAB NAVIGATION -->
+        <div class="flex gap-2 mb-8 border-b border-slate-700 pb-0 overflow-x-auto">
+            <button onclick="showTab('why')" id="tab-why" class="px-4 py-3 text-sm font-medium border-b-2 tab-active whitespace-nowrap">Why This Matters</button>
+            <button onclick="showTab('comparison')" id="tab-comparison" class="px-4 py-3 text-sm font-medium border-b-2 tab-inactive whitespace-nowrap">Day 0 vs Day 30</button>
+            <button onclick="showTab('slack')" id="tab-slack" class="px-4 py-3 text-sm font-medium border-b-2 tab-inactive whitespace-nowrap">vs. Slack AI</button>
+            <button onclick="showTab('pilot')" id="tab-pilot" class="px-4 py-3 text-sm font-medium border-b-2 tab-inactive whitespace-nowrap">Pilot Plan</button>
+            <button onclick="showTab('metrics')" id="tab-metrics" class="px-4 py-3 text-sm font-medium border-b-2 tab-inactive whitespace-nowrap">Success Criteria</button>
+        </div>
+
+        <!-- TAB: WHY THIS MATTERS -->
+        <div id="content-why" class="tab-content">
+            <div class="glass rounded-xl p-8 mb-6">
+                <h2 class="text-2xl font-bold mb-4">The Problem</h2>
+                <p class="text-slate-300 mb-6">Every SE on your team uses Claude Code. Most use it as a chat window — ask a question, get an answer, context resets. They're getting 10% of the value.</p>
+
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="metric-card glass rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-cyan-400">0</div>
+                        <div class="text-xs text-slate-400 mt-1">Persistent context between sessions</div>
+                    </div>
+                    <div class="metric-card glass rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-cyan-400">0</div>
+                        <div class="text-xs text-slate-400 mt-1">Quality enforcement on output</div>
+                    </div>
+                    <div class="metric-card glass rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-cyan-400">0</div>
+                        <div class="text-xs text-slate-400 mt-1">Automated intelligence gathering</div>
+                    </div>
+                </div>
+
+                <p class="text-slate-300">A fresh Claude Code install is a genius with amnesia. It forgets your preferences, your accounts, your org structure, your product catalog, your writing standards — every single session. The starter kit gives it institutional memory from Day 1.</p>
+            </div>
+
+            <div class="glass rounded-xl p-8">
+                <h2 class="text-2xl font-bold mb-4">The Compound Effect</h2>
+                <p class="text-slate-300 mb-4">Context engineering isn't about one session being better. It's about every session making the next one better. After 30 days:</p>
+                <ul class="space-y-3 text-slate-300">
+                    <li class="flex gap-3"><span class="text-cyan-400 font-bold">1.</span> Memory captures corrections — Claude never makes the same mistake twice</li>
+                    <li class="flex gap-3"><span class="text-cyan-400 font-bold">2.</span> Skills encode workflows — 30-minute processes become one command</li>
+                    <li class="flex gap-3"><span class="text-cyan-400 font-bold">3.</span> Hooks enforce standards — quality gates fire without human intervention</li>
+                    <li class="flex gap-3"><span class="text-cyan-400 font-bold">4.</span> Entity pages compound — every meeting enriches the next meeting's prep</li>
+                    <li class="flex gap-3"><span class="text-cyan-400 font-bold">5.</span> Overnight intelligence — the system works while you sleep</li>
+                </ul>
+                <div class="mt-6 p-4 rounded-lg" style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2);">
+                    <p class="text-sm text-cyan-300"><strong>The math:</strong> If each SE saves 45 min/day on account prep, meeting prep, email drafting, and content generation — that's 15+ hours/month back per person. Across a team of 60, that's 900 hours/month of SE capacity recovered.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: DAY 0 vs DAY 30 -->
+        <div id="content-comparison" class="tab-content hidden">
+            <div class="glass rounded-xl overflow-hidden mb-6">
+                <div class="comparison-row font-semibold text-sm">
+                    <div class="comparison-cell text-slate-400">Day 0 — Fresh Install</div>
+                    <div class="comparison-cell text-cyan-400">Day 30 — Starter Kit</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">No context between sessions</div>
+                    <div class="comparison-cell win">220+ memory files, corrections persist forever</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">Generic responses, AI-sounding output</div>
+                    <div class="comparison-cell win">Anti-slop rules enforce SE voice automatically</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">Hallucinated product names, wrong facts</div>
+                    <div class="comparison-cell win">Product verification layer + 3-layer anti-hallucination</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">Manual account research every time</div>
+                    <div class="comparison-cell win">/account-prep pulls CRM + web + competitive in 2 min</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">No awareness of org structure</div>
+                    <div class="comparison-cell win">Entity pages: 150+ people, org trees, relationships mapped</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">Each session starts from scratch</div>
+                    <div class="comparison-cell win">SessionStart hook loads relevant context automatically</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">No guardrails on architecture decisions</div>
+                    <div class="comparison-cell win">PreToolUse hooks block unsafe patterns before code is written</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">Intelligence gathering is manual</div>
+                    <div class="comparison-cell win">8 overnight agents: Exa, HN, GitHub, X, 38 Slack channels</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">One model, one perspective</div>
+                    <div class="comparison-cell win">20 models on LLMGW — cross-model validation, /validate command</div>
+                </div>
+                <div class="comparison-row text-sm">
+                    <div class="comparison-cell neutral">Skills don't persist between sessions</div>
+                    <div class="comparison-cell win">180+ skills loaded automatically based on task type</div>
+                </div>
+            </div>
+
+            <div class="glass rounded-xl p-8">
+                <h3 class="text-lg font-bold mb-3">What the pilot participant gets on Day 1:</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-lg bg-slate-800/50">
+                        <div class="text-cyan-400 font-semibold text-sm mb-2">Layer 1: Identity</div>
+                        <p class="text-xs text-slate-400">CLAUDE.md with routing table, role definition, anti-slop standards, product verification rules</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-slate-800/50">
+                        <div class="text-cyan-400 font-semibold text-sm mb-2">Layer 2: Rules & Guardrails</div>
+                        <p class="text-xs text-slate-400">Communication standards, security governance, architecture patterns — enforced every session</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-slate-800/50">
+                        <div class="text-cyan-400 font-semibold text-sm mb-2">Layer 3: SE Skill Pack</div>
+                        <p class="text-xs text-slate-400">/account-prep, /deal-strategy, /email-draft, /post-meeting, /demo-prep — 5 production commands</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-slate-800/50">
+                        <div class="text-cyan-400 font-semibold text-sm mb-2">Layer 4: Intelligence</div>
+                        <p class="text-xs text-slate-400">Slack channel roster, overnight gather scripts, morning synthesis — brain grows passively</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-slate-800/50">
+                        <div class="text-cyan-400 font-semibold text-sm mb-2">Layer 5: Entity Pages</div>
+                        <p class="text-xs text-slate-400">wiki/people/ templates, Slack profile seeding, org tree structure — relationship intelligence</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-slate-800/50">
+                        <div class="text-cyan-400 font-semibold text-sm mb-2">Layer 6: Compound Loop</div>
+                        <p class="text-xs text-slate-400">/skillify meta-command — every workflow you repeat becomes a permanent skill automatically</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: vs SLACK AI -->
+        <div id="content-slack" class="tab-content hidden">
+            <div class="glass rounded-xl p-8 mb-6">
+                <h2 class="text-2xl font-bold mb-2">Different tools for different jobs</h2>
+                <p class="text-slate-400 mb-6">Slack AI and Claude Code Context Engineering don't compete. They operate at different layers of the work.</p>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left border-b border-slate-700">
+                                <th class="py-3 px-4 text-slate-400 font-medium">Dimension</th>
+                                <th class="py-3 px-4 text-purple-400 font-medium">Slack AI</th>
+                                <th class="py-3 px-4 text-cyan-400 font-medium">Context-Engineered Claude Code</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-300">
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">What it is</td>
+                                <td class="py-3 px-4">Search & summarization assistant inside Slack</td>
+                                <td class="py-3 px-4">Autonomous development platform on your machine</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">Memory</td>
+                                <td class="py-3 px-4">Workspace context only — no structured knowledge base</td>
+                                <td class="py-3 px-4">220+ curated memory files, wiki, entity pages, knowledge graph</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">Skills</td>
+                                <td class="py-3 px-4">3 tiers: Bolt apps (need dev team), Workflow Builder (deterministic), prompt templates (shallow). All require deployment infrastructure.</td>
+                                <td class="py-3 px-4">180+ markdown skills — write a file, it's live in 30 seconds. Zero deployment. Full filesystem + bash + MCP access.</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">Quality enforcement</td>
+                                <td class="py-3 px-4">None — generic assistant voice</td>
+                                <td class="py-3 px-4">Anti-slop rules, product verification, hooks that gate output</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">Can build software</td>
+                                <td class="py-3 px-4">No — cannot write, deploy, or test code</td>
+                                <td class="py-3 px-4">Full stack: Apex, LWC, TypeScript, deploys, git, CI/CD</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">Autonomy</td>
+                                <td class="py-3 px-4">Single-turn Q&A</td>
+                                <td class="py-3 px-4">Multi-hour autonomous execution, overnight builds</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">Overnight intelligence</td>
+                                <td class="py-3 px-4">None</td>
+                                <td class="py-3 px-4">8 crons scanning Exa, HN, GitHub, X, 38 Slack channels</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">Model</td>
+                                <td class="py-3 px-4">Claude Sonnet 3.5 (older generation)</td>
+                                <td class="py-3 px-4">Opus 4.6 primary + 20 models via LLMGW for cross-validation</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-white">Setup effort</td>
+                                <td class="py-3 px-4 text-green-400">Zero — already deployed org-wide</td>
+                                <td class="py-3 px-4">30-45 min with starter kit (one-time)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="glass rounded-xl p-8">
+                <h3 class="text-lg font-bold mb-4">The honest framing</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-4 rounded-lg" style="background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.2);">
+                        <h4 class="text-purple-400 font-semibold mb-2">Use Slack AI when you need to...</h4>
+                        <ul class="text-sm text-slate-300 space-y-1.5">
+                            <li>Find something said in a channel last week</li>
+                            <li>Summarize a long thread you missed</li>
+                            <li>Quick answer from company knowledge base</li>
+                            <li>Share an insight with the team in-channel</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 rounded-lg" style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2);">
+                        <h4 class="text-cyan-400 font-semibold mb-2">Use Claude Code harness when you need to...</h4>
+                        <ul class="text-sm text-slate-300 space-y-1.5">
+                            <li>Prep for a customer meeting with full intelligence</li>
+                            <li>Generate a competitive talk track that sounds like you</li>
+                            <li>Build a demo, prototype, or technical artifact</li>
+                            <li>Run a multi-step research → analysis → deliverable pipeline</li>
+                            <li>Have the system learn from your corrections permanently</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 rounded-lg bg-slate-800/50">
+                    <p class="text-sm text-slate-300"><strong class="text-white">Timeline reality:</strong> Slack AI is a great channel search tool today. It may add memory and skills depth over the next 12-18 months. The local harness delivers that value now — and compounds daily. Starting today means your team has a 12-month head start on institutional knowledge that no centralized tool can replicate, because it encodes <em>your</em> judgment, <em>your</em> corrections, <em>your</em> org structure.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: PILOT PLAN -->
+        <div id="content-pilot" class="tab-content hidden">
+            <div class="glass rounded-xl p-8 mb-6">
+                <h2 class="text-2xl font-bold mb-6">2-Week Leadership Pilot</h2>
+
+                <div class="relative space-y-8">
+                    <div class="timeline-line"></div>
+
+                    <div class="flex gap-4 relative">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-xs font-bold text-cyan-400 shrink-0">1</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Day 1: Install & Setup (30 min)</div>
+                            <p class="text-sm text-slate-400 mt-1">Clone starter kit. Run setup script. Verify CLAUDE.md loads, rules fire, first skill (/account-prep) works. Done in one terminal session.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 relative">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-xs font-bold text-cyan-400 shrink-0">2</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Days 2-3: Core Workflows (normal work)</div>
+                            <p class="text-sm text-slate-400 mt-1">Use Claude Code for your actual work. Try /account-prep before a meeting. Try /email-draft for a customer email. Notice how rules prevent AI-sounding output automatically.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 relative">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-xs font-bold text-cyan-400 shrink-0">3</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Days 4-7: Memory Compounds</div>
+                            <p class="text-sm text-slate-400 mt-1">Correct Claude when it gets something wrong. Watch it never make that mistake again. Add your accounts, your team, your preferences. The system learns YOUR judgment.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 relative">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-xs font-bold text-cyan-400 shrink-0">4</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Days 8-10: Intelligence Layer</div>
+                            <p class="text-sm text-slate-400 mt-1">Activate overnight crons. Check wiki/inbox.md each morning for auto-gathered intelligence. Seed entity pages for your direct reports. The system starts working while you sleep.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 relative">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-xs font-bold text-cyan-400 shrink-0">5</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Days 11-14: Evaluate & Decide</div>
+                            <p class="text-sm text-slate-400 mt-1">Compare output quality vs. pre-pilot. Measure time saved. Assess: does this warrant org-wide rollout? What would you change for your team?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass rounded-xl p-8">
+                <h3 class="text-lg font-bold mb-4">What pilot participants need</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex gap-3 items-start">
+                        <span class="text-green-400 mt-0.5">&#x2713;</span>
+                        <span class="text-slate-300">Claude Code installed (VS Code extension or CLI) — already deployed via LLMGW</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-green-400 mt-0.5">&#x2713;</span>
+                        <span class="text-slate-300">Access to starter kit repo (private GitHub, @salesforce.com auth)</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-green-400 mt-0.5">&#x2713;</span>
+                        <span class="text-slate-300">30 minutes for initial setup (one time)</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-green-400 mt-0.5">&#x2713;</span>
+                        <span class="text-slate-300">Willingness to use Claude Code for 2-3 real work tasks per day during pilot</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-green-400 mt-0.5">&#x2713;</span>
+                        <span class="text-slate-300">Brief weekly check-in (15 min) to share findings</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: SUCCESS CRITERIA -->
+        <div id="content-metrics" class="tab-content hidden">
+            <div class="glass rounded-xl p-8 mb-6">
+                <h2 class="text-2xl font-bold mb-6">Success Criteria — What "Pass" Looks Like</h2>
+
+                <div class="space-y-6">
+                    <div class="p-4 rounded-lg bg-slate-800/50 border-l-4 border-cyan-500">
+                        <h4 class="font-semibold text-white mb-1">1. Time-to-First-Value</h4>
+                        <p class="text-sm text-slate-400">Participant can run /account-prep on a real account and get useful output within 48 hours of setup. No hand-holding required after initial install.</p>
+                        <div class="mt-2 text-xs text-cyan-400">Target: &lt; 48 hours from clone to first useful output</div>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-slate-800/50 border-l-4 border-cyan-500">
+                        <h4 class="font-semibold text-white mb-1">2. Output Quality Delta</h4>
+                        <p class="text-sm text-slate-400">Customer-facing content (emails, talk tracks, prep docs) produced with the harness is demonstrably higher quality than without. No AI-sounding language. Correct product names. Customer-centric framing.</p>
+                        <div class="mt-2 text-xs text-cyan-400">Target: Participant would send the output to a customer without editing</div>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-slate-800/50 border-l-4 border-cyan-500">
+                        <h4 class="font-semibold text-white mb-1">3. Compound Learning Demonstrated</h4>
+                        <p class="text-sm text-slate-400">By Day 7, Claude remembers corrections from Day 2. Participant sees the system getting better without re-explaining. Memory accumulates visibly.</p>
+                        <div class="mt-2 text-xs text-cyan-400">Target: 10+ memory files created organically by end of Week 1</div>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-slate-800/50 border-l-4 border-cyan-500">
+                        <h4 class="font-semibold text-white mb-1">4. Workflow Acceleration</h4>
+                        <p class="text-sm text-slate-400">At least one workflow the participant does weekly now takes &lt;50% of the time it used to. Account prep, meeting prep, email drafting, competitive research — any one.</p>
+                        <div class="mt-2 text-xs text-cyan-400">Target: 1+ workflow at 50% time reduction</div>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-slate-800/50 border-l-4 border-cyan-500">
+                        <h4 class="font-semibold text-white mb-1">5. "Would Recommend" Signal</h4>
+                        <p class="text-sm text-slate-400">After 2 weeks, participant answers: "Would you want your team to have this?" If yes — pilot passes. If no — we learn why and iterate.</p>
+                        <div class="mt-2 text-xs text-cyan-400">Target: Unanimous "yes" from pilot cohort</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass rounded-xl p-8">
+                <h3 class="text-lg font-bold mb-4">What we're NOT measuring</h3>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li class="flex gap-2"><span class="text-slate-500">&#x2717;</span> Lines of code written (irrelevant for SE leadership)</li>
+                    <li class="flex gap-2"><span class="text-slate-500">&#x2717;</span> Number of sessions per day (usage ≠ value)</li>
+                    <li class="flex gap-2"><span class="text-slate-500">&#x2717;</span> Technical complexity of setup (we handle that)</li>
+                    <li class="flex gap-2"><span class="text-slate-500">&#x2717;</span> Comparison to Slack AI (different tool, different job)</li>
+                </ul>
+                <div class="mt-6 p-4 rounded-lg" style="background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2);">
+                    <p class="text-sm text-amber-300"><strong>The real question:</strong> Does having a context-engineered Claude Code setup make an SE measurably better at their job? Not "faster at typing" — better at the work that wins deals.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="text-center mt-16 pt-8 border-t border-slate-800">
+            <p class="text-sm text-slate-500">Context Engineering Pilot — John Tehrani, Principal Strategic SE, TMT-Commercial</p>
+            <p class="text-xs text-slate-600 mt-1">Materials: <a href="https://jtehrani84.github.io/claude-context-architecture/" class="text-cyan-500/50 hover:text-cyan-400">jtehrani84.github.io/claude-context-architecture</a></p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('[id^="tab-"]').forEach(el => { el.classList.remove('tab-active'); el.classList.add('tab-inactive'); });
+            document.getElementById('content-' + tab).classList.remove('hidden');
+            document.getElementById('tab-' + tab).classList.remove('tab-inactive');
+            document.getElementById('tab-' + tab).classList.add('tab-active');
+        }
+
+        // Fade-in observer
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
