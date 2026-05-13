@@ -1110,9 +1110,9 @@
     <!-- THE 10-LAYER STACK -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Architecture</span>The ten-layer stack</h2>
+            <h2 class="fade-in"><span class="section-label">Architecture</span>The eleven-layer stack</h2>
 
-            <p class="fade-in">Part 1 had five tiers. The current system has ten layers. Five evolved from the original. Five are entirely new.</p>
+            <p class="fade-in">Part 1 had five tiers. The current system has eleven layers. Five evolved from the original. Six are entirely new.</p>
 
             <div class="stack-visual" id="stack-visual">
                 <div class="stack-layer layer-identity">
@@ -1195,6 +1195,14 @@
                     </div>
                     <div class="stack-layer-stat">auto-indexed</div>
                 </div>
+                <div class="stack-layer layer-identity">
+                    <div class="stack-layer-icon">&#x1F465;</div>
+                    <div class="stack-layer-content">
+                        <div class="stack-layer-name">Entities</div>
+                        <div class="stack-layer-desc">People pages &mdash; org trees, timelines, relationships</div>
+                    </div>
+                    <div class="stack-layer-stat">150+ people</div>
+                </div>
             </div>
         </div>
     </section>
@@ -1236,6 +1244,11 @@
                         <td>&rarr;</td>
                         <td><strong>CLAUDE.md is a full orchestration manifest</strong></td>
                     </tr>
+                    <tr>
+                        <td>"Contacts live in CRM"</td>
+                        <td>&rarr;</td>
+                        <td><strong>Entity pages capture working style, decision patterns, relationship history</strong></td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -1243,6 +1256,42 @@
                 <h4>The pattern</h4>
                 <p>Every passive component attracted an active counterpart. Storage attracted enforcement. Reference attracted validation. Memory attracted curation. The system developed an immune response to its own failure modes.</p>
             </div>
+        </div>
+    </section>
+
+    <!-- ENTITY PAGES -->
+    <section>
+        <div class="container">
+            <h2 class="fade-in"><span class="section-label">Entity Pages</span>The relationship layer</h2>
+
+            <p class="fade-in">Memory stores corrections. Wiki stores knowledge. But neither stores <em>people</em>. Entity pages close that gap &mdash; a structured page per person that compounds across every interaction.</p>
+
+            <p class="fade-in">Two templates (internal + external). Structured top for instant prep &mdash; role, org position, working style, territory. Append-only timeline below that grows with every meeting, decision, and collaboration. Seeded programmatically from Slack profiles, then enriched by overnight intelligence crons.</p>
+
+            <table class="fade-in">
+                <thead>
+                    <tr><th>Without</th><th></th><th>With entity pages</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"Who's the AE on that account?"</td>
+                        <td>&rarr;</td>
+                        <td><strong>Full org tree with SE/AE assignments in one Read</strong></td>
+                    </tr>
+                    <tr>
+                        <td>"What did we discuss last time?"</td>
+                        <td>&rarr;</td>
+                        <td><strong>Timeline shows every interaction chronologically</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Meeting prep = 20 min searching</td>
+                        <td>&rarr;</td>
+                        <td><strong>One page, auto-routed by SessionStart hook</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="fade-in">Result: 150+ people mapped across sales and solutions org trees. Every leader with their reports, Slack IDs, and coverage areas. The CRM knows accounts &mdash; entity pages know the humans working them.</p>
         </div>
     </section>
 
@@ -1525,7 +1574,7 @@
                 <p><strong>What transfers vs. what doesn't:</strong> The architecture, templates, and feedback loops transfer. The 220+ specific memories don't &mdash; those are YOUR corrections, YOUR project state. The kit gives you the scaffolding. Compound learning fills it in.</p>
             </div>
 
-            <h3 class="fade-in">The Kit (4 layers, 30 minutes to deploy)</h3>
+            <h3 class="fade-in">The Kit (5 layers, 45 minutes to deploy)</h3>
 
             <div class="card fade-in">
                 <div class="card-title">Layer 1: Identity Skeleton</div>
@@ -1544,7 +1593,12 @@
 
             <div class="card fade-in">
                 <div class="card-title">Layer 4: Intelligence Automation</div>
-                <p><strong>Slack channel roster</strong> with 25 pre-mapped internal channels (product, competitive, enablement, win/loss, leadership). <strong>Overnight gather scripts</strong> that scan Exa + X + Slack and synthesize a morning brief. <strong>One MCP server</strong> (GitHub) to prove the action layer. Swap in your OU channel and go.</p>
+                <p><strong>Slack channel roster</strong> with 25 pre-mapped internal channels (product, competitive, enablement, win/loss, leadership). <strong>Overnight gather scripts</strong> that scan Exa + HN + GitHub + X + Slack and synthesize a morning brief. <strong>One MCP server</strong> (GitHub) to prove the action layer. Swap in your OU channels and go.</p>
+            </div>
+
+            <div class="card fade-in">
+                <div class="card-title">Layer 5: Entity Pages</div>
+                <p><strong>wiki/people/ directory</strong> with two templates (internal + external). Seed your org tree from Slack profiles &mdash; Claude pulls name, title, email, timezone programmatically. Structure: org position at top, append-only timeline below. After one session, every leader and their reports are mapped. After a month, you have a relationship graph no CRM captures.</p>
             </div>
 
             <h3 class="fade-in">Channel Roster (pre-mapped for SE org)</h3>

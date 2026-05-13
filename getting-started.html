@@ -1113,6 +1113,47 @@ touch decisions/INDEX.md</pre>
                             </div>
                         </div>
 
+                        <!-- Entity Pages -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-white/70 mb-3">Entity Pages: People Directory</h4>
+                            <p class="text-xs text-white/40 mb-3">
+                                Memory stores corrections. Wiki stores knowledge. Entity pages store <em>people</em> &mdash; a structured page per person that compounds across every interaction.
+                            </p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4">mkdir -p wiki/people</pre>
+                            </div>
+                            <p class="text-xs text-white/40 mt-3 mb-3">
+                                Two templates &mdash; one for internal colleagues, one for external contacts:
+                            </p>
+                            <div class="code-block p-4 text-xs">
+                                <span class="lang-label">wiki/people/_template-internal.md</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                <pre class="text-white/60 mt-4"><span class="text-cyan-400"># {Name}</span>
+
+<span class="text-cyan-400">## Profile</span>
+- <span class="text-white/80">Title:</span>
+- <span class="text-white/80">Team/OU:</span>
+- <span class="text-white/80">Reports to:</span>
+- <span class="text-white/80">Location:</span>
+- <span class="text-white/80">Slack:</span> {ID} | {email}
+
+<span class="text-cyan-400">## Working Style</span>
+
+<span class="text-cyan-400">## Current Focus</span>
+
+<span class="text-cyan-400">## Territory / Coverage</span>
+
+---
+<span class="text-cyan-400">## Timeline</span>
+<span class="text-white/30">&lt;!-- Append after every interaction. Newest at top. --&gt;</span></pre>
+                            </div>
+                            <p class="text-xs text-white/40 mt-3">
+                                Seed them fast: ask Claude to search Slack profiles for your team and build the pages programmatically. One session maps your whole org tree &mdash; leaders, reports, coverage areas, Slack IDs. Then every meeting and collaboration appends to the timeline. Six months later, you have a relationship graph no CRM captures.
+                            </p>
+                        </div>
+
                         <!-- Maintenance -->
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Weekly Maintenance</h4>
