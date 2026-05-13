@@ -168,61 +168,71 @@
             </div>
         </div>
 
-        <!-- TAB: vs SLACK AI -->
+        <!-- TAB: vs SLACKBOT -->
         <div id="content-slack" class="tab-content hidden">
             <div class="glass rounded-xl p-8 mb-6">
                 <h2 class="text-2xl font-bold mb-2">Different tools for different jobs</h2>
-                <p class="text-slate-400 mb-6">Slackbot and Claude Code Context Engineering don't compete. They operate at different layers of the work.</p>
+                <p class="text-slate-400 mb-6">Slackbot and Claude Code Context Engineering don't compete. They operate at different layers of the work. Sources: FY27 Slack FCD, Salesforce Docs, #help-sell-slack field intel (May 2026).</p>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="text-left border-b border-slate-700">
                                 <th class="py-3 px-4 text-slate-400 font-medium">Dimension</th>
-                                <th class="py-3 px-4 text-purple-400 font-medium">Slackbot</th>
+                                <th class="py-3 px-4 text-purple-400 font-medium">Slackbot (May 2026 GA)</th>
                                 <th class="py-3 px-4 text-cyan-400 font-medium">Context-Engineered Claude Code</th>
                             </tr>
                         </thead>
                         <tbody class="text-slate-300">
                             <tr class="border-b border-slate-800">
                                 <td class="py-3 px-4 font-medium text-white">What it is</td>
-                                <td class="py-3 px-4">Search & summarization assistant inside Slack</td>
-                                <td class="py-3 px-4">Autonomous development platform on your machine</td>
+                                <td class="py-3 px-4">"The Agentic OS for humans, apps, and agents" — search & summarization assistant inside Slack</td>
+                                <td class="py-3 px-4">Autonomous development platform on your machine with 11 compounding layers</td>
                             </tr>
                             <tr class="border-b border-slate-800">
                                 <td class="py-3 px-4 font-medium text-white">Memory</td>
-                                <td class="py-3 px-4">Workspace context only — no structured knowledge base</td>
-                                <td class="py-3 px-4">220+ curated memory files, wiki, entity pages, knowledge graph</td>
+                                <td class="py-3 px-4">Workspace context only — no per-user structured knowledge base. No cross-session learning from corrections.</td>
+                                <td class="py-3 px-4">220+ curated memory files, 95-page wiki, 150+ entity pages, knowledge graph. Corrections persist forever.</td>
                             </tr>
                             <tr class="border-b border-slate-800">
                                 <td class="py-3 px-4 font-medium text-white">Skills</td>
-                                <td class="py-3 px-4">3 tiers: Bolt apps (need dev team), Workflow Builder (deterministic), prompt templates (shallow). All require deployment infrastructure.</td>
-                                <td class="py-3 px-4">180+ markdown skills — write a file, it's live in 30 seconds. Zero deployment. Full filesystem + bash + MCP access.</td>
+                                <td class="py-3 px-4">Admin-managed prompt templates (GA May 2026). Skills Manager role distributes to org/groups. Cannot execute code, access filesystem, or call MCP servers.</td>
+                                <td class="py-3 px-4">180+ markdown skills — write a file, live in 30 seconds. Full filesystem + bash + MCP access. Multi-step executable workflows.</td>
                             </tr>
                             <tr class="border-b border-slate-800">
                                 <td class="py-3 px-4 font-medium text-white">Quality enforcement</td>
-                                <td class="py-3 px-4">None — generic assistant voice</td>
-                                <td class="py-3 px-4">Anti-slop rules, product verification, hooks that gate output</td>
+                                <td class="py-3 px-4">None — generic assistant voice, no output gates</td>
+                                <td class="py-3 px-4">Anti-slop rules (50+ banned words), product verification, 14 hooks that gate output before it ships</td>
                             </tr>
                             <tr class="border-b border-slate-800">
                                 <td class="py-3 px-4 font-medium text-white">Can build software</td>
-                                <td class="py-3 px-4">No — cannot write, deploy, or test code</td>
-                                <td class="py-3 px-4">Full stack: Apex, LWC, TypeScript, deploys, git, CI/CD</td>
+                                <td class="py-3 px-4">No — cannot write, deploy, or test code. Architecturally impossible (cloud-only).</td>
+                                <td class="py-3 px-4">Full stack: Apex, LWC, TypeScript, deploys, git, CI/CD. Built a production platform autonomously.</td>
                             </tr>
                             <tr class="border-b border-slate-800">
                                 <td class="py-3 px-4 font-medium text-white">Autonomy</td>
-                                <td class="py-3 px-4">Single-turn Q&A</td>
-                                <td class="py-3 px-4">Multi-hour autonomous execution, overnight builds</td>
+                                <td class="py-3 px-4">Single-turn Q&A. Human confirms every action.</td>
+                                <td class="py-3 px-4">Multi-hour autonomous execution. "Build overnight" → production deployment by morning.</td>
                             </tr>
                             <tr class="border-b border-slate-800">
                                 <td class="py-3 px-4 font-medium text-white">Overnight intelligence</td>
-                                <td class="py-3 px-4">None</td>
-                                <td class="py-3 px-4">8 crons scanning Exa, HN, GitHub, X, 38 Slack channels</td>
+                                <td class="py-3 px-4">None — reactive only, runs when asked</td>
+                                <td class="py-3 px-4">8 crons scanning Exa, HN, GitHub, X, 38 Slack channels. Wiki grows passively.</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">Search</td>
+                                <td class="py-3 px-4 text-green-400">Enterprise Search across Slack + Google Drive + Confluence + Salesforce. Semantic + keyword. GA now.</td>
+                                <td class="py-3 px-4">Slack MCP for channel reads + Exa for web + local wiki/memory search. Same data, extra step.</td>
                             </tr>
                             <tr class="border-b border-slate-800">
                                 <td class="py-3 px-4 font-medium text-white">Model</td>
-                                <td class="py-3 px-4">Claude Sonnet 3.5 (older generation)</td>
-                                <td class="py-3 px-4">Opus 4.6 primary + 20 models via LLMGW for cross-validation</td>
+                                <td class="py-3 px-4">Claude Sonnet 3.5 (older generation, single model)</td>
+                                <td class="py-3 px-4">Opus 4.6 primary + 20 models via LLMGW. Cross-model validation with /validate command.</td>
+                            </tr>
+                            <tr class="border-b border-slate-800">
+                                <td class="py-3 px-4 font-medium text-white">CRM access</td>
+                                <td class="py-3 px-4">Via Agentforce in Slack (requires AF license). Slackbot↔Salesforce MCP GA mid-June 2026.</td>
+                                <td class="py-3 px-4">Direct sf CLI via MCP — 18 CRM tools, query any object, write-back confirmed. Live now.</td>
                             </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-white">Setup effort</td>
@@ -234,7 +244,42 @@
                 </div>
             </div>
 
-            <div class="glass rounded-xl p-8">
+            <!-- Slackbot GA Features -->
+            <div class="glass rounded-xl p-8 mb-6">
+                <h3 class="text-lg font-bold mb-4">What Slackbot does well (GA May 2026)</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-3 rounded-lg bg-purple-500/5 border border-purple-500/10">
+                        <div class="text-purple-400 font-semibold text-xs mb-1">Enterprise Search</div>
+                        <p class="text-xs text-slate-400">Semantic + keyword across Slack, Google Drive, Confluence, Salesforce, Box. Natural language follow-ups.</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-purple-500/5 border border-purple-500/10">
+                        <div class="text-purple-400 font-semibold text-xs mb-1">Conversation Summaries</div>
+                        <p class="text-xs text-slate-400">One-click channel/thread summarization. Daily recaps of topics you follow.</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-purple-500/5 border border-purple-500/10">
+                        <div class="text-purple-400 font-semibold text-xs mb-1">Huddle Summaries</div>
+                        <p class="text-xs text-slate-400">Auto-captures key points and action items from huddles.</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-purple-500/5 border border-purple-500/10">
+                        <div class="text-purple-400 font-semibold text-xs mb-1">Slackbot Skills</div>
+                        <p class="text-xs text-slate-400">Admin-managed reusable prompt templates. Skills Manager role for power users. GA May 2026.</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-purple-500/5 border border-purple-500/10">
+                        <div class="text-purple-400 font-semibold text-xs mb-1">AI Workflow Building</div>
+                        <p class="text-xs text-slate-400">Create Workflow Builder automations from natural language.</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-purple-500/5 border border-purple-500/10">
+                        <div class="text-purple-400 font-semibold text-xs mb-1">Agentforce in Slack</div>
+                        <p class="text-xs text-slate-400">@mention agents in channels. DM agents privately. Custom agents via templates.</p>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                    <p class="text-xs text-amber-300"><strong>Field note:</strong> Channel Expert (legacy) was deprecated May 4, 2026. V2 has no announced timeline. Slackbot↔Salesforce MCP integration is GA mid-June 2026.</p>
+                </div>
+            </div>
+
+            <!-- Honest framing -->
+            <div class="glass rounded-xl p-8 mb-6">
                 <h3 class="text-lg font-bold mb-4">The honest framing</h3>
                 <div class="grid md:grid-cols-2 gap-6">
                     <div class="p-4 rounded-lg" style="background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.2);">
@@ -244,6 +289,7 @@
                             <li>Summarize a long thread you missed</li>
                             <li>Quick answer from company knowledge base</li>
                             <li>Share an insight with the team in-channel</li>
+                            <li>Get a daily recap of topics you follow</li>
                         </ul>
                     </div>
                     <div class="p-4 rounded-lg" style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2);">
@@ -254,11 +300,42 @@
                             <li>Build a demo, prototype, or technical artifact</li>
                             <li>Run a multi-step research → analysis → deliverable pipeline</li>
                             <li>Have the system learn from your corrections permanently</li>
+                            <li>Execute overnight autonomous workflows</li>
                         </ul>
                     </div>
                 </div>
-                <div class="mt-6 p-4 rounded-lg bg-slate-800/50">
-                    <p class="text-sm text-slate-300"><strong class="text-white">Timeline reality:</strong> Slackbot is a great channel search tool today. It may add memory and skills depth over the next 12-18 months. The local harness delivers that value now — and compounds daily. Starting today means your team has a 12-month head start on institutional knowledge that no centralized tool can replicate, because it encodes <em>your</em> judgment, <em>your</em> corrections, <em>your</em> org structure.</p>
+            </div>
+
+            <!-- Will it catch up? -->
+            <div class="glass rounded-xl p-8">
+                <h3 class="text-lg font-bold mb-4">Will Slackbot catch up?</h3>
+                <p class="text-sm text-slate-400 mb-4">Honest assessment based on architecture, roadmap signals, and field intel:</p>
+
+                <div class="space-y-3">
+                    <div class="flex gap-3 items-start">
+                        <span class="text-amber-400 text-xs font-mono mt-0.5 shrink-0">6-12mo</span>
+                        <span class="text-sm text-slate-300">Skills depth may improve (MCP access for Skills is the most likely evolution)</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-amber-400 text-xs font-mono mt-0.5 shrink-0">12-18mo</span>
+                        <span class="text-sm text-slate-300">Per-user persistent memory <em>possible</em> if prioritized (massive infrastructure change)</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-red-400 text-xs font-mono mt-0.5 shrink-0">Never</span>
+                        <span class="text-sm text-slate-300">Local filesystem access — architecturally impossible in Slack's cloud model</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-red-400 text-xs font-mono mt-0.5 shrink-0">Never</span>
+                        <span class="text-sm text-slate-300">Pre/post-action hooks and enforcement gates — Slack is a collaboration tool, not a dev platform</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-red-400 text-xs font-mono mt-0.5 shrink-0">Never</span>
+                        <span class="text-sm text-slate-300">Multi-hour autonomous execution without human confirmation</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 rounded-lg" style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2);">
+                    <p class="text-sm text-cyan-300"><strong>The moat:</strong> Even if Slackbot adds memory and better skills in 18 months, it starts at zero. A harness started today has 18 months of compound learning — 220+ memory files, 150+ people mapped, overnight intelligence history, battle-tested guardrails. That institutional knowledge doesn't transfer to any centralized tool. It encodes <em>your</em> judgment, <em>your</em> corrections, <em>your</em> org structure. That's the permanent advantage.</p>
                 </div>
             </div>
         </div>
