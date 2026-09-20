@@ -357,7 +357,7 @@
             </h1>
 
             <p class="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-8 leading-relaxed">
-                Five stages, 30 minutes total. Go from a blank slate to a Claude that knows your projects, follows your rules, remembers what you've taught it, and catches architectural mistakes before they happen.
+                Five stages, about 30 minutes of work. By the end, Claude starts every session already knowing your projects, following your rules, remembering what you've taught it, and catching architectural mistakes before they land.
             </p>
 
             <!-- Progress indicator -->
@@ -413,10 +413,10 @@
                     Every time you start a Claude Code session, Claude has no idea who you are, what you're working on, or what you told it yesterday. It's a brilliant collaborator with total amnesia.
                 </p>
                 <p class="text-white/50 leading-relaxed mb-4">
-                    You end up repeating yourself. "I'm an SE." "This is a Salesforce project." "Don't use deprecated APIs." "Remember, we decided on approach B last week." Over and over.
+                    So you end up repeating yourself every session &mdash; "I'm an SE," "this is a Salesforce project," "don't use deprecated APIs," "remember, we decided on approach B last week."
                 </p>
                 <p class="text-white/50 leading-relaxed">
-                    This guide fixes that. You'll create a small set of files that Claude reads automatically at the start of every session. No plugins, no external tools, no coding required. Just files in the right places with the right content.
+                    This guide fixes that. You'll create a small set of files that Claude reads on its own at the start of every session, with no plugins, no external tools, and no code to write. Just the right files, in the right places, with the right content.
                 </p>
             </div>
         </div>
@@ -465,7 +465,7 @@
                         <!-- Quick check -->
                         <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10">
                             <p class="text-sm text-white/60">
-                                <span class="text-cyan-400 font-semibold">Quick check:</span> Open your terminal, run <code class="text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">claude --version</code>. If you see a version number, you're good. If not, install Claude Code first at <a href="https://claude.ai/code" class="text-cyan-400 underline hover:text-cyan-300 transition-colors" target="_blank" rel="noopener noreferrer">claude.ai/code</a>.
+                                <span class="text-cyan-400 font-semibold">Quick check:</span> open your terminal and run <code class="text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">claude --version</code>. A version number means you're set. If nothing comes back, install Claude Code first at <a href="https://claude.ai/code" class="text-cyan-400 underline hover:text-cyan-300 transition-colors" target="_blank" rel="noopener noreferrer">claude.ai/code</a>.
                             </p>
                         </div>
 
@@ -473,7 +473,7 @@
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">How Claude Code finds your files</h4>
                             <p class="text-sm text-white/40 leading-relaxed mb-3">
-                                When Claude Code starts a session, it looks for configuration files in a specific order. You don't need to "register" or "import" anything. Just put the files in the right place and Claude reads them automatically.
+                                When Claude Code starts a session, it looks for configuration files in a specific order, so there's nothing to "register" or "import." You just put the files where they belong, and Claude reads them on its own.
                             </p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">hierarchy</span>
@@ -564,7 +564,7 @@ Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
                         <!-- What happens next -->
                         <div class="bg-green-500/5 rounded-lg p-4 border border-green-500/10">
                             <p class="text-sm text-white/60">
-                                <span class="text-green-400 font-semibold">What happens now:</span> The next time you start Claude Code in this project directory, it reads CLAUDE.md automatically. No configuration needed. Claude will know your name, your project, and your rules from the first message.
+                                <span class="text-green-400 font-semibold">What happens now:</span> the next time you start Claude Code in this project directory, it reads CLAUDE.md automatically, with no configuration needed. From the first message, Claude knows your name, your project, and your rules.
                             </p>
                         </div>
 
@@ -574,19 +574,19 @@ Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
                             <ul class="space-y-2 text-sm text-white/40">
                                 <li class="flex items-start gap-2">
                                     <span class="text-cyan-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span><span class="text-white/60 font-medium">Keep it under 200 lines.</span> CLAUDE.md loads into the context window every session. If it's too long, you're wasting tokens on setup instead of actual work. Move reference content to a wiki (Stage 3).</span>
+                                    <span><span class="text-white/60 font-medium">Keep it under 200 lines.</span> CLAUDE.md loads into the context window every session, so if it runs long, you're spending tokens on setup instead of actual work. Move that reference content out to a wiki (Stage 3).</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-cyan-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span><span class="text-white/60 font-medium">Be specific with rules.</span> "Write good code" is useless. "All Apex must be bulk-safe and never perform SOQL inside loops" tells Claude exactly what to do.</span>
+                                    <span><span class="text-white/60 font-medium">Be specific with rules.</span> "Write good code" is useless, while "all Apex must be bulk-safe and never perform SOQL inside loops" tells Claude exactly what to do.</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-cyan-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span><span class="text-white/60 font-medium">Update it as your project evolves.</span> CLAUDE.md should reflect your current reality. If you finished a feature, remove it from "Current Work." If you discovered a new rule, add it.</span>
+                                    <span><span class="text-white/60 font-medium">Update it as your project evolves.</span> CLAUDE.md should reflect your current reality, so when you finish a feature, drop it from "Current Work," and when you discover a new rule, add it in.</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-cyan-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span><span class="text-white/60 font-medium">Commit it to git.</span> CLAUDE.md belongs in source control. It's useful documentation even for human teammates.</span>
+                                    <span><span class="text-white/60 font-medium">Commit it to git.</span> CLAUDE.md belongs in source control, where it doubles as useful documentation for your human teammates too.</span>
                                 </li>
                             </ul>
                         </div>
@@ -615,7 +615,7 @@ Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">What are rules files?</h4>
                             <p class="text-sm text-white/40 leading-relaxed">
-                                CLAUDE.md is project-specific. Rules files are global &mdash; they apply to every project on your machine. Security standards, coding conventions, how you want Claude to communicate. Write them once, and Claude follows them everywhere.
+                                CLAUDE.md is project-specific, but rules files are global &mdash; they apply to every project on your machine. Think security standards, coding conventions, and how you want Claude to talk to you. Write them once, and Claude follows them everywhere.
                             </p>
                         </div>
 
@@ -676,14 +676,14 @@ Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
 - Don't start responses with "Great question!" or "Sure, I'd be happy to..."
 - Don't repeat my question back to me.
 - Don't add disclaimers unless there's a genuine risk.
-- Don't use jargon like "leverage," "utilize," or "facilitate." Use plain words.</pre>
+- Don't use jargon like "leverage" or "utilize." Use plain words.</pre>
                             </div>
                         </div>
 
                         <!-- Rule file 3: infrastructure constraints -->
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Step 4: Add infrastructure constraints (the most important rule file)</h4>
-                            <p class="text-xs text-white/40 mb-3">This one prevents architectural mistakes &mdash; the kind where Claude builds code that can never work because it violates a hard infrastructure boundary. These constraints are <strong>always loaded, never cut</strong> from context:</p>
+                            <p class="text-xs text-white/40 mb-3">This one prevents architectural mistakes &mdash; the kind where Claude builds code that can never work because it violates a hard infrastructure boundary. These constraints stay <strong>loaded in every session and never get cut</strong> from context:</p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">~/.claude/rules/infrastructure-constraints.md</span>
                                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
@@ -734,7 +734,7 @@ Before adding new auth, connectors, or infrastructure code:
                         <!-- How it works together -->
                         <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10">
                             <p class="text-sm text-white/60">
-                                <span class="text-cyan-400 font-semibold">How rules and CLAUDE.md work together:</span> Claude loads all <code class="text-cyan-400 bg-cyan-500/10 px-1 py-0.5 rounded">~/.claude/rules/*.md</code> files first, then your project's CLAUDE.md on top. If they conflict, rules files take priority. This means your security standards can't be overridden by project-specific settings.
+                                <span class="text-cyan-400 font-semibold">How rules and CLAUDE.md work together:</span> Claude loads all <code class="text-cyan-400 bg-cyan-500/10 px-1 py-0.5 rounded">~/.claude/rules/*.md</code> files first, then layers your project's CLAUDE.md on top. If the two ever conflict, the rules files win, so a project-specific setting can never quietly override your security standards.
                             </p>
                         </div>
                     </div>
@@ -762,10 +762,10 @@ Before adding new auth, connectors, or infrastructure code:
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">What is the wiki?</h4>
                             <p class="text-sm text-white/40 leading-relaxed">
-                                A directory of markdown pages that Claude can look up when a task requires deeper context. Unlike CLAUDE.md, wiki pages are not loaded every session. They're pulled in on demand, which keeps your context window clean.
+                                It's a directory of markdown pages Claude can look up when a task needs deeper context. Unlike CLAUDE.md, these pages stay out of the session by default and get pulled in only on demand, which keeps your context window clean.
                             </p>
                             <p class="text-sm text-white/40 leading-relaxed mt-2">
-                                Think of CLAUDE.md as the table of contents. The wiki is the full book. Claude reads the table of contents every time, and opens specific chapters only when needed.
+                                Think of CLAUDE.md as the table of contents and the wiki as the full book. Claude reads the contents every time, then opens a specific chapter only when the work calls for it.
                             </p>
                         </div>
 
@@ -843,7 +843,7 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                         <!-- How it grows -->
                         <div class="bg-violet-500/5 rounded-lg p-4 border border-violet-500/10">
                             <p class="text-sm text-white/60">
-                                <span class="text-violet-400 font-semibold">How the wiki grows:</span> You don't need to write all the pages yourself. When you learn something during a session &mdash; a tricky deployment step, a decision about architecture, a gotcha you hit &mdash; just tell Claude: "Add that to the wiki." Claude writes the page, updates the index, and it's there for next time.
+                                <span class="text-violet-400 font-semibold">How the wiki grows:</span> you don't have to write every page yourself. When you learn something during a session, like a tricky deployment step or an architecture decision or a gotcha you just hit, tell Claude to add it to the wiki. It writes the page, updates the index, and leaves it there for next time.
                             </p>
                         </div>
                     </div>
@@ -887,7 +887,7 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                                 </div>
                             </div>
                             <p class="text-xs text-white/40 mt-3">
-                                You don't need to know the exact path. Claude manages these files. MEMORY.md is the index, and Claude creates topic files for specific subjects (like <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">deployment-gotchas.md</code> or <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">api-design-decisions.md</code>).
+                                You don't need to know the exact path, since Claude manages these files for you. MEMORY.md is the index, and Claude spins up topic files for specific subjects (like <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">deployment-gotchas.md</code> or <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">api-design-decisions.md</code>).
                             </p>
                         </div>
 
@@ -899,9 +899,9 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                                 <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
                                     <p class="text-xs text-cyan-400 font-semibold mb-2">When Claude makes a mistake:</p>
                                     <div class="bg-navy-900 rounded-lg p-3 text-xs text-white/50 font-mono">
-                                        "That's wrong &mdash; we use v2 of the API, not v1. Remember this for next time."
+                                        "That's wrong &mdash; we're on v2 of the API here, so don't reach for v1. Remember this for next time."
                                     </div>
-                                    <p class="text-xs text-white/30 mt-2">Claude saves: "Always use API v2, not v1."</p>
+                                    <p class="text-xs text-white/30 mt-2">Claude saves the rule "always use API v2 and avoid v1" for every session after this one.</p>
                                 </div>
                                 <!-- Example 2 -->
                                 <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
@@ -909,7 +909,7 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                                     <div class="bg-navy-900 rounded-lg p-3 text-xs text-white/50 font-mono">
                                         "We decided to use PostgreSQL instead of MongoDB for this project. Save that."
                                     </div>
-                                    <p class="text-xs text-white/30 mt-2">Claude saves: "Database: PostgreSQL (not MongoDB). Decision made [date]."</p>
+                                    <p class="text-xs text-white/30 mt-2">Claude saves the decision that this project runs on PostgreSQL over MongoDB, stamped with the date it was made.</p>
                                 </div>
                                 <!-- Example 3 -->
                                 <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
@@ -917,7 +917,7 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                                     <div class="bg-navy-900 rounded-lg p-3 text-xs text-white/50 font-mono">
                                         "That's exactly the format I want for test data. Remember to keep doing this."
                                     </div>
-                                    <p class="text-xs text-white/30 mt-2">Positive feedback compounds. Claude stops second-guessing what works.</p>
+                                    <p class="text-xs text-white/30 mt-2">Positive feedback compounds, so Claude stops second-guessing the things that already work.</p>
                                 </div>
                             </div>
                         </div>
@@ -925,7 +925,7 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                         <!-- Tips -->
                         <div class="bg-pink-500/5 rounded-lg p-4 border border-pink-500/10">
                             <p class="text-sm text-white/60">
-                                <span class="text-pink-400 font-semibold">Key insight:</span> Memory works best for corrections and preferences. "Always use tabs, not spaces." "My team prefers verbose commit messages." "The staging environment URL is X." These are the kinds of things that save you time when Claude remembers them.
+                                <span class="text-pink-400 font-semibold">Key insight:</span> memory works best for corrections and preferences. Think "always indent with tabs," "my team prefers verbose commit messages," or "the staging environment URL is X." Those are the facts that save you real time once Claude holds onto them.
                             </p>
                         </div>
 
@@ -935,11 +935,11 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                             <ul class="space-y-2 text-sm text-white/40">
                                 <li class="flex items-start gap-2">
                                     <span class="text-pink-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span><span class="text-white/60 font-medium">Long reference documents.</span> Those go in the wiki. Memory is for short, specific facts.</span>
+                                    <span><span class="text-white/60 font-medium">Long reference documents.</span> Those belong in the wiki, because memory is meant for short, specific facts you'll reuse.</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-pink-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span><span class="text-white/60 font-medium">Temporary context.</span> "I'm debugging the login flow" doesn't need to be saved. It's only relevant right now.</span>
+                                    <span><span class="text-white/60 font-medium">Temporary context.</span> "I'm debugging the login flow" doesn't need to be saved, since it only matters right now.</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-pink-400 mt-0.5 flex-shrink-0">&bull;</span>
@@ -979,7 +979,7 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">SessionStart Hook: Automated Context Routing</h4>
                             <p class="text-xs text-white/40 mb-3">
-                                A hook is a script that runs automatically at specific points in Claude's lifecycle. A SessionStart hook runs when you start a new session. You can use it to inject recent git activity, open issues, or other context that changes between sessions.
+                                A hook is a script that runs automatically at set points in Claude's lifecycle. A SessionStart hook, for instance, fires when you open a new session, and you can use it to inject recent git activity, open issues, or anything else that shifts from one session to the next.
                             </p>
                             <p class="text-xs text-white/40 mb-3">
                                 Create the hook script:
@@ -1078,10 +1078,10 @@ touch decisions/INDEX.md</pre>
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">PreToolUse Hook: Architecture Guardrail</h4>
                             <p class="text-xs text-white/40 mb-3">
-                                A SessionStart hook runs at the beginning. A <strong>PreToolUse</strong> hook runs <em>before</em> Claude edits a file. This is where you catch architectural mistakes at the moment of action &mdash; before code is written, not after.
+                                A SessionStart hook fires at the beginning of a session, while a <strong>PreToolUse</strong> hook fires <em>before</em> Claude edits a file. That's where you catch an architectural mistake at the moment of action, while the code is still unwritten.
                             </p>
                             <p class="text-xs text-white/40 mb-3">
-                                The concept: map file patterns to constraints. When Claude is about to edit <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">salesforce.ts</code>, the hook surfaces &ldquo;Org62 = CLI only.&rdquo; When Claude edits a deployment config, the hook surfaces the VPC constraint. The constraint appears in context <em>at the moment it matters.</em>
+                                It works by mapping file patterns to constraints. When Claude is about to edit <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">salesforce.ts</code>, the hook surfaces &ldquo;Org62 = CLI only.&rdquo; Edit a deployment config instead, and it surfaces the VPC constraint. Either way, the constraint lands in context <em>at the moment it matters.</em>
                             </p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">~/.claude/settings.json (add to hooks)</span>
@@ -1108,7 +1108,7 @@ touch decisions/INDEX.md</pre>
                             </p>
                             <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10 mt-3">
                                 <p class="text-sm text-white/60">
-                                    <span class="text-cyan-400 font-semibold">DDR-001 principle:</span> This applies a lesson from the Agentforce Agent Harness &mdash; &ldquo;agents forget to remember.&rdquo; Memory retrieval must be <strong>intrinsic</strong> (automatic), not <strong>voluntary</strong> (the agent chooses to look). Constraints rules load automatically. The hook fires automatically. The information is in Claude&rsquo;s face when it matters, not buried in a wiki page it might not read.
+                                    <span class="text-cyan-400 font-semibold">DDR-001 principle:</span> this applies a lesson from the Agentforce Agent Harness &mdash; &ldquo;agents forget to remember.&rdquo; Memory retrieval has to be <strong>intrinsic</strong> and automatic rather than <strong>voluntary</strong>, where the agent has to choose to go look. So the constraints rules load on their own and the hook fires on its own, which puts the information in Claude&rsquo;s face at the moment it matters instead of leaving it buried in a wiki page it might never open.
                                 </p>
                             </div>
                         </div>
@@ -1117,7 +1117,7 @@ touch decisions/INDEX.md</pre>
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Entity Pages: People Directory</h4>
                             <p class="text-xs text-white/40 mb-3">
-                                Memory stores corrections. Wiki stores knowledge. Entity pages store <em>people</em> &mdash; a structured page per person that compounds across every interaction.
+                                Memory stores your corrections and the wiki stores your knowledge. Entity pages store <em>people</em> &mdash; one structured page per person that compounds across every interaction you have with them.
                             </p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">bash</span>
@@ -1150,7 +1150,7 @@ touch decisions/INDEX.md</pre>
 <span class="text-white/30">&lt;!-- Append after every interaction. Newest at top. --&gt;</span></pre>
                             </div>
                             <p class="text-xs text-white/40 mt-3">
-                                Seed them fast: ask Claude to search Slack profiles for your team and build the pages programmatically. One session maps your whole org tree &mdash; leaders, reports, coverage areas, Slack IDs. Then every meeting and collaboration appends to the timeline. Six months later, you have a relationship graph no CRM captures.
+                                You can seed them fast by asking Claude to search Slack profiles for your team and build the pages programmatically. A single session maps your whole org tree &mdash; leaders, reports, coverage areas, Slack IDs. From then on, every meeting and collaboration appends to the timeline, and six months later you're holding a relationship graph no CRM captures.
                             </p>
                         </div>
 
@@ -1158,7 +1158,7 @@ touch decisions/INDEX.md</pre>
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Weekly Maintenance</h4>
                             <p class="text-xs text-white/40 mb-3">
-                                Knowledge bases get stale. Once a week (or whenever you think of it), do a quick review:
+                                Knowledge bases get stale, so once a week (or whenever you think of it) run a quick review:
                             </p>
                             <ul class="space-y-2 text-sm text-white/40">
                                 <li class="flex items-start gap-2">
@@ -1175,7 +1175,7 @@ touch decisions/INDEX.md</pre>
                                 </li>
                             </ul>
                             <p class="text-xs text-white/40 mt-3">
-                                You can even ask Claude to help: "Review my wiki index and flag anything that looks outdated." Claude reads the files, checks dates, and reports back.
+                                You can even hand this off to Claude by asking it to review your wiki index and flag anything that looks outdated. It reads the files, checks the dates, and reports back to you.
                             </p>
                         </div>
 
@@ -1191,7 +1191,7 @@ touch decisions/INDEX.md</pre>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-amber-400 mt-0.5 flex-shrink-0">&rarr;</span>
-                                    <span>This is Part 1 of a 5-part series: Foundation, MCP Servers, Custom Commands, Plugins, and Intelligence Pipeline</span>
+                                    <span>This is Part 1 of a 5-part series that runs through Foundation, MCP Servers, Custom Commands, Plugins, and the Intelligence Pipeline</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-amber-400 mt-0.5 flex-shrink-0">&rarr;</span>
@@ -1199,7 +1199,7 @@ touch decisions/INDEX.md</pre>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-amber-400 mt-0.5 flex-shrink-0">&rarr;</span>
-                                    <span>The key insight: memory must be <strong class="text-amber-400/80">intrinsic</strong> (loaded automatically), not voluntary (Claude chooses to look). Constraints rules, ADRs, and PreToolUse hooks make critical knowledge unavoidable</span>
+                                    <span>The key insight is that memory has to be <strong class="text-amber-400/80">intrinsic</strong> and load automatically rather than stay voluntary, where Claude has to choose to look. Constraints rules, ADRs, and PreToolUse hooks are what make critical knowledge unavoidable</span>
                                 </li>
                             </ul>
                         </div>
