@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teaching Claude Code to Remember | A Persistent Context Architecture for SEs</title>
+    <title>Teaching Claude Code to Remember — Context Engineering, Part 1</title>
+    <meta name="description" content="Part 1 of the Context Engineering series: how I turned Claude Code from a clean-slate-every-session tool into a teammate that remembers — a five-tier persistent context architecture built on Karpathy's LLM Wiki pattern.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -238,45 +239,25 @@
 <body>
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 backdrop-blur-xl bg-navy-900/80 border-b border-white/5">
-        <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-indigo-500 flex items-center justify-center">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
-                    </svg>
-                </div>
-                <span class="font-semibold text-sm text-white/90">Claude Code Context Architecture</span>
+        <div class="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center text-xs font-mono text-white/40">
+            <span>context-engineering <span class="text-cyan-400">//</span> part-1</span>
+            <div class="flex items-center gap-3 sm:gap-4">
+                <span class="text-cyan-400 font-semibold">1</span>
+                <a href="https://jtehrani84.github.io/context-engineering-agentscript/" class="hover:text-white/70 transition">2</a>
+                <a href="https://jtehrani84.github.io/context-engineering-mcp/" class="hover:text-white/70 transition">3</a>
+                <a href="https://jtehrani84.github.io/context-engineering-knowledge-graph/" class="hover:text-white/70 transition hidden sm:inline">4</a>
+                <a href="https://jtehrani84.github.io/context-engineering-skills/" class="hover:text-white/70 transition hidden sm:inline">5</a>
+                <a href="https://jtehrani84.github.io/claude-context-architecture/from-memory-to-operating-system.html" class="hover:text-white/70 transition hidden sm:inline">6</a>
+                <a href="https://jtehrani84.github.io/context-engineering-part-7/" class="hover:text-white/70 transition hidden sm:inline">7</a>
+                <a href="https://jtehrani84.github.io/context-engineering-part-8/" class="hover:text-white/70 transition hidden sm:inline">8</a>
+                <a href="https://jtehrani84.github.io/context-engineering-part-9/" class="hover:text-white/70 transition hidden sm:inline">9</a>
+                <a href="https://jtehrani84.github.io/context-engineering-part-10/" class="hover:text-white/70 transition hidden sm:inline">10</a>
             </div>
-            <div class="hidden md:flex items-center gap-6 text-xs font-medium text-white/50">
-                <a href="#problem" class="nav-link hover:text-white/90 transition-colors">Problem</a>
-                <a href="#architecture" class="nav-link hover:text-white/90 transition-colors">Architecture</a>
-                <a href="#components" class="nav-link hover:text-white/90 transition-colors">Components</a>
-                <a href="#before-after" class="nav-link hover:text-white/90 transition-colors">Before/After</a>
-                <a href="#origin" class="nav-link hover:text-white/90 transition-colors">Origin</a>
-                <a href="#getting-started" class="nav-link hover:text-white/90 transition-colors">Get Started</a>
-                <a href="getting-started.html" class="px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 transition-all duration-200 text-xs">Full Guide</a>
-            </div>
-            <!-- Mobile menu toggle -->
-            <button id="mobile-menu-btn" class="md:hidden text-white/50 hover:text-white/90 transition-colors" aria-label="Toggle menu">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-            </button>
-        </div>
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="md:hidden hidden border-t border-white/5 px-6 py-3 space-y-2 text-xs font-medium text-white/50">
-            <a href="#problem" class="block py-1.5 hover:text-white/90 transition-colors">Problem</a>
-            <a href="#architecture" class="block py-1.5 hover:text-white/90 transition-colors">Architecture</a>
-            <a href="#components" class="block py-1.5 hover:text-white/90 transition-colors">Components</a>
-            <a href="#before-after" class="block py-1.5 hover:text-white/90 transition-colors">Before/After</a>
-            <a href="#origin" class="block py-1.5 hover:text-white/90 transition-colors">Origin</a>
-            <a href="#getting-started" class="block py-1.5 hover:text-white/90 transition-colors">Get Started</a>
-            <a href="getting-started.html" class="block py-1.5 text-cyan-400 hover:text-cyan-300 transition-colors">Full Guide →</a>
         </div>
     </nav>
 
     <!-- Hero -->
-    <section class="min-h-screen flex items-center justify-center relative pt-16">
+    <section class="min-h-screen flex items-center justify-center relative pt-28">
         <!-- Background gradient -->
         <div class="absolute inset-0 overflow-hidden">
             <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
@@ -284,10 +265,7 @@
         </div>
 
         <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8">
-                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 pulse-dot"></span>
-                Claude Code Power User Guide
-            </div>
+            <div class="font-mono text-xs md:text-sm uppercase tracking-wider text-cyan-400/80 mb-8">Context Engineering Series · Part 1</div>
 
             <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6">
                 <span class="text-white">Teaching Claude Code</span><br>
@@ -295,7 +273,7 @@
             </h1>
 
             <p class="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed">
-                A persistent context architecture that turns Claude Code from a clean slate every session into a teammate who knows your projects, remembers your preferences, and gets smarter every session — without being prompted to.
+                A persistent context architecture that turns Claude Code from a clean slate into a teammate, one that knows your projects, remembers your preferences, and gets a little smarter every session without being asked to.
             </p>
 
             <!-- Hero metrics -->
@@ -854,7 +832,7 @@
                     The Five Components
                 </h2>
                 <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
-                    Each piece is simple on its own. Together they create a system that's genuinely smarter than the sum of its parts.
+                    Each piece is simple on its own. Together they add up to a system that's smarter than the sum of its parts.
                 </p>
             </div>
 
@@ -1629,17 +1607,25 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <section class="py-16 px-6 border-t border-white/5">
-        <div class="max-w-5xl mx-auto text-center">
-            <p class="text-white/30 text-sm mb-2">
-                Built by John Tehrani &mdash; Principal Solutions Engineer, Salesforce
-            </p>
-            <p class="text-white/20 text-xs">
-                This document was written collaboratively with Claude Code using the exact system it describes.
-            </p>
+    <!-- Next in the series -->
+    <section class="py-12 px-6 border-t border-white/5">
+        <div class="max-w-3xl mx-auto text-center">
+            <div class="text-xs font-mono uppercase tracking-widest text-cyan-400/70 mb-3">Next in the Series</div>
+            <p class="text-white/50 text-sm mb-6 leading-relaxed">Once Claude Code remembers who you are, the next question is what you build on top of that memory. Part 2 picks up the thread with AgentScript.</p>
+            <a href="https://jtehrani84.github.io/context-engineering-agentscript/" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 border border-cyan-500/20 text-cyan-400 font-medium hover:from-cyan-500/20 hover:to-indigo-500/20 transition-all duration-200">
+                Part 2 &mdash; AgentScript
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
         </div>
     </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5">
+        <div class="max-w-5xl mx-auto px-6 py-12 text-slate-500 text-sm font-mono flex flex-col md:flex-row justify-between gap-4">
+            <span>Context Engineering Series · Part 1 · John Tehrani</span>
+            <span>Written with the system it describes.</span>
+        </div>
+    </footer>
 
     <script>
         // Scroll-triggered animations
