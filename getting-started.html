@@ -1081,7 +1081,7 @@ touch decisions/INDEX.md</pre>
                                 A SessionStart hook fires at the beginning of a session, while a <strong>PreToolUse</strong> hook fires <em>before</em> Claude edits a file. That's where you catch an architectural mistake at the moment of action, while the code is still unwritten.
                             </p>
                             <p class="text-xs text-white/40 mb-3">
-                                It works by mapping file patterns to constraints. When Claude is about to edit <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">salesforce.ts</code>, the hook surfaces &ldquo;Org62 = CLI only.&rdquo; Edit a deployment config instead, and it surfaces the VPC constraint. Either way, the constraint lands in context <em>at the moment it matters.</em>
+                                It works by mapping file patterns to constraints. When Claude is about to edit <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">salesforce.ts</code>, the hook surfaces &ldquo;internal CRM = CLI only.&rdquo; Edit a deployment config instead, and it surfaces the VPC constraint. Either way, the constraint lands in context <em>at the moment it matters.</em>
                             </p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">~/.claude/settings.json (add to hooks)</span>

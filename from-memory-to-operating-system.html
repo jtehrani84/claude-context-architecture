@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>From Memory to Operating System — Context Engineering, Part 6</title>
+    <title>From Memory to Operating System · Context Engineering, Part 6</title>
     <meta name="description" content="Part 6 of the Context Engineering series: 60 days after teaching Claude Code to remember, the filing system had turned into an autonomous development platform. How corrections compound into an operating system.">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -235,7 +235,7 @@
             color: #22D3EE;
         }
 
-        /* THE EMPTY ROOM — Day 0 Visual */
+        /* THE EMPTY ROOM - Day 0 Visual */
         .empty-room {
             background: #1E293B;
             border: 1px solid #334155;
@@ -290,7 +290,7 @@
         .terminal-content .dim { color: #475569; }
         .terminal-content .comment { color: #475569; font-style: italic; }
 
-        /* Day 60 visual — layered stack */
+        /* Day 60 visual - layered stack */
         .stack-visual {
             margin: 32px 0;
             display: flex;
@@ -947,7 +947,7 @@
         <div class="hero">
             <div class="hero-badge">Context Engineering Series &middot; Part 6</div>
             <h1>From Memory to<br><span>Operating System</span></h1>
-            <p class="hero-subtitle">60 days ago I taught Claude Code to remember, and then compound learning took over. What started as a filing system turned into an autonomous development platform.</p>
+            <p class="hero-subtitle">Part 1 was about teaching Claude Code to remember. Over the 60 days after it, compound learning took over, and what started as a filing system turned into an autonomous development platform.</p>
 
             <div class="hero-metrics">
                 <div class="hero-metric">
@@ -979,9 +979,9 @@
     <!-- THE EMPTY ROOM -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Day Zero</span>The Genius with Amnesia</h2>
+            <h2 class="fade-in">Day Zero on a Fresh Install</h2>
 
-            <p class="fade-in">Install Claude Code today, open a terminal, and this is what greets you.</p>
+            <p class="fade-in">Install Claude Code, open a terminal, and this is what greets you.</p>
 
             <div class="empty-room fade-in">
                 <div class="terminal-bar">
@@ -1006,15 +1006,17 @@
                 </div>
             </div>
 
-            <p class="fade-in">Every session starts from scratch. You explain who you are and what your project is, then re-state the same constraints Claude violated yesterday. Around minute 45 the context fills up and you start over. The genius has total amnesia.</p>
+            <p class="fade-in">Every session starts from scratch, so you explain who you are and what the project is, you re-state the same constraints Claude violated yesterday, and somewhere around minute 45 the context fills up and you start over.</p>
+
+            <p class="fade-in">Here's that fresh install next to the same setup at day 60. The counts in the second column, like every count on this page, are a snapshot from May 2026 when I wrote it, and I've left them the way they were.</p>
 
             <div class="comparison-split fade-in">
                 <div class="comparison-panel day0">
-                    <h4>Day 0 &mdash; Fresh Install</h4>
+                    <h4>Fresh Install (Day 0)</h4>
                     <ul>
                         <li>You explain yourself every session</li>
                         <li>Corrections lost overnight</li>
-                        <li>No enforcement &mdash; suggestions only</li>
+                        <li>Suggestions only, nothing enforced</li>
                         <li>Generic model capability</li>
                         <li>Can only read/write local files</li>
                         <li>Session dies at context limit</li>
@@ -1023,23 +1025,18 @@
                     </ul>
                 </div>
                 <div class="comparison-panel day90">
-                    <h4>Day 60 &mdash; After Compound Learning</h4>
+                    <h4>After Compound Learning (Day 60)</h4>
                     <ul>
                         <li>Knows your role, style, constraints instantly</li>
                         <li>220+ files of persisted decisions</li>
                         <li>14 hooks intercept and block mistakes</li>
                         <li>180+ domain-expert skills on demand</li>
-                        <li>13 MCP servers &mdash; CRM, Slack, browser, search, email</li>
-                        <li>FTS5 compression &mdash; multi-hour sessions</li>
+                        <li>13 MCP servers for CRM, Slack, browser, search, email</li>
+                        <li>FTS5 compression for multi-hour sessions</li>
                         <li>Runs production builds unsupervised</li>
                         <li>Compound learning across every session</li>
                     </ul>
                 </div>
-            </div>
-
-            <div class="one-liner fade-in">
-                <p><strong>Day 0</strong> &mdash; you work <em>with</em> Claude.<br>
-                <strong class="accent">Day 60</strong> &mdash; Claude works <em>for</em> you.</p>
             </div>
         </div>
     </section>
@@ -1047,27 +1044,18 @@
     <!-- WHY WE'RE HERE -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">The Mechanism</span>How Corrections Become Autonomy</h2>
+            <h2 class="fade-in">How Corrections Turned into Autonomy</h2>
 
-            <p class="fade-in">Nobody planned a 2.1 GB local intelligence system. It grew out of three forces that keep compounding on each other.</p>
+            <p class="fade-in">Nobody planned a 2.1 GB local intelligence system, least of all me. Each correction, wiki page, and skill came out of a specific session's need, and the five-tier framework from Part 1 gave those decisions somewhere to land.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">1 &mdash; Friction became architecture</div>
-                <p>Every mistake Claude made, I corrected, and each correction turned into a memory file. When the same mistake kept coming back it became a rule, and a rule Claude ignored became a hook. The hooks that needed real data pulled in MCP servers, and when those servers overflowed the context window, context-mode came in to absorb them. Each layer exists because the one before it wasn't enough on its own.</p>
-            </div>
+            <p class="fade-in">Claude would make a mistake and I'd correct it, and that correction got saved as a memory file. If the same mistake kept coming back I had Claude write a rule for it, and the rules it still ignored got turned into hooks. Some of those hooks needed real data before they could decide anything, which is how MCP servers came in, and once the servers started overflowing the context window I brought in context-mode to absorb them. Each layer showed up because the one before it wasn't enough by itself.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">2 &mdash; The non-developer advantage</div>
-                <p>I never wrote a line of Python, and I never authored a YAML skill file or debugged a hook script either. Every piece of infrastructure (the hooks, the graph indexer, the skills) was built by Claude from my requirements. The barrier was never coding ability, it's knowing what you want and being specific about the constraints.</p>
-            </div>
+            <p class="fade-in">I'm not a developer, and sixty days of this didn't make me one. I haven't written a line of Python, authored a YAML skill file, or debugged a hook script, and I've never hand-built a skill either. Claude built every piece of the infrastructure (the hooks, the graph indexer, the skills) from my requirements, so what it took from me was knowing what I wanted and being specific about the constraints.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">3 &mdash; Compound learning is exponential</div>
-                <p>The first twenty days were memory and the wiki, the filing system. Days 20 to 40 layered on hooks and MCP servers for enforcement, and the stretch from day 40 to 60 added skills, the graph, and context-mode as an expertise layer. Each layer made the next one faster to build, so by day 60 Claude could stand up a new skill in about 5 minutes, because it already had the patterns from the previous 179.</p>
-            </div>
+            <p class="fade-in">The pace picked up as the layers stacked. The first twenty days were memory and the wiki, basically the filing system, then days 20 to 40 added hooks and MCP servers for enforcement, and days 40 to 60 brought skills, the graph, and context-mode. Each layer made the next one faster to build, so by day 60 Claude could stand up a new skill in about 5 minutes because it already had the patterns from the previous 179.</p>
 
             <!-- Compound loop visual -->
-            <h3 class="fade-in">The compound loop</h3>
+            <h3 class="fade-in">The Compound Loop</h3>
 
             <div class="loop-visual fade-in" id="compound-loop">
                 <div class="loop-nodes">
@@ -1098,17 +1086,17 @@
                 </div>
             </div>
 
-            <p class="fade-in" style="font-size: 14px; color: #64748B; text-align: center; margin-top: -16px;"><em>How it plays out... <code>--set-env-vars</code> wipes all Cloud Run vars &rarr; correction &rarr; memory &rarr; infrastructure rule &rarr; PreToolUse hook blocks it forever</em></p>
+            <p class="fade-in" style="font-size: 14px; color: #64748B; text-align: center; margin-top: -16px;"><em>How it plays out... <code>--set-env-vars</code> wipes all Cloud Run vars &rarr; correction &rarr; memory &rarr; infrastructure rule &rarr; PreToolUse hook blocks it from then on</em></p>
         </div>
     </section>
 
     <!-- GROWTH CHART -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Scale</span>60 Days of Compound Growth</h2>
+            <h2 class="fade-in">60 Days of Compound Growth</h2>
 
             <div class="growth-chart fade-in" id="growth-chart">
-                <div class="growth-chart-title">Part 1 &rarr; Today</div>
+                <div class="growth-chart-title">Part 1 &rarr; May 2026</div>
 
                 <div class="growth-row">
                     <div class="growth-label">Memory</div>
@@ -1157,12 +1145,12 @@
             </div>
 
             <!-- Timeline -->
-            <h3 class="fade-in">How it grew</h3>
+            <h3 class="fade-in">How It Grew</h3>
 
             <div class="timeline fade-in">
                 <div class="timeline-item">
                     <div class="timeline-date">February 2026</div>
-                    <div class="timeline-title">Part 1 &mdash; Five-tier architecture</div>
+                    <div class="timeline-title">Part 1 and the five-tier architecture</div>
                     <div class="timeline-desc">128 memory files, 59 wiki pages, a SessionStart hook, and about 20 commands, enough that Claude finally stopped forgetting overnight.</div>
                 </div>
                 <div class="timeline-item">
@@ -1187,16 +1175,16 @@
     <!-- THE 10-LAYER STACK -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Architecture</span>The Eleven-Layer Stack</h2>
+            <h2 class="fade-in">The Eleven-Layer Stack</h2>
 
-            <p class="fade-in">Part 1 had five tiers. The current system has eleven layers, five of them evolved from the original set and six entirely new.</p>
+            <p class="fade-in">Part 1 had five tiers. By day 60 the system had eleven layers, five of them evolved from the original set and six entirely new.</p>
 
             <div class="stack-visual" id="stack-visual">
                 <div class="stack-layer layer-identity">
                     <div class="stack-layer-icon">&#x1F3AF;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Identity</div>
-                        <div class="stack-layer-desc">CLAUDE.md &mdash; who, what, routing table</div>
+                        <div class="stack-layer-desc">CLAUDE.md with who, what, and the routing table</div>
                     </div>
                     <div class="stack-layer-stat">194 lines</div>
                 </div>
@@ -1212,7 +1200,7 @@
                     <div class="stack-layer-icon">&#x1F4DA;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Knowledge</div>
-                        <div class="stack-layer-desc">Wiki &mdash; architecture, patterns, runbooks</div>
+                        <div class="stack-layer-desc">Wiki pages for architecture, patterns, runbooks</div>
                     </div>
                     <div class="stack-layer-stat">95+ pages</div>
                 </div>
@@ -1220,7 +1208,7 @@
                     <div class="stack-layer-icon">&#x1F4CF;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Standards</div>
-                        <div class="stack-layer-desc">Rules &mdash; security, architecture, quality, anti-slop</div>
+                        <div class="stack-layer-desc">Rules for security, architecture, quality, anti-slop</div>
                     </div>
                     <div class="stack-layer-stat">11 files</div>
                 </div>
@@ -1228,7 +1216,7 @@
                     <div class="stack-layer-icon">&#x2696;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Decisions</div>
-                        <div class="stack-layer-desc">ADRs &mdash; reasoning cache for architecture choices</div>
+                        <div class="stack-layer-desc">ADRs, a reasoning cache for architecture choices</div>
                     </div>
                     <div class="stack-layer-stat">5 ADRs</div>
                 </div>
@@ -1236,7 +1224,7 @@
                     <div class="stack-layer-icon">&#x1F6E1;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Enforcement</div>
-                        <div class="stack-layer-desc">Hooks &mdash; intercept, validate, gate actions</div>
+                        <div class="stack-layer-desc">Hooks that intercept, validate, and gate actions</div>
                     </div>
                     <div class="stack-layer-stat">14 scripts</div>
                 </div>
@@ -1244,7 +1232,7 @@
                     <div class="stack-layer-icon">&#x1F393;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Expertise</div>
-                        <div class="stack-layer-desc">Skills &mdash; compressed domain experts</div>
+                        <div class="stack-layer-desc">Skills, each a compressed domain expert</div>
                     </div>
                     <div class="stack-layer-stat">180+ skills</div>
                 </div>
@@ -1252,7 +1240,7 @@
                     <div class="stack-layer-icon">&#x26A1;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Action</div>
-                        <div class="stack-layer-desc">MCP &mdash; CRM, Slack, GitHub, browser, search</div>
+                        <div class="stack-layer-desc">MCP servers for CRM, Slack, GitHub, browser, search</div>
                     </div>
                     <div class="stack-layer-stat">13 servers</div>
                 </div>
@@ -1260,7 +1248,7 @@
                     <div class="stack-layer-icon">&#x1F4E6;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Overflow</div>
-                        <div class="stack-layer-desc">Context-mode &mdash; 98% compression sandbox</div>
+                        <div class="stack-layer-desc">Context-mode, a 98% compression sandbox</div>
                     </div>
                     <div class="stack-layer-stat">FTS5</div>
                 </div>
@@ -1268,7 +1256,7 @@
                     <div class="stack-layer-icon">&#x1F578;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Graph</div>
-                        <div class="stack-layer-desc">Entity relationships &mdash; semantic linking</div>
+                        <div class="stack-layer-desc">Entity relationships and semantic linking</div>
                     </div>
                     <div class="stack-layer-stat">auto-indexed</div>
                 </div>
@@ -1276,24 +1264,26 @@
                     <div class="stack-layer-icon">&#x1F465;</div>
                     <div class="stack-layer-content">
                         <div class="stack-layer-name">Entities</div>
-                        <div class="stack-layer-desc">People pages &mdash; org trees, timelines, relationships</div>
+                        <div class="stack-layer-desc">People pages with org trees, timelines, relationships</div>
                     </div>
                     <div class="stack-layer-stat">150+ people</div>
                 </div>
             </div>
+
+            <p class="fade-in">The overflow layer came out of a limit Part 1 didn't see coming. Part 1 optimized startup, cutting it from 15K to 5K tokens, but the limit I kept hitting came at minute 45, when research filled the window, and context-mode is what made multi-hour sessions possible.</p>
         </div>
     </section>
 
     <!-- PASSIVE TO ACTIVE -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">The Shift</span>From Passive to Active</h2>
+            <h2 class="fade-in">From Passive to Active</h2>
 
-            <p class="fade-in">Part 1 described a passive system that stored things and loaded them when they were relevant. What grew out of it is active. It intercepts, validates, and enforces without a human in the loop.</p>
+            <p class="fade-in">Part 1 described a passive system that stored things and loaded them when they were relevant. What grew out of it acts on its own. It intercepts and enforces without a human in the loop, and it checks its own output before anything ships.</p>
 
             <table class="fade-in">
                 <thead>
-                    <tr><th>Part 1 (Passive)</th><th></th><th>Now (Active)</th></tr>
+                    <tr><th>Part 1 (Passive)</th><th></th><th>Day 60 (Active)</th></tr>
                 </thead>
                 <tbody>
                     <tr>
@@ -1309,7 +1299,7 @@
                     <tr>
                         <td>"Rules load as standards"</td>
                         <td>&rarr;</td>
-                        <td><strong>Rules enforced by hook chains &mdash; gated, not suggested</strong></td>
+                        <td><strong>Rules enforced by hook chains that gate the action</strong></td>
                     </tr>
                     <tr>
                         <td>"Wiki pages load on demand"</td>
@@ -1330,8 +1320,8 @@
             </table>
 
             <div class="insight-box fade-in">
-                <h4>The pattern</h4>
-                <p>Every passive component attracted an active counterpart. Storage pulled in enforcement, reference pulled in validation, and memory pulled in curation. The system developed an immune response to its own failure modes.</p>
+                <h4>The Pattern</h4>
+                <p>Every passive piece ended up pulling in an active counterpart. Storage got enforcement sitting next to it, reference material got validation, and memory got curation, which looks a lot like the system growing an immune response to the specific ways it kept failing.</p>
             </div>
         </div>
     </section>
@@ -1339,9 +1329,9 @@
     <!-- ENTITY PAGES -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Entity Pages</span>The Relationship Layer</h2>
+            <h2 class="fade-in">Entity Pages for the People</h2>
 
-            <p class="fade-in">Memory stores corrections and the wiki stores knowledge, but neither one stores <em>people</em>. Entity pages close that gap with a structured page per person that compounds across every interaction.</p>
+            <p class="fade-in">Memory holds corrections and the wiki holds knowledge, and for a while nothing held <em>people</em>. Entity pages fill that gap with a structured page per person that compounds across every interaction.</p>
 
             <p class="fade-in">There are two templates, internal and external. The structured top gives you instant prep (role, org position, working style, territory), and an append-only timeline below it grows with every meeting, decision, and collaboration. The pages are seeded programmatically from Slack profiles, then enriched by overnight intelligence crons.</p>
 
@@ -1368,44 +1358,33 @@
                 </tbody>
             </table>
 
-            <p class="fade-in">So far that's 150+ people mapped across the sales and solutions org trees, every leader sitting there with their reports, Slack IDs, and coverage areas. The CRM knows the accounts, and the entity pages know the humans working them.</p>
+            <p class="fade-in">By day 60 that was 150+ people mapped across the sales and solutions org trees, each leader sitting there with their reports, Slack IDs, and coverage areas. The CRM has the accounts, and I wanted somewhere that held the humans working them.</p>
         </div>
     </section>
 
     <!-- COMPOUND LOOPS -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Interactions</span>Where the Real Payoff Lives</h2>
+            <h2 class="fade-in">Where the Layers Interact</h2>
 
-            <p class="fade-in">Individual layers are useful on their own, but the interactions between them are where compound growth actually happens.</p>
+            <p class="fade-in">Each layer is useful by itself, but most of the payoff came from the places where one hands off to the next, and three loops show it best.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Loop 1 &mdash; Error &rarr; Memory &rarr; Guardrail &rarr; Prevention</div>
-                <p>Deploy with <code>--set-env-vars</code> instead of <code>--update-env-vars</code> and every env var gets wiped. You correct Claude, the correction lands in memory, and that memory gets cited in an infrastructure rule &mdash; so now a hook blocks any deploy that uses <code>--set-env-vars</code>, and that whole error class can't happen again, even in a brand new session.</p>
-            </div>
+            <p class="fade-in">The first one starts with a mistake. Deploy with <code>--set-env-vars</code> instead of <code>--update-env-vars</code> and every env var gets wiped. You correct Claude, the correction lands in memory, that memory gets cited in an infrastructure rule, and from then on a hook blocks any deploy that uses <code>--set-env-vars</code>, so that whole class of error is gone, even in a fresh session with nothing loaded yet.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Loop 2 &mdash; Research &rarr; Wiki &rarr; Graph &rarr; Routing</div>
-                <p>You research Agentforce Agent Script, Claude writes it up as a wiki page, and the graph extracts the entities from it. Next session, when you mention "agent routing," the SessionStart hook surfaces that wiki page along with related memories and the architecture doc &mdash; the context arrives before you ask for it.</p>
-            </div>
+            <p class="fade-in">The second is research turning into routing. When I researched Agentforce Agent Script, Claude wrote it up as a wiki page and the graph pulled the entities out of it, so the next time I mention "agent routing" the SessionStart hook surfaces that page along with the related memories and the architecture doc before I've asked for any of it.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Loop 3 &mdash; Skill &rarr; MCP &rarr; Context-Mode &rarr; Output</div>
-                <p>Run <code>/account-prep</code> and the skill already knows the workflow. It calls the MCP servers for CRM, news, and web, each response compresses through context-mode, and then the skill assembles the prep doc using the anti-slop rules and corporate grounding. That's one command driving five systems with zero manual context management.</p>
-            </div>
+            <p class="fade-in">The third is a skill doing the driving. When I run <code>/account-prep</code> the skill already knows the workflow, so it calls the MCP servers for CRM, news, and web, compresses each response through context-mode, and assembles the prep doc under the anti-slop rules and corporate grounding. That's one command driving five systems, and I don't manage any of the context by hand.</p>
 
-            <div class="callout fade-in">
-                <p><strong>This is the compound effect,</strong> and no single layer produces it on its own. Memory alone doesn't prevent errors, hooks alone don't know what's dangerous, and skills alone can't reach external data. The value lives in the connections between them.</p>
-            </div>
+            <p class="fade-in">If any one of those layers is missing, the loop doesn't close. Memory on its own never blocked that deploy, and the hook only knew the flag was dangerous because memory told it, the same way a skill is stuck with local files until an MCP server gives it outside data.</p>
         </div>
     </section>
 
     <!-- DDR-001 -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Lesson</span>Agents Forget to Remember &mdash; at Every Layer</h2>
+            <h2 class="fade-in">Agents Forget to Remember, at Every Layer</h2>
 
-            <p class="fade-in">In Part 1 I cited DDR-001 from the Agentforce Agent Harness and its line "agents forget to remember," and the fix at the time was intrinsic constraint awareness. Two months on, the same DDR-001 shows up at every layer of the stack.</p>
+            <p class="fade-in">In Part 1 I cited DDR-001 from the Agentforce Agent Harness and its line "agents forget to remember," and the fix at the time was intrinsic constraint awareness. Two months on, the same failure shows up at every layer of the stack.</p>
 
             <table class="fade-in">
                 <thead>
@@ -1421,7 +1400,7 @@
             </table>
 
             <div class="callout-amber callout fade-in">
-                <p><strong>The meta-lesson</strong> is that every knowledge source needs a matching enforcement mechanism. Knowledge on its own is only a suggestion, and suggestions quietly decay the moment a session gets busy, whereas the same knowledge sitting behind a hook becomes a constraint that keeps compounding session after session.</p>
+                <p>My 128 memory files never stopped my infrastructure mistakes and three PreToolUse hooks did, which is how I ended up believing every knowledge source needs a matching enforcement mechanism. Knowledge that only sits in context gets quietly skipped once a session gets busy, and the same knowledge sitting behind a hook keeps holding session after session.</p>
             </div>
         </div>
     </section>
@@ -1429,70 +1408,29 @@
     <!-- VALIDATION -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Validation</span>The World Caught Up</h2>
+            <h2 class="fade-in">Outside Validation</h2>
 
-            <p class="fade-in">When Part 1 went out, this all felt like a personal hack. Four weeks later, that stopped being true.</p>
+            <p class="fade-in">When Part 1 went out this all felt like a personal hack, and four weeks after I published it that stopped being true.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Karpathy's "LLM Wiki" hit 5,000+ GitHub stars</div>
-                <p>The pattern we built on, ingest-synthesize-evolve, went viral and spawned a wave of persistent memory tools, and we'd been running it in production for months by then.</p>
-            </div>
+            <p class="fade-in">Karpathy's "LLM Wiki" hit 5,000+ GitHub stars. The pattern I'd built on, ingest-synthesize-evolve, went viral and spawned a wave of persistent memory tools, and by then I'd been running it in production for months. His own comment on it is the one I keep coming back to.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Salesforce published "Not All Agentic Harnesses Are Created Equal"</div>
-                <p>The VP-level Futures team published on the exact framework, the scaffolding that gives a model its tools, data, and constraints. That's direct validation at the highest level.</p>
-            </div>
+            <blockquote class="fade-in">
+                <p>&ldquo;I think there is room here for an incredible new product instead of a hacky collection of scripts.&rdquo;</p>
+                <div class="attribution">Andrej Karpathy, on the LLM Wiki pattern</div>
+            </blockquote>
 
-            <div class="card fade-in">
-                <div class="card-title">Anthropic shipped Managed Agents with memory consolidation</div>
-                <p>They called it "dreaming," agents consolidating what they learned between sessions, which is the same pattern as our memory and /curate system, now productized by Anthropic themselves.</p>
-            </div>
+            <p class="fade-in">Sixty days after Part 1, my own hacky collection of scripts had become a platform, and I hadn't designed it to. Salesforce's VP-level Futures team published "Not All Agentic Harnesses Are Created Equal" on the exact framework I'd been living in, the scaffolding that gives a model its tools, data, and constraints, which I took as direct validation at the highest level. Anthropic shipped Managed Agents with a memory consolidation feature they called "dreaming," agents consolidating what they learned between sessions, the same pattern as my memory and /curate system, productized by Anthropic themselves.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">MCP token overhead became a known problem</div>
-                <p>At 58 tools you're burning about 55K tokens per turn, and we run more than 200 with deferred loading. It's a problem the rest of the field is only now discovering, and we'd already solved it.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- LESSONS -->
-    <section>
-        <div class="container">
-            <h2 class="fade-in"><span class="section-label">Lessons</span>What 60 Days Taught Me</h2>
-
-            <div class="card fade-in">
-                <div class="card-title">1 &mdash; The system builds itself</div>
-                <p>I didn't plan most of this. Each correction, wiki page, and skill grew out of a specific session's need, and the five-tier framework just gave those decisions somewhere to land.</p>
-            </div>
-
-            <div class="card fade-in">
-                <div class="card-title">2 &mdash; Enforcement matters more than knowledge</div>
-                <p>128 memory files didn't stop my infrastructure mistakes, but three PreToolUse hooks did. If you build only one new thing after Part 1, make it a guardrail hook for your most expensive mistake.</p>
-            </div>
-
-            <div class="card fade-in">
-                <div class="card-title">3 &mdash; Context overflow is the real scaling limit</div>
-                <p>Part 1 optimized startup, cutting it from 15K to 5K tokens, but the real limit hit at minute 45, when research filled the window. Context-mode was the breakthrough that made multi-hour sessions possible.</p>
-            </div>
-
-            <div class="card fade-in">
-                <div class="card-title">4 &mdash; Skills are the highest-return investment</div>
-                <p>One skill replaces about 30 minutes of manual instruction per session. I've got 186 of them, assembled from three suites (project management, Salesforce platform, and developer tooling), plus 28 custom commands I directed Claude to build for my specific SE workflow. You don't write 186 skills from scratch, you install the right systems and customize the last mile.</p>
-            </div>
-
-            <div class="card fade-in">
-                <div class="card-title">5 &mdash; You don't need to be a developer</div>
-                <p>I've never opened a Python file to write the hooks, and I've never hand-built a skill. Claude builds its own infrastructure from my direction. It comes down to domain expertise, clear requirements, and an AI that builds its own tooling.</p>
-            </div>
+            <p class="fade-in">By May 2026 MCP token overhead was a known problem too. At 58 tools you burn about 55K tokens per turn, and I was already running more than 200 with deferred loading, so for me that one was already solved.</p>
         </div>
     </section>
 
     <!-- FOR YOU -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">For You</span>What to Build After Part 1</h2>
+            <h2 class="fade-in">What to Build After Part 1</h2>
 
-            <p class="fade-in">This is the priority order, ranked by what gave me the most return.</p>
+            <p class="fade-in">If you're coming from Part 1, this is the order I'd build in, ranked by what paid me back the most.</p>
 
             <table class="fade-in">
                 <thead>
@@ -1503,42 +1441,28 @@
                     <tr><td><span class="priority-num">2</span></td><td><strong>3 domain skills</strong></td><td>Replaces 30 min of instruction per session each</td><td>2 hrs</td></tr>
                     <tr><td><span class="priority-num">3</span></td><td><strong>One MCP server</strong></td><td>Closes the gap between "understands" and "does"</td><td>1 hr</td></tr>
                     <tr><td><span class="priority-num">4</span></td><td><strong>Context overflow management</strong></td><td>Removes the 20-minute session ceiling</td><td>1 hr</td></tr>
-                    <tr><td><span class="priority-num">5</span></td><td><strong>ADR directory</strong></td><td>Reasoning cache &mdash; stops re-debating settled decisions</td><td>15 min</td></tr>
+                    <tr><td><span class="priority-num">5</span></td><td><strong>ADR directory</strong></td><td>Reasoning cache that stops re-debating settled decisions</td><td>15 min</td></tr>
                 </tbody>
             </table>
 
+            <p class="fade-in">If you only build one thing after Part 1, make it that guardrail hook for your most expensive mistake. Skills were the highest-return investment overall, though. One skill replaces about 30 minutes of manual instruction per session, and by day 60 I had 186 of them, assembled from three suites (project management, Salesforce platform, and developer tooling), plus 28 custom commands I had Claude build for my own SE workflow. I didn't write 186 skills from scratch, I installed the right suites and customized the last mile.</p>
+
             <div class="callout fade-in">
-                <p>You don't need 220 memory files or 186 skills. What you need are the <strong>feedback loops</strong>... one guardrail that fires when it matters, one skill that loads expertise automatically, one MCP server that fetches real data. Get those loops running and compound growth takes care of the rest.</p>
+                <p>None of this requires 220 memory files or 186 skills. What made the difference for me was getting the first <strong>feedback loops</strong> running, a guardrail that fires when it matters and a skill that loads expertise automatically, with one MCP server fetching real data, and once those were in place the growth mostly compounded by itself.</p>
             </div>
-        </div>
-    </section>
-
-    <!-- CLOSING -->
-    <section>
-        <div class="container">
-            <h2 class="fade-in"><span class="section-label">The Trajectory</span>Where This Goes</h2>
-
-            <p class="fade-in">Part 1 solved one specific problem, which was Claude forgetting between sessions. The system that grew out of that fix solves a very different one... <strong>making a non-developer as productive as a senior engineering team.</strong></p>
-
-            <p class="fade-in">199 commits in 28 days built an AI platform with 6 subagents, 25 data connectors, and production infrastructure, and that was with the early five-tier system. With the current ten-layer stack, the same scope takes less than a week.</p>
-
-            <p class="fade-in">The gap between "domain expertise + clear requirements" and "production software" is closing, and not because the models got smarter, it's because the <em>local infrastructure around the model</em> compounds. Memory remembers, hooks enforce, skills teach, MCP servers act, and the graph connects it all, none of which requires you to be a developer.</p>
-
-            <blockquote class="fade-in">
-                <p>&ldquo;I think there is room here for an incredible new product instead of a hacky collection of scripts.&rdquo;</p>
-                <div class="attribution">&mdash; Andrej Karpathy, on the LLM Wiki pattern</div>
-            </blockquote>
-
-            <p class="fade-in">60 days later, the hacky scripts had become a platform. I didn't design it that way, compound learning just doesn't stop at memory.</p>
         </div>
     </section>
 
     <!-- CASE STUDIES: TABBED -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Case Studies</span>What Context Actually Buys You</h2>
+            <h2 class="fade-in">What Context Actually Buys You</h2>
 
-            <p class="fade-in">Two proof points here, one about intelligence and one about autonomy.</p>
+            <p class="fade-in">Part 1 solved one specific problem, Claude forgetting between sessions. The system that grew out of that fix ended up going after a much bigger one... <strong>making a non-developer as productive as a senior engineering team.</strong></p>
+
+            <p class="fade-in">My best evidence for that is my own build history. Over 28 days, 199 commits built an AI platform with 6 subagents, 25 data connectors, and production infrastructure, and that was on the early five-tier system. On the day-60 stack the same scope takes less than a week. The models getting smarter doesn't explain that. What kept closing the gap between domain expertise with clear requirements and production software was the <em>local infrastructure around the model</em> compounding, and none of it asked me to be a developer.</p>
+
+            <p class="fade-in">The two case studies below come at that from different directions, one about intelligence and one about autonomy.</p>
 
             <div class="case-tabs fade-in">
                 <div class="case-tab active" data-case="intelligence">The Intelligence Gap</div>
@@ -1547,16 +1471,16 @@
 
             <!-- TAB 1: Intelligence Gap (Gemini) -->
             <div class="case-panel active" id="case-intelligence">
-                <h3>A frontier model audits my setup. 9 of 10 recommendations were already solved.</h3>
+                <h3>A Frontier Model Audits My Setup</h3>
 
-                <p>I shared this article with Gemini Pro and asked it to audit my setup, and it came back with 10 confident recommendations.</p>
+                <p>I shared this article with Gemini Pro and asked it to audit my setup. It came back with 10 confident recommendations, and 9 of them were already solved, six of which are in the table.</p>
 
                 <table>
                     <thead>
                         <tr><th>Gemini's Recommendation</th><th>Reality</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>"You need a deprecation/garbage collection layer"</td><td class="highlight">Already built &mdash; /curate runs weekly with decay rates and prune cycles.</td></tr>
+                        <tr><td>"You need a deprecation/garbage collection layer"</td><td class="highlight">Already built. /curate runs weekly with decay rates and prune cycles.</td></tr>
                         <tr><td>"Risk of over-constraint paralysis from hooks"</td><td class="highlight">Claude Code's permission system already has a bypass, so it's not a rigid rule engine.</td></tr>
                         <tr><td>"Graph indexing will cause startup latency"</td><td class="highlight">Already measured at 61ms per file and 151ms at session-init, which is imperceptible.</td></tr>
                         <tr><td>"Users will have dependency conflicts"</td><td class="highlight">The starter kit is a clean template with no machine-specific paths.</td></tr>
@@ -1565,20 +1489,20 @@
                     </tbody>
                 </table>
 
-                <p>Confident, well-structured advice that would have been correct for a generic setup &mdash; but wrong for mine. It couldn't know because it had no context.</p>
+                <p>It was well-structured advice that would have been right for a generic setup and was wrong for mine, and it couldn't have known that because it had no context about me.</p>
 
                 <div class="callout">
-                    <p><strong>The gap here isn't intelligence, it's context</strong> &mdash; the same model family and the same parameters, where the only variable is what the system remembers about YOUR specific situation.</p>
+                    <p>It was the same model family with the same parameters, and the only thing missing was what my system remembers about <strong>my</strong> specific situation, and that's the difference between the audit it gave me and a useful one.</p>
                 </div>
             </div>
 
             <!-- TAB 2: Autonomy Gap (Overnight Build) -->
             <div class="case-panel" id="case-autonomy">
-                <h3>I approved a plan at 10 PM. By 7 AM, it was deployed to production.</h3>
+                <h3>I Approved a Plan at 10 PM and It Was in Production by 7 AM</h3>
 
-                <p>The first case study showed context making AI smarter. This one is about something further along, where context makes AI <strong>autonomous</strong> — it stops just answering questions better and starts operating on its own.</p>
+                <p>The first case study is about context making AI smarter. This one goes a step further, to the point where context makes it <strong>autonomous</strong> and it operates on its own for a whole night.</p>
 
-                <p>I had a 7-pillar architecture plan for transforming a production intelligence platform, hardened through three rounds of architectural audit &mdash; 14 accepted fixes and 6 rejected findings, each with documented rationale. I approved it at 10 PM, told Claude <strong>"Build overnight. Don't stop."</strong> and went to sleep.</p>
+                <p>I had a 7-pillar architecture plan for transforming a production intelligence platform, hardened through three rounds of architectural audit that produced 14 accepted fixes and 6 rejected findings, each with documented rationale. I approved it at 10 PM, told Claude <strong>"Build overnight. Don't stop."</strong> and went to sleep.</p>
 
                 <div class="case-metrics">
                     <div class="case-metric"><span class="case-metric-value cyan">19</span><span class="case-metric-label">Files Created</span></div>
@@ -1601,24 +1525,24 @@
                     </tbody>
                 </table>
 
-                <h4>Why this was possible</h4>
+                <h4>Why This Was Possible</h4>
 
-                <p>This wasn't just "AI writes code fast" &mdash; any frontier model can generate files. What made it ship as a <strong>coherent system</strong> rather than a pile of disconnected fragments is the operating system underneath.</p>
+                <p>Any frontier model can generate files quickly, but getting 19 of them to land as one <strong>coherent system</strong>, with the pieces actually fitting together, came from the operating system underneath it.</p>
 
                 <table>
                     <thead>
                         <tr><th>OS Layer</th><th>What It Contributed</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td><strong>Memory</strong></td><td>Knew the entire architecture, 196 cached accounts, data model history, deployment patterns &mdash; no re-briefing needed</td></tr>
-                        <tr><td><strong>Rules</strong></td><td>Security governance, architecture patterns, voice standards &mdash; all enforced automatically on every file written</td></tr>
-                        <tr><td><strong>Plan</strong></td><td>3-round audited plan with explicit file paths, interface contracts, dependency graph &mdash; zero ambiguity</td></tr>
-                        <tr><td><strong>Wiki</strong></td><td>60+ pages of project knowledge, integration topology, platform constraints &mdash; answered questions without asking</td></tr>
-                        <tr><td><strong>Hooks</strong></td><td>Metadata validators scored every file (90-120/120). Caught issues at write-time, not deploy-time</td></tr>
+                        <tr><td><strong>Memory</strong></td><td>Knew the entire architecture, 196 cached accounts, data model history, and deployment patterns, so there was no re-briefing</td></tr>
+                        <tr><td><strong>Rules</strong></td><td>Security governance, architecture patterns, and voice standards, enforced automatically on every file written</td></tr>
+                        <tr><td><strong>Plan</strong></td><td>3-round audited plan with explicit file paths, interface contracts, and a dependency graph, which left zero ambiguity</td></tr>
+                        <tr><td><strong>Wiki</strong></td><td>60+ pages of project knowledge, integration topology, and platform constraints that answered questions without asking me</td></tr>
+                        <tr><td><strong>Hooks</strong></td><td>Metadata validators scored every file (90-120/120) and caught issues at write-time, before anything reached a deploy</td></tr>
                     </tbody>
                 </table>
 
-                <h4>What the human actually did</h4>
+                <h4>What the Human Actually Did</h4>
 
                 <table>
                     <thead>
@@ -1634,7 +1558,7 @@
                 </table>
 
                 <div class="callout">
-                    <p><strong>The real story here was never speed, it was autonomy.</strong> Context architecture doesn't just make AI faster at answering questions, it makes AI capable of independent execution, so the human role shifts from "writing code" to "approving plans and verifying outcomes."</p>
+                    <p>My role moved from writing code to approving plans and verifying outcomes, about 45 minutes of it, and the context architecture carried the <strong>independent execution</strong> in between. I care about that more than the 25x number.</p>
                 </div>
             </div>
         </div>
@@ -1643,64 +1567,49 @@
     <!-- RECIPE CARD -->
     <section>
         <div class="container">
-            <h2 class="fade-in"><span class="section-label">Recipe Card</span>Copy This Setup in One Shot</h2>
+            <h2 class="fade-in">The Starter Kit</h2>
 
-            <p class="fade-in">I built this over 60 days through trial and error, and you don't have to. Here's the whole architecture as a deployable kit &mdash; clone the repo, run setup, and start from Day 30 instead of Day 0.</p>
+            <p class="fade-in">It took me 60 days of trial and error to get here, and the whole architecture is packaged as a deployable kit so you can clone the repo, run setup, and start from Day 30 instead of Day 0.</p>
 
             <div class="callout fade-in">
-                <p><strong>What transfers, and what doesn't.</strong> The architecture, templates, and feedback loops all transfer, but the 220+ specific memories don't &mdash; those are YOUR corrections and YOUR project state. The kit hands you the scaffolding, and compound learning fills it in over time.</p>
+                <p>The architecture, templates, and feedback loops all transfer. The 220+ specific memories don't, because those are my corrections and my project state and yours will look different, so the kit hands you the scaffolding and compound learning fills it in over time.</p>
             </div>
 
-            <h3 class="fade-in">The Kit (5 layers, 45 minutes to deploy)</h3>
+            <h3 class="fade-in">The Kit (5 Layers, 45 Minutes to Deploy)</h3>
 
-            <div class="card fade-in">
-                <div class="card-title">Layer 1 &mdash; Identity Skeleton</div>
-                <p><strong>Template CLAUDE.md</strong> with the routing-table structure, role definition, project registry, and essential standards baked in (anti-slop, anti-hallucination), plus a pre-wired wiki index. You fill in YOUR role, YOUR projects, and YOUR constraints, which takes about 10 minutes.</p>
-            </div>
+            <p class="fade-in"><strong>Layer 1, the identity skeleton,</strong> is a template CLAUDE.md with the routing-table structure, role definition, project registry, and essential standards baked in (anti-slop, anti-hallucination), plus a pre-wired wiki index. Filling in your own role, projects, and constraints takes about 10 minutes.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Layer 2 &mdash; Rules &amp; Guardrails</div>
-                <p><strong>Three starter rules files</strong> &mdash; communication.md (voice standards, banned patterns), security-governance.md (CRUD/FLS, sharing, secrets), and architecture.md (decision framework, preferred patterns). Then <strong>two hook scripts</strong> &mdash; session-init for context routing on start, and one PreToolUse guardrail that blocks your most expensive recurring mistake.</p>
-            </div>
+            <p class="fade-in">For <strong>rules and guardrails (layer 2)</strong>, the three starter rules files are communication.md for voice standards and banned patterns, security-governance.md for CRUD/FLS, sharing, and secrets, and architecture.md for the decision framework and preferred patterns. It also ships two hook scripts, session-init for context routing on start and one PreToolUse guardrail that blocks your most expensive recurring mistake.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Layer 3 &mdash; SE Skill Pack</div>
-                <p><strong>Five production-ready skills</strong> &mdash; /account-prep (pre-meeting intelligence), /deal-strategy (competitive + talk track), /email-draft (anti-slop customer email), /post-meeting (capture + CRM + follow-up), and /demo-prep (script from brief). Each one replaces about 30 minutes of manual instruction per use.</p>
-            </div>
+            <p class="fade-in">Then there's the <strong>SE skill pack</strong>, five production-ready skills that each replace about 30 minutes of manual instruction per use: /account-prep for pre-meeting intelligence, /deal-strategy for competitive positioning and a talk track, /email-draft for anti-slop customer email, /post-meeting for capture, CRM, and follow-up, and /demo-prep for a script built from a brief.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Layer 4 &mdash; Intelligence Automation</div>
-                <p>A <strong>Slack channel roster</strong> with 25 pre-mapped internal channels (product, competitive, enablement, win/loss, leadership), plus <strong>overnight gather scripts</strong> that scan Exa, HN, GitHub, X, and Slack and synthesize a morning brief. There's <strong>one MCP server</strong> (GitHub) in there to prove the action layer works. Swap in your own OU channels and go.</p>
-            </div>
+            <p class="fade-in">The fourth layer is <strong>intelligence automation</strong>, a Slack channel roster of 25 pre-mapped internal channels (product, competitive, enablement, win/loss, leadership) and overnight gather scripts that scan Exa, HN, GitHub, X, and Slack and synthesize a morning brief. There's one MCP server (GitHub) in there to prove the action layer works. Swap in your own OU channels and go.</p>
 
-            <div class="card fade-in">
-                <div class="card-title">Layer 5 &mdash; Entity Pages</div>
-                <p>A <strong>wiki/people/ directory</strong> with two templates, internal and external. You seed your org tree from Slack profiles (Claude pulls name, title, email, and timezone programmatically), and each page puts org position at the top with an append-only timeline below it. After one session, every leader and their reports are mapped, and after a month you've got a relationship graph no CRM captures.</p>
-            </div>
+            <p class="fade-in">Last come the <strong>entity pages</strong>, a wiki/people/ directory with the two templates, internal and external. You seed your org tree from Slack profiles, with Claude pulling name, title, email, and timezone programmatically, and each page puts org position at the top with an append-only timeline below it. After one session every leader and their reports are mapped, and after a month you've got a relationship graph no CRM captures.</p>
 
-            <h3 class="fade-in">Channel Roster (pre-mapped for SE org)</h3>
+            <h3 class="fade-in">Channel Roster (Pre-Mapped for SE Org)</h3>
 
             <table class="fade-in">
                 <thead>
                     <tr><th>Category</th><th>Channels</th><th>What You Get</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td><strong>Competitive Intel</strong></td><td>#tmt-solutions, #analyst-coverage</td><td>CI drops, IDC/ISG/Gartner reports</td></tr>
-                    <tr><td><strong>Product &amp; Roadmap</strong></td><td>#agentforce-updates, #platform-releases</td><td>What shipped, what's GA, deprecations</td></tr>
-                    <tr><td><strong>AI &amp; Tooling</strong></td><td>#ai-club, #ai-engineering-productivity, #solutions-ai-tooling</td><td>Internal AI tools, techniques, launches</td></tr>
-                    <tr><td><strong>SE Enablement</strong></td><td>#se-enablement, #demo-sharing</td><td>New assets, techniques that work</td></tr>
-                    <tr><td><strong>Territory</strong></td><td>#tmt-commercial, #tmt-solutions-broadcast</td><td>OU updates, leadership priorities</td></tr>
-                    <tr><td><strong>Industry</strong></td><td>#industries-communications, #industries-media, #industries-tech</td><td>Vertical trends, reference stories</td></tr>
+                    <tr><td><strong>Competitive Intel</strong></td><td>Your team&rsquo;s solutions channel, an analyst-coverage channel</td><td>CI drops, IDC/ISG/Gartner reports</td></tr>
+                    <tr><td><strong>Product &amp; Roadmap</strong></td><td>Product-update and release channels</td><td>What shipped, what's GA, deprecations</td></tr>
+                    <tr><td><strong>AI &amp; Tooling</strong></td><td>Internal AI and engineering-productivity channels</td><td>Internal AI tools, techniques, launches</td></tr>
+                    <tr><td><strong>SE Enablement</strong></td><td>Enablement and demo-sharing channels</td><td>New assets, techniques that work</td></tr>
+                    <tr><td><strong>Territory</strong></td><td>Your business unit&rsquo;s broadcast channels</td><td>OU updates, leadership priorities</td></tr>
+                    <tr><td><strong>Industry</strong></td><td>One channel per industry you cover</td><td>Vertical trends, reference stories</td></tr>
                 </tbody>
             </table>
 
-            <h3 class="fade-in">Growth timeline (what to expect)</h3>
+            <h3 class="fade-in">Growth Timeline (What to Expect)</h3>
 
             <div class="timeline fade-in">
                 <div class="timeline-item">
                     <div class="timeline-date">Week 1</div>
                     <div class="timeline-title">Foundation working</div>
-                    <div class="timeline-desc">CLAUDE.md routes context, rules enforce standards, and session-init starts suggesting relevant pages &mdash; enough that Claude stops making your most common mistake.</div>
+                    <div class="timeline-desc">CLAUDE.md routes context, rules enforce standards, and session-init starts suggesting relevant pages, which is enough for Claude to stop making your most common mistake.</div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-date">Week 2&ndash;3</div>
@@ -1710,17 +1619,14 @@
                 <div class="timeline-item">
                     <div class="timeline-date">Week 4+</div>
                     <div class="timeline-title">Compound effects kick in</div>
-                    <div class="timeline-desc">The loops start connecting &mdash; memory feeding guardrails, skills calling MCP servers, context-mode extending sessions. From here, the system builds itself.</div>
+                    <div class="timeline-desc">The loops start connecting, with memory feeding guardrails, skills calling MCP servers, and context-mode stretching sessions out.</div>
                 </div>
             </div>
 
-            <div class="insight-box fade-in">
-                <h4>The non-developer advantage</h4>
-                <p>You don't need to code any of this. Tell Claude what you want enforced, what workflow you need automated, what mistake to never make again. Claude builds the hooks, writes the skills, configures the MCP servers. Your job is direction and domain expertise &mdash; the same skills that make you good at your actual job.</p>
-            </div>
+            <p class="fade-in">You don't need to code any of it. Tell Claude what you want enforced, what workflow you need automated, and which mistake it should never make again, and it'll build the hooks, write the skills, and configure the MCP servers itself. Your part is direction and domain expertise, the same skills that make you good at the job you already have.</p>
 
             <div class="callout fade-in">
-                <p><strong>Get the kit:</strong> <code>git clone https://github.com/jtehrani84/claude-code-se-starter-kit.git && cd claude-code-se-starter-kit && ./setup.sh</code> &mdash; or contact John Tehrani (jtehrani@salesforce.com) for access.</p>
+                <p><strong>Get the kit:</strong> <code>git clone https://github.com/jtehrani84/claude-code-se-starter-kit.git && cd claude-code-se-starter-kit && ./setup.sh</code>, or contact John Tehrani (jtehrani@salesforce.com) for access.</p>
             </div>
         </div>
     </section>

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teaching Claude Code to Remember — Context Engineering, Part 1</title>
-    <meta name="description" content="Part 1 of the Context Engineering series: how I turned Claude Code from a clean-slate-every-session tool into a teammate that remembers — a five-tier persistent context architecture built on Karpathy's LLM Wiki pattern.">
+    <title>Teaching Claude Code to Remember: Context Engineering, Part 1</title>
+    <meta name="description" content="Part 1 of the Context Engineering series: how I turned Claude Code from a clean-slate-every-session tool into a teammate that remembers, with a five-tier persistent context architecture built on Karpathy's LLM Wiki pattern.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -273,7 +273,7 @@
             </h1>
 
             <p class="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed">
-                A persistent context architecture that turns Claude Code from a clean slate into a teammate, one that knows your projects, remembers your preferences, and gets a little smarter every session without being asked to.
+                How I got Claude Code to hang on to my projects and preferences, along with every correction I'd already made, so a session picks up where the last one left off and it gets a little smarter each time without me asking.
             </p>
 
             <!-- Hero metrics -->
@@ -308,246 +308,51 @@
     <!-- The Problem -->
     <section id="problem" class="py-24 px-6">
         <div class="max-w-5xl mx-auto">
-            <div class="fade-in">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">The Problem</div>
+            <div class="fade-in max-w-3xl">
                 <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-                    Every Session Starts from Zero
+                    Every Session Started from Zero
                 </h2>
-                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
-                    Out of the box, Claude Code has no persistent memory. No matter how many hours you've spent together, tomorrow it won't remember a thing.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="fade-in fade-in-delay-1 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
-                    <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center mb-4">
+                <div class="space-y-5 text-white/60 text-lg leading-relaxed">
+                    <p>
+                        Out of the box, Claude Code has no persistent memory. You can spend a whole afternoon with it on a project, close the terminal, and when you open it again it doesn't know you were ever there.
+                    </p>
+                    <p>
+                        <span class="inline-flex w-7 h-7 rounded-md bg-red-500/10 items-center justify-center align-middle mr-1">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round">
                             <circle cx="12" cy="12" r="10"/>
                             <path d="M12 8v4M12 16h.01"/>
                         </svg>
-                    </div>
-                    <h3 class="font-semibold text-white mb-2">Context Window Bloat</h3>
-                    <p class="text-sm text-white/40 leading-relaxed">
-                        A monolithic CLAUDE.md that dumps 15,000 tokens of instructions every session. Deployment details when you're writing emails. Slide rendering rules when you're debugging Apex. 30% of your context window gone before you type a word.
+                        </span>
+                        The CLAUDE.md I had was one monolithic file that dumped about 15,000 tokens of instructions into every session, whether or not the task needed them, so I'd get deployment details while writing an email and slide rendering rules while debugging Apex. That's 7.5% of the context window gone before I'd typed a word.
                     </p>
-                </div>
-
-                <div class="fade-in fade-in-delay-2 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
-                    <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center mb-4">
+                    <p>
+                        <span class="inline-flex w-7 h-7 rounded-md bg-red-500/10 items-center justify-center align-middle mr-1">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round">
                             <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
                             <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
                             <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
                             <line x1="2" y1="2" x2="22" y2="22"/>
                         </svg>
-                    </div>
-                    <h3 class="font-semibold text-white mb-2">Groundhog Day</h3>
-                    <p class="text-sm text-white/40 leading-relaxed">
-                        "I'm a Solution Engineer working on Salesforce, here's my project structure, don't use these words, remember the 70/30 rule..." That's the opening you retype every single session, and the first 10 minutes always go to re-orientation.
+                        </span>
+                        And even with all that loaded I was still retyping the same opening every time, <span class="text-white/80">"I'm a Solution Engineer working on Salesforce, here's my project structure, don't use these words, remember the 70/30 rule..."</span> so the first 10 minutes of a session always went to re-orientation.
                     </p>
-                </div>
-
-                <div class="fade-in fade-in-delay-3 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
-                    <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center mb-4">
+                    <p>
+                        <span class="inline-flex w-7 h-7 rounded-md bg-red-500/10 items-center justify-center align-middle mr-1">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round">
                             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                         </svg>
-                    </div>
-                    <h3 class="font-semibold text-white mb-2">No Compound Learning</h3>
-                    <p class="text-sm text-white/40 leading-relaxed">
-                        Claude makes the same mistake twice, reaching for a deprecated product name you corrected last week or suggesting a pattern you already rejected, because whatever it learned yesterday quietly vanished overnight.
+                        </span>
+                        What bothered me most was that nothing carried over. Claude would make the same mistake twice, reaching for a deprecated product name I'd corrected last week or suggesting a pattern I'd already rejected, because whatever it learned the day before was gone by the next session. Losing ten minutes a session was annoying, but it also meant Claude was never going to get any better at working with <em>me</em>, since every correction evaporated when the session closed.
                     </p>
                 </div>
             </div>
 
-            <!-- Pain point callout -->
-            <div class="fade-in mt-12 glass-card rounded-xl p-8 border-l-4 border-amber-500/50">
-                <p class="text-white/70 text-lg leading-relaxed">
-                    <span class="text-amber-400 font-semibold">The real cost was never the time.</span> It's that Claude can never get better at working with <em>you specifically</em>, and without persistent context every session is a first date with a genius who has amnesia.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- The Architecture -->
-    <section id="architecture" class="py-24 px-6 relative">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.02] to-transparent"></div>
-        <div class="max-w-5xl mx-auto relative z-10">
-            <div class="fade-in">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">The Solution</div>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-                    Five-Tier Persistent Context
-                </h2>
-                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
-                    Instead of one massive instruction file, split context into five tiers. Load what you need, when you need it. The right information at the right time.
-                </p>
-            </div>
-
-            <!-- Architecture Diagram -->
-            <div class="fade-in glass-card rounded-2xl p-8 md:p-12 glow-cyan">
-                <!-- Tier pyramid -->
-                <div class="space-y-4">
-                    <!-- P1 -->
-                    <div class="arch-node">
-                        <div class="flex items-center gap-4 mb-2">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P1</div>
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div>
-                                        <span class="font-semibold text-white">Identity &mdash; CLAUDE.md</span>
-                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Always Loaded</span>
-                                    </div>
-                                    <span class="font-mono text-xs text-cyan-400">~2,800 tokens</span>
-                                </div>
-                                <p class="text-sm text-white/40">Who you are, the essential rules like anti-slop and anti-hallucination, and the wiki routing table &mdash; the irreducible minimum Claude carries on every run.</p>
-                            </div>
-                        </div>
-                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400" style="width: 48%"></div>
-                    </div>
-
-                    <!-- P2 -->
-                    <div class="arch-node">
-                        <div class="flex items-center gap-4 mb-2">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P2</div>
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div>
-                                        <span class="font-semibold text-white">Session Init &mdash; Hooks</span>
-                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Auto on Start</span>
-                                    </div>
-                                    <span class="font-mono text-xs text-indigo-400">~200 tokens</span>
-                                </div>
-                                <p class="text-sm text-white/40">Python script analyzes your directory, git history, and branch name &rarr; suggests the right wiki pages to load.</p>
-                            </div>
-                        </div>
-                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400" style="width: 8%"></div>
-                    </div>
-
-                    <!-- P3 -->
-                    <div class="arch-node">
-                        <div class="flex items-center gap-4 mb-2">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P3</div>
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div>
-                                        <span class="font-semibold text-white">Knowledge Base &mdash; Wiki</span>
-                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">On Demand</span>
-                                    </div>
-                                    <span class="font-mono text-xs text-violet-400">Variable</span>
-                                </div>
-                                <p class="text-sm text-white/40">51 pages of deep reference covering architecture patterns, deployment runbooks, and design systems, pulled in only when the task actually needs them.</p>
-                            </div>
-                        </div>
-                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-violet-500 to-violet-400" style="width: 35%"></div>
-                    </div>
-
-                    <!-- P4 -->
-                    <div class="arch-node">
-                        <div class="flex items-center gap-4 mb-2">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P4</div>
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div>
-                                        <span class="font-semibold text-white">Long-Term Memory &mdash; Files</span>
-                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">When Recalled</span>
-                                    </div>
-                                    <span class="font-mono text-xs text-pink-400">~2,000 tokens</span>
-                                </div>
-                                <p class="text-sm text-white/40">128 topic files covering decisions made, mistakes corrected, project status, and feedback, with the MEMORY.md index auto-loaded and the details read on demand.</p>
-                            </div>
-                        </div>
-                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-pink-500 to-pink-400" style="width: 35%"></div>
-                    </div>
-
-                    <!-- P5 -->
-                    <div class="arch-node">
-                        <div class="flex items-center gap-4 mb-2">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P5</div>
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div>
-                                        <span class="font-semibold text-white">Behavioral Rules &mdash; Guardrails</span>
-                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Always Active</span>
-                                    </div>
-                                    <span class="font-mono text-xs text-amber-400">10 files</span>
-                                </div>
-                                <p class="text-sm text-white/40">Security governance, architecture standards, testing quality, communication style, context-mode policy, data protection. Loaded from ~/.claude/rules/ every session.</p>
-                            </div>
-                        </div>
-                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-400" style="width: 20%"></div>
-                    </div>
-                </div>
-
-                <!-- Before/After token comparison -->
-                <div class="mt-10 pt-8 border-t border-white/5">
-                    <h4 class="text-xs font-semibold text-white/50 tracking-wider uppercase mb-5">Context window at session start &mdash; before vs. after</h4>
-                    <div class="space-y-5">
-                        <!-- Before -->
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                                    <span class="text-sm font-medium text-red-400">Before</span>
-                                    <span class="text-xs text-white/30">Monolithic CLAUDE.md</span>
-                                </div>
-                                <span class="font-mono text-xs text-red-400/70">~15,000 tokens (7.5%)</span>
-                            </div>
-                            <div class="w-full h-5 rounded-full bg-navy-900 overflow-hidden">
-                                <div class="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-1000 relative" style="width: 45%">
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <span class="text-[9px] font-mono text-white/70 font-medium">15K tokens burned upfront</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- After -->
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full bg-cyan-400"></div>
-                                    <span class="text-sm font-medium text-cyan-400">After</span>
-                                    <span class="text-xs text-white/30">Tiered architecture (P1 + P2 + P4 index)</span>
-                                </div>
-                                <span class="font-mono text-xs text-cyan-400/70">~5,000 tokens (2.5%)</span>
-                            </div>
-                            <div class="w-full h-5 rounded-full bg-navy-900 overflow-hidden">
-                                <div class="h-full rounded-full bg-gradient-to-r from-cyan-600 to-cyan-400 transition-all duration-1000 relative" style="width: 15%">
-                                    <div class="absolute inset-0 flex items-center pl-2">
-                                        <span class="text-[9px] font-mono text-white/70 font-medium">5K</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Savings callout -->
-                    <div class="mt-5 flex items-center gap-3 bg-cyan-500/5 rounded-lg px-4 py-3 border border-cyan-500/10">
-                        <div class="text-2xl font-bold text-cyan-400">3x</div>
-                        <p class="text-xs text-white/40">less overhead. The remaining 97.5% of your context window is available for actual work &mdash; code, conversation, and output.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Before / After -->
-    <section id="before-after" class="py-24 px-6">
-        <div class="max-w-5xl mx-auto">
-            <div class="fade-in">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Comparison</div>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-                    Before and After
-                </h2>
-                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
-                    The same person, the same projects, the same Claude Code &mdash; except one of them runs on a persistent context architecture and the other doesn't.
-                </p>
-            </div>
-
-            <!-- Full-width BEFORE architecture diagram -->
-            <div class="fade-in mb-12">
+            <!-- Before diagram: what that looked like -->
+            <div class="fade-in mt-14">
                 <div class="glass-card rounded-2xl overflow-hidden border-red-500/20">
                     <div class="px-6 py-4 bg-red-500/5 border-b border-red-500/10 flex items-center gap-3">
                         <div class="w-3 h-3 rounded-full bg-red-500/60"></div>
-                        <span class="font-semibold text-sm text-red-400">Before &mdash; Out-of-the-Box Claude Code</span>
+                        <span class="font-semibold text-sm text-red-400">Out-of-the-Box Claude Code (Before)</span>
                     </div>
                     <div class="p-8">
                         <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" class="w-full">
@@ -652,13 +457,674 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Origin -->
+    <section id="origin" class="py-24 px-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/[0.02] to-transparent"></div>
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="fade-in max-w-3xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    Starting from Karpathy's LLM Wiki
+                </h2>
+                <p class="text-white/60 text-lg mb-12 leading-relaxed">
+                    The idea I built on is the <span class="text-white/80">LLM Wiki pattern</span> that Andrej Karpathy described in early 2026. Rather than re-deriving knowledge on every query, you have the LLM build and maintain a persistent wiki that compounds over time, which goes right at the nothing-carries-over problem. Here's how his three layers map onto what I ended up with.
+                </p>
+            </div>
+
+            <div class="fade-in glass-card rounded-2xl p-8 md:p-10 glow-cyan">
+                <!-- Three-layer diagram -->
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <!-- Layer 1: Raw Sources -->
+                    <div class="relative">
+                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-violet-400 tracking-wider uppercase">Karpathy Layer 1</div>
+                        <div class="rounded-xl border border-violet-500/20 bg-violet-500/5 p-5 h-full">
+                            <h4 class="font-semibold text-violet-400 text-sm mb-1">Raw Sources</h4>
+                            <p class="text-xs text-white/40 mb-3">Immutable input that I curate before it goes in.</p>
+                            <div class="space-y-1.5 text-xs font-mono text-white/30">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
+                                    <span>intel-digests/</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
+                                    <span>X feed (GraphQL)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
+                                    <span>Exa search results</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
+                                    <span>Articles, docs, PDFs</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layer 2: Wiki -->
+                    <div class="relative">
+                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-cyan-400 tracking-wider uppercase">Karpathy Layer 2</div>
+                        <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 h-full">
+                            <h4 class="font-semibold text-cyan-400 text-sm mb-1">Wiki</h4>
+                            <p class="text-xs text-white/40 mb-3">Synthesized and interlinked, and Claude maintains it as it goes.</p>
+                            <div class="space-y-1.5 text-xs font-mono text-white/30">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
+                                    <span>wiki/ (51 pages)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
+                                    <span>Cross-referenced</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
+                                    <span>Auto-indexed</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
+                                    <span>Lint-checked</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layer 3: Schema -->
+                    <div class="relative">
+                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-pink-400 tracking-wider uppercase">Karpathy Layer 3</div>
+                        <div class="rounded-xl border border-pink-500/20 bg-pink-500/5 p-5 h-full">
+                            <h4 class="font-semibold text-pink-400 text-sm mb-1">Schema</h4>
+                            <p class="text-xs text-white/40 mb-3">The structure and conventions Claude and I work out between us.</p>
+                            <div class="space-y-1.5 text-xs font-mono text-white/30">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
+                                    <span>CLAUDE.md</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
+                                    <span>Auto-memory (128 files)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
+                                    <span>Wiki index + log</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
+                                    <span>Rules files</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/5 pt-6">
+                    <p class="text-sm text-white/50 leading-relaxed">
+                        His three operations lined up with things I already had. <span class="inline-flex w-6 h-6 rounded-md bg-violet-500/10 items-center justify-center align-middle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                        </span> Ingest is my <span class="font-mono text-white/70">/ingest</span> command, <span class="inline-flex w-6 h-6 rounded-md bg-cyan-500/10 items-center justify-center align-middle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        </span> query is just every conversation, and <span class="inline-flex w-6 h-6 rounded-md bg-pink-500/10 items-center justify-center align-middle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F472B6" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </span> lint is <span class="font-mono text-white/70">/wiki-lint</span>.
+                    </p>
+                    <p class="mt-4 text-sm text-white/50 leading-relaxed">
+                        <span class="text-violet-400 font-semibold">The part of his argument that sold me</span> is that the maintenance burden is what kills every knowledge system, because the bookkeeping is exactly what people stop doing. Claude handles the summarizing, cross-referencing, filing, and consistency-checking while I work, which leaves me the sourcing and the thinking, plus pointing it in the right direction, and I've never had to sit down and organize the wiki myself.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Filesystem vs RAG callout -->
+            <div class="fade-in mt-8 glass-card rounded-xl p-6 border-l-4 border-violet-500/50">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-violet-400 mb-1">Why Flat Files Instead of Vector Embeddings?</h4>
+                        <p class="text-sm text-white/40 leading-relaxed">
+                            RAG (retrieval-augmented generation) retrieves by <em>meaning</em>, which is great for searching large datasets you didn't write. My preferences and project state, and every correction I've made, are things I wrote myself. Those live better in structured markdown files that Claude reads and updates directly, which is simpler and quicker to work with and doesn't drift from what I actually wrote. So I run both, a flat-file wiki for personal knowledge and pgvector RAG for corporate data like product names, customer stories, and competitive intel.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="fade-in mt-10 max-w-3xl text-white/60 leading-relaxed">
+                When I built this, though, Karpathy's write-up didn't deal with context window cost at all, and a wiki that keeps growing has to get loaded somehow. Loading all of it at the start of every session would have put me right back at the 15,000-token file.
+            </p>
+        </div>
+    </section>
+
+    <!-- The Architecture -->
+    <section id="architecture" class="py-24 px-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.02] to-transparent"></div>
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="fade-in max-w-3xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    Splitting It into Five Tiers
+                </h2>
+                <p class="text-white/60 text-lg mb-12 leading-relaxed">
+                    So instead of one massive instruction file, I split the context into five tiers that load at different times, each with its own token cost. The counts on this page are a snapshot from when I wrote Part 1, and the May 2026 follow-up at the bottom has the later numbers for memory files, hooks, and MCP servers.
+                </p>
+            </div>
+
+            <!-- Architecture Diagram -->
+            <div class="fade-in glass-card rounded-2xl p-8 md:p-12 glow-cyan">
+                <!-- Tier pyramid -->
+                <div class="space-y-4">
+                    <!-- P1 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P1</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Identity (CLAUDE.md)</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Always Loaded</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-cyan-400">~2,800 tokens</span>
+                                </div>
+                                <p class="text-sm text-white/40">Who I am, the essential rules like anti-slop and anti-hallucination, and the wiki routing table, which is the irreducible minimum Claude carries into every run.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400" style="width: 48%"></div>
+                    </div>
+
+                    <!-- P2 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P2</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Session Init (Hooks)</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Auto on Start</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-indigo-400">~200 tokens</span>
+                                </div>
+                                <p class="text-sm text-white/40">A Python script reads the directory, the git history, and the branch name, and suggests which wiki pages to load.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400" style="width: 8%"></div>
+                    </div>
+
+                    <!-- P3 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P3</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Knowledge Base (Wiki)</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">On Demand</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-violet-400">Variable</span>
+                                </div>
+                                <p class="text-sm text-white/40">51 pages of deep reference on architecture patterns, deployment runbooks, and design systems, pulled in only when a task needs them.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-violet-500 to-violet-400" style="width: 35%"></div>
+                    </div>
+
+                    <!-- P4 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P4</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Long-Term Memory (Files)</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">When Recalled</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-pink-400">~2,000 tokens</span>
+                                </div>
+                                <p class="text-sm text-white/40">128 topic files on decisions made, mistakes corrected, project status, and feedback. The MEMORY.md index loads automatically and the details get read on demand.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-pink-500 to-pink-400" style="width: 35%"></div>
+                    </div>
+
+                    <!-- P5 -->
+                    <div class="arch-node">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">P5</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div>
+                                        <span class="font-semibold text-white">Behavioral Rules (Guardrails)</span>
+                                        <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Always Active</span>
+                                    </div>
+                                    <span class="font-mono text-xs text-amber-400">All projects</span>
+                                </div>
+                                <p class="text-sm text-white/40">Security governance, architecture standards, testing quality, communication style, context-mode policy, and data protection, loaded from ~/.claude/rules/ every session.</p>
+                            </div>
+                        </div>
+                        <div class="ml-16 layer-bar h-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-400" style="width: 20%"></div>
+                    </div>
+                </div>
+
+                <!-- Before/After token comparison -->
+                <div class="mt-10 pt-8 border-t border-white/5">
+                    <h4 class="text-xs font-semibold text-white/50 tracking-wider uppercase mb-5">Context Window at Session Start, Before and After</h4>
+                    <div class="space-y-5">
+                        <!-- Before -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                    <span class="text-sm font-medium text-red-400">Before</span>
+                                    <span class="text-xs text-white/30">Monolithic CLAUDE.md</span>
+                                </div>
+                                <span class="font-mono text-xs text-red-400/70">~15,000 tokens (7.5%)</span>
+                            </div>
+                            <div class="w-full h-5 rounded-full bg-navy-900 overflow-hidden">
+                                <div class="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-1000 relative" style="width: 45%">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="text-[9px] font-mono text-white/70 font-medium">15K tokens burned upfront</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- After -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-cyan-400"></div>
+                                    <span class="text-sm font-medium text-cyan-400">After</span>
+                                    <span class="text-xs text-white/30">Tiered architecture (P1 + P2 + P4 index)</span>
+                                </div>
+                                <span class="font-mono text-xs text-cyan-400/70">~5,000 tokens (2.5%)</span>
+                            </div>
+                            <div class="w-full h-5 rounded-full bg-navy-900 overflow-hidden">
+                                <div class="h-full rounded-full bg-gradient-to-r from-cyan-600 to-cyan-400 transition-all duration-1000 relative" style="width: 15%">
+                                    <div class="absolute inset-0 flex items-center pl-2">
+                                        <span class="text-[9px] font-mono text-white/70 font-medium">5K</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Savings callout -->
+                    <div class="mt-5 flex items-center gap-3 bg-cyan-500/5 rounded-lg px-4 py-3 border border-cyan-500/10">
+                        <div class="text-2xl font-bold text-cyan-400">3x</div>
+                        <p class="text-xs text-white/40">less overhead at the start of a session, which leaves the other 97.5% of the context window for code, conversation, and output.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Components Deep Dive -->
+    <section id="components" class="py-24 px-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/[0.02] to-transparent"></div>
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="fade-in max-w-3xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    What's in Each Piece
+                </h2>
+                <p class="text-white/60 text-lg mb-12 leading-relaxed">
+                    Every tier is a real file or folder on disk, and hooks are what make the timing happen. Each one opens up to show what's inside, and CLAUDE.md comes first because everything else gets reached through its routing table.
+                </p>
+            </div>
+
+            <!-- Component Cards -->
+            <div class="space-y-4">
+                <!-- 1. CLAUDE.md -->
+                <div class="fade-in glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp1')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">The Identity Layer (CLAUDE.md)</h3>
+                            <p class="text-xs text-white/40 mt-0.5">182 lines that hold my identity and a routing table to everything else.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp1-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp1" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="code-block p-4 text-xs">
+                                <div class="text-cyan-400/70 mb-2"># What goes in CLAUDE.md</div>
+                                <div class="text-white/50 space-y-1">
+                                    <div><span class="text-cyan-400">Section 1:</span> Owner identity (name, role, context)</div>
+                                    <div><span class="text-cyan-400">Section 2:</span> Environment (OS, editor, model, GCP project)</div>
+                                    <div><span class="text-cyan-400">Section 3:</span> Essential rules, only the ones Claude needs EVERY time</div>
+                                    <div class="ml-8 text-white/30">&bull; Anti-slop banned words (50+)</div>
+                                    <div class="ml-8 text-white/30">&bull; Anti-hallucination golden rule</div>
+                                    <div class="ml-8 text-white/30">&bull; Product name corrections</div>
+                                    <div class="ml-8 text-white/30">&bull; Visual design philosophy</div>
+                                    <div><span class="text-cyan-400">Section 4:</span> Wiki routing table (11 work contexts &rarr; wiki pages)</div>
+                                    <div><span class="text-cyan-400">Section 5:</span> Project inventory (names, repos, status only)</div>
+                                    <div><span class="text-cyan-400">Section 6:</span> Available commands (table format)</div>
+                                </div>
+                            </div>
+                            <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-cyan-400 font-semibold">What makes it work is the routing table.</span> CLAUDE.md only has to answer "who am I and where do I look things up?", and the table tells Claude which wiki page to load for a given task without dragging the content in upfront. The old 15,000-token file is what you get when it tries to hold everything instead.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Wiki -->
+                <div class="fade-in fade-in-delay-1 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp2')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">The Knowledge Base (Wiki)</h3>
+                            <p class="text-xs text-white/40 mt-0.5">51 pages across 7 categories, Claude's long-form reference library.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp2-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp2" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
+                                    <div class="text-2xl font-bold text-violet-400">6</div>
+                                    <div class="text-xs text-white/40">Projects</div>
+                                </div>
+                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
+                                    <div class="text-2xl font-bold text-violet-400">19</div>
+                                    <div class="text-xs text-white/40">Concepts</div>
+                                </div>
+                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
+                                    <div class="text-2xl font-bold text-violet-400">7</div>
+                                    <div class="text-xs text-white/40">Tools</div>
+                                </div>
+                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
+                                    <div class="text-2xl font-bold text-violet-400">5</div>
+                                    <div class="text-xs text-white/40">Insights</div>
+                                </div>
+                            </div>
+                            <div class="code-block p-4 text-xs">
+                                <div class="text-violet-400/70 mb-2"># wiki/ directory structure</div>
+                                <div class="text-white/50 space-y-1">
+                                    <div>wiki/</div>
+                                    <div>&nbsp;&nbsp;index.md&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Master catalog (auto-maintained)</span></div>
+                                    <div>&nbsp;&nbsp;inbox.md&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Auto-capture queue</span></div>
+                                    <div>&nbsp;&nbsp;concepts/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Architecture, patterns, systems</span></div>
+                                    <div>&nbsp;&nbsp;projects/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Project overviews and status</span></div>
+                                    <div>&nbsp;&nbsp;tools/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Tool configs, MCP servers, CLIs</span></div>
+                                    <div>&nbsp;&nbsp;entities/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Companies, people, accounts</span></div>
+                                    <div>&nbsp;&nbsp;insights/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Strategic observations, theses</span></div>
+                                </div>
+                            </div>
+                            <div class="bg-violet-500/5 rounded-lg p-4 border border-violet-500/10">
+                                <p class="text-sm text-white/60">
+                                    <span class="text-violet-400 font-semibold">Nobody has to feed it.</span> At the end of each session Claude checks whether it learned anything worth keeping, and if it did, it appends a one-liner to <code class="text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded">wiki/inbox.md</code> that the next session folds into a proper page.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Memory -->
+                <div class="fade-in fade-in-delay-2 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp3')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">Cross-Session State (Memory)</h3>
+                            <p class="text-xs text-white/40 mt-0.5">128 topic files of decisions, feedback, and project status that carry from one session to the next.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp3-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp3" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-pink-500/5 rounded-lg p-4 border border-pink-500/10">
+                                    <div class="text-sm font-semibold text-pink-400 mb-2">Memory Types</div>
+                                    <div class="space-y-2 text-xs text-white/50">
+                                        <div><span class="text-pink-400">user</span> for role, preferences, expertise level</div>
+                                        <div><span class="text-pink-400">feedback</span> for corrections and confirmed approaches</div>
+                                        <div><span class="text-pink-400">project</span> for status, decisions, deadlines</div>
+                                        <div><span class="text-pink-400">reference</span> for external resource pointers</div>
+                                    </div>
+                                </div>
+                                <div class="bg-pink-500/5 rounded-lg p-4 border border-pink-500/10">
+                                    <div class="text-sm font-semibold text-pink-400 mb-2">How It Works</div>
+                                    <div class="space-y-2 text-xs text-white/50">
+                                        <div><span class="text-white/70">MEMORY.md</span> is the index, loaded every session</div>
+                                        <div><span class="text-white/70">Topic files</span> get read on demand when relevant</div>
+                                        <div><span class="text-white/70">Auto-save</span> means Claude saves when it learns something</div>
+                                        <div><span class="text-white/70">Staleness</span> checks mean old info gets verified before Claude acts on it</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="code-block p-4 text-xs">
+                                <div class="text-pink-400/70 mb-2"># Example memory file</div>
+                                <div class="text-white/50">
+                                    <div>---</div>
+                                    <div>name: Product Name Verification</div>
+                                    <div>description: Never assume SF product names are correct</div>
+                                    <div>type: feedback</div>
+                                    <div>---</div>
+                                    <div class="mt-2">LLMs hallucinate plausible Salesforce product names.</div>
+                                    <div>Always verify against salesforce.com before using.</div>
+                                    <div class="mt-1"><span class="text-pink-400">**Why:**</span> Claude once wrote "System of Agency"</div>
+                                    <div>instead of "Agentforce" in a customer-facing deck.</div>
+                                    <div><span class="text-pink-400">**How to apply:**</span> Check salesforce.com before</div>
+                                    <div>using any product name. When in doubt, ask John.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Hooks -->
+                <div class="fade-in fade-in-delay-3 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp4')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">The Automation Layer (Hooks)</h3>
+                            <p class="text-xs text-white/40 mt-0.5">8 hooks, each one an automated behavior that fires on a session event or a tool call.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp4-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp4" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">SessionStart</span>
+                                    <span class="text-sm text-white/60">session-init.py creates session dir, wiki-aware context routing</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
+                                    <span class="text-sm text-white/60">SF CLI guardrail warns on deprecated sfdx commands</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
+                                    <span class="text-sm text-white/60">SOQL schema check validates queries before execution</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
+                                    <span class="text-sm text-white/60">Architecture guardrail surfaces infrastructure constraints + ADRs before editing constrained files</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PostToolUse</span>
+                                    <span class="text-sm text-white/60">Validator checks written code against naming/security standards</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PostToolUse</span>
+                                    <span class="text-sm text-white/60">Debug log analyzer parses SF debug logs automatically</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">Stop</span>
+                                    <span class="text-sm text-white/60">Completion check reviews for incomplete items before closing</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
+                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">Notification</span>
+                                    <span class="text-sm text-white/60">macOS notification plays sound when Claude needs attention</span>
+                                </div>
+                            </div>
+                            <div class="bg-indigo-500/5 rounded-lg p-4 border border-indigo-500/10">
+                                <p class="text-sm text-white/60">
+                                    Hooks run your code at specific moments in Claude's workflow. <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">SessionStart</code> is the most powerful of them, since that's where context routing happens, and <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">PreToolUse</code> and <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">PostToolUse</code> are where quality standards get enforced without me asking.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Rules -->
+                <div class="fade-in fade-in-delay-4 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
+                    <button onclick="toggleExpand('comp5')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white">Behavioral Guardrails (Rules)</h3>
+                            <p class="text-xs text-white/40 mt-0.5">The files in ~/.claude/rules/ hold the standards Claude follows across every project, infrastructure constraints included (tagged P1 Identity, never cut). Nine of them are listed here.</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp5-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div id="comp5" class="expandable-content">
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">security-governance.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">architecture.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">testing-quality.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">communication.md</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">salesforce-instructions.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">salesforce-platform.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">tailwind-ui.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                                        <span class="text-white/60">slds2-lwc-ui.md</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="w-2 h-2 rounded-full bg-red-400"></div>
+                                        <span class="text-white/60 font-medium">infrastructure-constraints.md</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-amber-500/5 rounded-lg p-4 border border-amber-500/10">
+                                <p class="text-sm text-white/60">
+                                    Rules files live in <code class="text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">~/.claude/rules/</code> and apply to <em>all</em> projects globally, while CLAUDE.md stays project-specific. I reach for a rule when I want a standard everywhere (security, architecture patterns, communication style) and for CLAUDE.md when the context only matters to one project.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Together -->
+    <section class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="fade-in max-w-3xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    One Real Session
+                </h2>
+                <p class="text-white/60 text-lg mb-12 leading-relaxed">
+                    Here's what that looks like when I open Claude Code in my slide-generation project directory, and most of it happens before I type anything.
+                </p>
+            </div>
+
+            <!-- Timeline -->
+            <div class="relative pl-12 space-y-8">
+                <div class="timeline-line"></div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-cyan-500/10 border-2 border-cyan-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-cyan-400">1</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-cyan-400 mb-2">Before I Type Anything (P1, P2, P4)</div>
+                        <p class="text-sm text-white/50 leading-relaxed">CLAUDE.md loads first, about 2,800 tokens, and Claude picks up who I am and what my job is, along with the essential rules and the line in the routing table saying slide work means pitch-craft.md and slide-visual-design.md. Then session-init.py fires. It notices the working directory contains "slides," checks the git log, where recent commits mention "deck" and "slide," and from that it suggests three wiki pages worth loading (pitch-craft.md, slide-visual-design.md, and golden-narrative-framework.md) for around 200 tokens.</p>
+                        <p class="text-sm text-white/50 leading-relaxed mt-3">The MEMORY.md index comes in last, about 2,000 tokens covering 128 memory entries, and the relevant ones surface right away. One flags that AI backgrounds look cheesy while solid colors read as premium (feedback-imagen-cheesy.md), and another warns Claude off using Salesforce contract timelines as Why Now drivers (feedback-seller-urgency-ban.md).</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-violet-500/10 border-2 border-violet-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-violet-400">2</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-violet-400 mb-1">I Ask for a Customer Deck</div>
+                        <p class="text-sm text-white/50 leading-relaxed">Claude reads pitch-craft.md (the golden narrative framework), slide-visual-design.md (design tokens and the layout library), and that account's memory file. It already has everything I used to spell out, solid backgrounds, the 70/30 customer-to-Salesforce ratio, the banned words, how the brand colors resolve, so there's no setup and it just starts building.</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-amber-400">3</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <p class="text-sm text-white/50 leading-relaxed">When Claude writes code, the PostToolUse validator hook checks naming conventions and security patterns on its own, so I'm not the one reviewing the basics.</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-green-400">4</span>
+                    </div>
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="text-sm font-semibold text-green-400 mb-1">Session Ends &rarr; Knowledge Captured</div>
+                        <p class="text-sm text-white/50 leading-relaxed">Along the way Claude worked out that account's brand palette, so before closing it appends a line to wiki/inbox.md recording which colors the brand resolved to, and the next session folds that into a proper wiki entry.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Before / After -->
+    <section id="before-after" class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="fade-in max-w-3xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
+                    What Changed Once It Was Running
+                </h2>
+                <div class="space-y-5 text-white/60 text-lg leading-relaxed mb-12">
+                    <p>
+                        The ramp-up went to zero minutes. I stopped opening with "here's my project, here are my rules, remember that thing from yesterday," because Claude already knows who I am and what I'm working on, and it has the decisions I've already made.
+                    </p>
+                    <p>
+                        The 82% and the 3x measure different things. The 82% compares the old 15,000-token file with the 2,800 tokens of CLAUDE.md alone, with everything else coming in on demand, and the 3x counts all of what loads at session start (CLAUDE.md, the hook, and the memory index, about 5,000 tokens). Either way the window stays clear for actual work, and conversations run 3-4x longer before it fills.
+                    </p>
+                    <p>
+                        The 128 memory files are where the corrections live. Each one is a correction or a preference (some are architectural decisions) that got saved once and keeps getting applied, which is why Claude stops making the same mistake twice. The wiki keeps growing and memory keeps accumulating with every session, so the system gets better the more I use it, and session 100 is a lot better than session 1. Without something pruning it, though, it would only keep growing, the way Karpathy's does.
+                    </p>
+                </div>
+            </div>
 
             <!-- Full-width AFTER architecture diagram -->
             <div class="fade-in fade-in-delay-2">
                 <div class="glass-card rounded-2xl overflow-hidden animated-border" style="border-color: transparent;">
                     <div class="px-6 py-4 bg-cyan-500/5 border-b border-cyan-500/10 flex items-center gap-3">
                         <div class="w-3 h-3 rounded-full bg-cyan-400 pulse-dot"></div>
-                        <span class="font-semibold text-sm text-cyan-400">After &mdash; Persistent Context Architecture</span>
+                        <span class="font-semibold text-sm text-cyan-400">Persistent Context Architecture (After)</span>
                     </div>
                     <div class="p-8">
                         <svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" class="w-full">
@@ -728,7 +1194,7 @@
                             <rect x="280" y="249" width="340" height="50" rx="10" fill="url(#violetGrad)" stroke="#A78BFA" stroke-width="1" opacity="0.6"/>
                             <text x="310" y="272" fill="#A78BFA" font-size="10" font-weight="700" font-family="JetBrains Mono">P3</text>
                             <text x="340" y="272" fill="#C4B5FD" font-size="12" font-weight="600" font-family="Inter">Wiki Knowledge Base</text>
-                            <text x="340" y="287" fill="#A78BFA" font-size="9" font-family="Inter" opacity="0.5">51 pages &mdash; concepts, projects, tools, insights</text>
+                            <text x="340" y="287" fill="#A78BFA" font-size="9" font-family="Inter" opacity="0.5">51 pages of concepts, projects, tools, insights</text>
                             <text x="580" y="279" text-anchor="end" fill="#A78BFA" font-size="9" font-family="JetBrains Mono" opacity="0.5">variable</text>
                             <text x="665" y="279" fill="#A78BFA" font-size="9" font-family="Inter" opacity="0.4">on demand</text>
 
@@ -751,7 +1217,7 @@
                             <rect x="280" y="326" width="340" height="50" rx="10" fill="url(#pinkGrad)" stroke="#F472B6" stroke-width="1" opacity="0.6"/>
                             <text x="310" y="349" fill="#F472B6" font-size="10" font-weight="700" font-family="JetBrains Mono">P4</text>
                             <text x="340" y="349" fill="#F9A8D4" font-size="12" font-weight="600" font-family="Inter">Long-Term Memory</text>
-                            <text x="340" y="364" fill="#F472B6" font-size="9" font-family="Inter" opacity="0.5">128 files &mdash; decisions, feedback, project state</text>
+                            <text x="340" y="364" fill="#F472B6" font-size="9" font-family="Inter" opacity="0.5">128 files of decisions, feedback, project state</text>
                             <text x="580" y="356" text-anchor="end" fill="#F472B6" font-size="9" font-family="JetBrains Mono" opacity="0.5">~2,000 tokens</text>
                             <text x="665" y="356" fill="#F472B6" font-size="9" font-family="Inter" opacity="0.4">index loaded</text>
 
@@ -763,15 +1229,15 @@
                             <rect x="280" y="403" width="340" height="50" rx="10" fill="url(#amberGrad)" stroke="#FBBF24" stroke-width="1" opacity="0.6"/>
                             <text x="310" y="426" fill="#FBBF24" font-size="10" font-weight="700" font-family="JetBrains Mono">P5</text>
                             <text x="340" y="426" fill="#FDE68A" font-size="12" font-weight="600" font-family="Inter">Behavioral Rules</text>
-                            <text x="340" y="441" fill="#FBBF24" font-size="9" font-family="Inter" opacity="0.5">10 files &mdash; security, architecture, testing, voice, context-mode, data protection</text>
-                            <text x="580" y="433" text-anchor="end" fill="#FBBF24" font-size="9" font-family="JetBrains Mono" opacity="0.5">10 files</text>
+                            <text x="340" y="441" fill="#FBBF24" font-size="9" font-family="Inter" opacity="0.5">security, architecture, testing, voice, context-mode, data protection</text>
+                            <text x="580" y="433" text-anchor="end" fill="#FBBF24" font-size="9" font-family="JetBrains Mono" opacity="0.5">all projects</text>
                             <text x="665" y="433" fill="#FBBF24" font-size="9" font-family="Inter" opacity="0.4">always active</text>
 
                             <!-- Bottom: Claude Code result -->
                             <line x1="450" y1="453" x2="450" y2="473" stroke="#22D3EE" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 2"/>
                             <polygon points="446,471 454,471 450,477" fill="#22D3EE" opacity="0.3"/>
                             <rect x="300" y="480" width="300" height="30" rx="8" fill="#22D3EE" opacity="0.06" stroke="#22D3EE" stroke-width="1" opacity="0.3"/>
-                            <text x="450" y="500" text-anchor="middle" fill="#22D3EE" font-size="11" font-weight="500" font-family="Inter">Context 2.5% full &mdash; ready to work</text>
+                            <text x="450" y="500" text-anchor="middle" fill="#22D3EE" font-size="11" font-weight="500" font-family="Inter">Context 2.5% full, ready to work</text>
 
                             <!-- Left side: loading indicators -->
                             <rect x="88" y="100" width="148" height="28" rx="6" fill="#22D3EE" opacity="0.05" stroke="#22D3EE" stroke-width="0.5" opacity="0.15"/>
@@ -803,7 +1269,7 @@
                             </div>
                             <div class="flex items-start gap-2">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                <span class="text-xs text-white/40">Corrections stick forever</span>
+                                <span class="text-xs text-white/40">Corrections stick</span>
                             </div>
                             <div class="flex items-start gap-2">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" class="flex-shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>
@@ -817,596 +1283,58 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Token comparison removed — now in Architecture section above -->
         </div>
     </section>
 
-    <!-- Components Deep Dive -->
-    <section id="components" class="py-24 px-6 relative">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/[0.02] to-transparent"></div>
-        <div class="max-w-5xl mx-auto relative z-10">
-            <div class="fade-in">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Deep Dive</div>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-                    The Five Components
-                </h2>
-                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
-                    Each piece is simple on its own. Together they add up to a system that's smarter than the sum of its parts.
-                </p>
-            </div>
-
-            <!-- Component Cards -->
-            <div class="space-y-4">
-                <!-- 1. CLAUDE.md -->
-                <div class="fade-in glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
-                    <button onclick="toggleExpand('comp1')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
-                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center flex-shrink-0">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-white">CLAUDE.md &mdash; The Identity Layer</h3>
-                            <p class="text-xs text-white/40 mt-0.5">182 lines holding your irreducible identity and a routing table to everything else.</p>
-                        </div>
-                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp1-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div id="comp1" class="expandable-content">
-                        <div class="px-6 pb-6 space-y-4">
-                            <div class="code-block p-4 text-xs">
-                                <div class="text-cyan-400/70 mb-2"># What goes in CLAUDE.md</div>
-                                <div class="text-white/50 space-y-1">
-                                    <div><span class="text-cyan-400">Section 1:</span> Owner identity (name, role, context)</div>
-                                    <div><span class="text-cyan-400">Section 2:</span> Environment (OS, editor, model, GCP project)</div>
-                                    <div><span class="text-cyan-400">Section 3:</span> Essential rules — only the ones Claude needs EVERY time</div>
-                                    <div class="ml-8 text-white/30">&bull; Anti-slop banned words (50+)</div>
-                                    <div class="ml-8 text-white/30">&bull; Anti-hallucination golden rule</div>
-                                    <div class="ml-8 text-white/30">&bull; Product name corrections</div>
-                                    <div class="ml-8 text-white/30">&bull; Visual design philosophy</div>
-                                    <div><span class="text-cyan-400">Section 4:</span> Wiki routing table (11 work contexts &rarr; wiki pages)</div>
-                                    <div><span class="text-cyan-400">Section 5:</span> Project inventory (names, repos, status only)</div>
-                                    <div><span class="text-cyan-400">Section 6:</span> Available commands (table format)</div>
-                                </div>
-                            </div>
-                            <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10">
-                                <p class="text-sm text-white/60">
-                                    <span class="text-cyan-400 font-semibold">What makes it work</span> is that CLAUDE.md answers "who am I and where do I look things up?" instead of trying to hold "here's everything I'll ever need," and the routing table is what carries that off &mdash; it tells Claude which wiki page to load for a given task without dragging the content in upfront.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. Wiki -->
-                <div class="fade-in fade-in-delay-1 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
-                    <button onclick="toggleExpand('comp2')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
-                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center flex-shrink-0">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-white">Wiki &mdash; The Knowledge Base</h3>
-                            <p class="text-xs text-white/40 mt-0.5">51 pages across 7 categories that make up Claude's long-form reference library.</p>
-                        </div>
-                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp2-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div id="comp2" class="expandable-content">
-                        <div class="px-6 pb-6 space-y-4">
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
-                                    <div class="text-2xl font-bold text-violet-400">6</div>
-                                    <div class="text-xs text-white/40">Projects</div>
-                                </div>
-                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
-                                    <div class="text-2xl font-bold text-violet-400">19</div>
-                                    <div class="text-xs text-white/40">Concepts</div>
-                                </div>
-                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
-                                    <div class="text-2xl font-bold text-violet-400">7</div>
-                                    <div class="text-xs text-white/40">Tools</div>
-                                </div>
-                                <div class="bg-violet-500/5 rounded-lg p-3 border border-violet-500/10 text-center">
-                                    <div class="text-2xl font-bold text-violet-400">5</div>
-                                    <div class="text-xs text-white/40">Insights</div>
-                                </div>
-                            </div>
-                            <div class="code-block p-4 text-xs">
-                                <div class="text-violet-400/70 mb-2"># wiki/ directory structure</div>
-                                <div class="text-white/50 space-y-1">
-                                    <div>wiki/</div>
-                                    <div>&nbsp;&nbsp;index.md&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Master catalog (auto-maintained)</span></div>
-                                    <div>&nbsp;&nbsp;inbox.md&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Auto-capture queue</span></div>
-                                    <div>&nbsp;&nbsp;concepts/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Architecture, patterns, systems</span></div>
-                                    <div>&nbsp;&nbsp;projects/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Project overviews and status</span></div>
-                                    <div>&nbsp;&nbsp;tools/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Tool configs, MCP servers, CLIs</span></div>
-                                    <div>&nbsp;&nbsp;entities/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Companies, people, accounts</span></div>
-                                    <div>&nbsp;&nbsp;insights/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-white/30"># Strategic observations, theses</span></div>
-                                </div>
-                            </div>
-                            <div class="bg-violet-500/5 rounded-lg p-4 border border-violet-500/10">
-                                <p class="text-sm text-white/60">
-                                    <span class="text-violet-400 font-semibold">The wiki grows on its own.</span> At the end of each session, Claude checks whether it learned anything worth keeping, and if it did, it appends a one-liner to <code class="text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded">wiki/inbox.md</code> that the next session folds into a proper page, so the knowledge compounds without anyone managing it.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. Memory -->
-                <div class="fade-in fade-in-delay-2 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
-                    <button onclick="toggleExpand('comp3')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
-                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center flex-shrink-0">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-white">Memory &mdash; Cross-Session State</h3>
-                            <p class="text-xs text-white/40 mt-0.5">128 topic files holding decisions, feedback, and project status that persist forever.</p>
-                        </div>
-                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp3-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div id="comp3" class="expandable-content">
-                        <div class="px-6 pb-6 space-y-4">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="bg-pink-500/5 rounded-lg p-4 border border-pink-500/10">
-                                    <div class="text-sm font-semibold text-pink-400 mb-2">Memory Types</div>
-                                    <div class="space-y-2 text-xs text-white/50">
-                                        <div><span class="text-pink-400">user</span> &mdash; role, preferences, expertise level</div>
-                                        <div><span class="text-pink-400">feedback</span> &mdash; corrections and confirmed approaches</div>
-                                        <div><span class="text-pink-400">project</span> &mdash; status, decisions, deadlines</div>
-                                        <div><span class="text-pink-400">reference</span> &mdash; external resource pointers</div>
-                                    </div>
-                                </div>
-                                <div class="bg-pink-500/5 rounded-lg p-4 border border-pink-500/10">
-                                    <div class="text-sm font-semibold text-pink-400 mb-2">How It Works</div>
-                                    <div class="space-y-2 text-xs text-white/50">
-                                        <div><span class="text-white/70">MEMORY.md</span> &mdash; index loaded every session</div>
-                                        <div><span class="text-white/70">Topic files</span> &mdash; read on demand when relevant</div>
-                                        <div><span class="text-white/70">Auto-save</span> &mdash; Claude saves when it learns something</div>
-                                        <div><span class="text-white/70">Staleness</span> &mdash; old info verified before acting on it</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="code-block p-4 text-xs">
-                                <div class="text-pink-400/70 mb-2"># Example memory file</div>
-                                <div class="text-white/50">
-                                    <div>---</div>
-                                    <div>name: Product Name Verification</div>
-                                    <div>description: Never assume SF product names are correct</div>
-                                    <div>type: feedback</div>
-                                    <div>---</div>
-                                    <div class="mt-2">LLMs hallucinate plausible Salesforce product names.</div>
-                                    <div>Always verify against salesforce.com before using.</div>
-                                    <div class="mt-1"><span class="text-pink-400">**Why:**</span> Claude once wrote "System of Agency"</div>
-                                    <div>instead of "Agentforce" in a customer-facing deck.</div>
-                                    <div><span class="text-pink-400">**How to apply:**</span> Check salesforce.com before</div>
-                                    <div>using any product name. When in doubt, ask John.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. Hooks -->
-                <div class="fade-in fade-in-delay-3 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
-                    <button onclick="toggleExpand('comp4')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
-                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center flex-shrink-0">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-white">Hooks &mdash; The Automation Layer</h3>
-                            <p class="text-xs text-white/40 mt-0.5">8 hooks, each an automated behavior that fires on session events and tool calls.</p>
-                        </div>
-                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp4-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div id="comp4" class="expandable-content">
-                        <div class="px-6 pb-6 space-y-4">
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
-                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">SessionStart</span>
-                                    <span class="text-sm text-white/60">session-init.py &mdash; creates session dir, wiki-aware context routing</span>
-                                </div>
-                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
-                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
-                                    <span class="text-sm text-white/60">SF CLI guardrail &mdash; warns on deprecated sfdx commands</span>
-                                </div>
-                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
-                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
-                                    <span class="text-sm text-white/60">SOQL schema check &mdash; validates queries before execution</span>
-                                </div>
-                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
-                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PreToolUse</span>
-                                    <span class="text-sm text-white/60">Architecture guardrail &mdash; surfaces infrastructure constraints + ADRs before editing constrained files</span>
-                                </div>
-                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
-                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PostToolUse</span>
-                                    <span class="text-sm text-white/60">Validator &mdash; checks written code against naming/security standards</span>
-                                </div>
-                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
-                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">PostToolUse</span>
-                                    <span class="text-sm text-white/60">Debug log analyzer &mdash; parses SF debug logs automatically</span>
-                                </div>
-                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
-                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">Stop</span>
-                                    <span class="text-sm text-white/60">Completion check &mdash; reviews for incomplete items before closing</span>
-                                </div>
-                                <div class="flex items-center gap-3 bg-indigo-500/5 rounded-lg p-3 border border-indigo-500/10">
-                                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">Notification</span>
-                                    <span class="text-sm text-white/60">macOS notification &mdash; plays sound when Claude needs attention</span>
-                                </div>
-                            </div>
-                            <div class="bg-indigo-500/5 rounded-lg p-4 border border-indigo-500/10">
-                                <p class="text-sm text-white/60">
-                                    <span class="text-indigo-400 font-semibold">The whole idea</span> is that hooks run your code at specific moments in Claude's workflow. <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">SessionStart</code> is the most powerful of them, since that's where context routing happens, but <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">PreToolUse</code> and <code class="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">PostToolUse</code> are where you enforce quality standards automatically.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 5. Rules -->
-                <div class="fade-in fade-in-delay-4 glass-card rounded-xl overflow-hidden glow-cyan-hover transition-all duration-300">
-                    <button onclick="toggleExpand('comp5')" class="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
-                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center flex-shrink-0">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-white">Rules &mdash; Behavioral Guardrails</h3>
-                            <p class="text-xs text-white/40 mt-0.5">11 files in ~/.claude/rules/ holding the standards Claude follows across every project, including the infrastructure constraints (P1 Identity &mdash; never cut).</p>
-                        </div>
-                        <svg class="w-5 h-5 text-white/30 transition-transform duration-300" id="comp5-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div id="comp5" class="expandable-content">
-                        <div class="px-6 pb-6 space-y-4">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-                                        <span class="text-white/60">security-governance.md</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-                                        <span class="text-white/60">architecture.md</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-                                        <span class="text-white/60">testing-quality.md</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-                                        <span class="text-white/60">communication.md</span>
-                                    </div>
-                                </div>
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-                                        <span class="text-white/60">salesforce-instructions.md</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-                                        <span class="text-white/60">salesforce-platform.md</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-                                        <span class="text-white/60">tailwind-ui.md</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
-                                        <span class="text-white/60">slds2-lwc-ui.md</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div class="w-2 h-2 rounded-full bg-red-400"></div>
-                                        <span class="text-white/60 font-medium">infrastructure-constraints.md</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-amber-500/5 rounded-lg p-4 border border-amber-500/10">
-                                <p class="text-sm text-white/60">
-                                    <span class="text-amber-400 font-semibold">Rules and CLAUDE.md play different roles.</span> Rules files live in <code class="text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">~/.claude/rules/</code> and apply to <em>all</em> projects globally, while CLAUDE.md stays project-specific, so you reach for a rule when you want a standard everywhere (security, architecture patterns, communication style) and for CLAUDE.md when the context only matters to one project.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works Together -->
-    <section class="py-24 px-6">
-        <div class="max-w-5xl mx-auto">
-            <div class="fade-in">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">In Practice</div>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-                    A Real Session, Step by Step
-                </h2>
-                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
-                    You open Claude Code in your slide-generation project directory. Here's what happens before you type a single word.
-                </p>
-            </div>
-
-            <!-- Timeline -->
-            <div class="relative pl-12 space-y-8">
-                <div class="timeline-line"></div>
-
-                <div class="relative">
-                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-cyan-500/10 border-2 border-cyan-500/30 flex items-center justify-center">
-                        <span class="text-xs font-bold text-cyan-400">1</span>
-                    </div>
-                    <div class="glass-card rounded-xl p-5">
-                        <div class="text-sm font-semibold text-cyan-400 mb-1">CLAUDE.md loads (P1)</div>
-                        <p class="text-sm text-white/50">Claude learns your identity, role, and essential rules, and it reads the routing table telling it that slide work means loading pitch-craft.md and slide-visual-design.md &mdash; all for about 2,800 tokens.</p>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-indigo-500/10 border-2 border-indigo-500/30 flex items-center justify-center">
-                        <span class="text-xs font-bold text-indigo-400">2</span>
-                    </div>
-                    <div class="glass-card rounded-xl p-5">
-                        <div class="text-sm font-semibold text-indigo-400 mb-1">session-init.py fires (P2)</div>
-                        <p class="text-sm text-white/50">The hook notices the working directory contains "slides" and checks the git log, where recent commits mention "deck" and "slide." From that it suggests three wiki pages worth loading, pitch-craft.md, slide-visual-design.md, and golden-narrative-framework.md, for around 200 tokens.</p>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-pink-500/10 border-2 border-pink-500/30 flex items-center justify-center">
-                        <span class="text-xs font-bold text-pink-400">3</span>
-                    </div>
-                    <div class="glass-card rounded-xl p-5">
-                        <div class="text-sm font-semibold text-pink-400 mb-1">MEMORY.md index loads (P4)</div>
-                        <p class="text-sm text-white/50">Claude sees 128 memory entries, and the relevant ones surface right away. One flags that AI backgrounds look cheesy while solid colors read as premium (feedback-imagen-cheesy.md), and another warns it off using Salesforce contract timelines as Why Now drivers (feedback-seller-urgency-ban.md). That index runs about 2,000 tokens.</p>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-violet-500/10 border-2 border-violet-500/30 flex items-center justify-center">
-                        <span class="text-xs font-bold text-violet-400">4</span>
-                    </div>
-                    <div class="glass-card rounded-xl p-5">
-                        <div class="text-sm font-semibold text-violet-400 mb-1">You say "Build me a Starbucks deck"</div>
-                        <p class="text-sm text-white/50">Claude reads pitch-craft.md (the golden narrative framework), slide-visual-design.md (design tokens and the layout library), and the Starbucks memory file. By now it already knows what used to need spelling out, from solid backgrounds and the 70/30 customer-to-Salesforce ratio to the banned words and brand color resolution, so there's no setup and it just starts building.</p>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center">
-                        <span class="text-xs font-bold text-amber-400">5</span>
-                    </div>
-                    <div class="glass-card rounded-xl p-5">
-                        <div class="text-sm font-semibold text-amber-400 mb-1">PostToolUse hooks validate output</div>
-                        <p class="text-sm text-white/50">After Claude writes code, the validator hook checks naming conventions and security patterns automatically. No manual review of basics &mdash; the system catches the easy stuff.</p>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <div class="absolute -left-12 w-12 h-12 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
-                        <span class="text-xs font-bold text-green-400">6</span>
-                    </div>
-                    <div class="glass-card rounded-xl p-5">
-                        <div class="text-sm font-semibold text-green-400 mb-1">Session ends &rarr; knowledge captured</div>
-                        <p class="text-sm text-white/50">Claude learned that Starbucks uses a green-on-dark palette, so it appends a line to wiki/inbox.md noting that the brand colors resolved to #00704A, and the next session folds that into a proper wiki entry. The system just got a little smarter.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Theoretical Foundation -->
-    <section id="origin" class="py-24 px-6 relative">
+    <!-- Beyond the pattern -->
+    <section class="py-24 px-6 relative">
         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/[0.02] to-transparent"></div>
         <div class="max-w-5xl mx-auto relative z-10">
-            <div class="fade-in">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Origin</div>
+            <div class="fade-in max-w-3xl">
                 <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-                    Standing on Karpathy's Shoulders
+                    Where It Went Past Karpathy's Pattern
                 </h2>
-                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
-                    This system implements the <span class="text-white/80">LLM Wiki pattern</span> that Andrej Karpathy described in early 2026 &mdash; rather than re-deriving knowledge on every query, you have the LLM build and maintain a persistent wiki that compounds over time.
-                </p>
-            </div>
-
-            <div class="fade-in glass-card rounded-2xl p-8 md:p-10 glow-cyan">
-                <!-- Three-layer diagram -->
-                <div class="grid md:grid-cols-3 gap-6 mb-8">
-                    <!-- Layer 1: Raw Sources -->
-                    <div class="relative">
-                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-violet-400 tracking-wider uppercase">Karpathy Layer 1</div>
-                        <div class="rounded-xl border border-violet-500/20 bg-violet-500/5 p-5 h-full">
-                            <h4 class="font-semibold text-violet-400 text-sm mb-1">Raw Sources</h4>
-                            <p class="text-xs text-white/40 mb-3">Immutable input that a human curates before it goes in.</p>
-                            <div class="space-y-1.5 text-xs font-mono text-white/30">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
-                                    <span>intel-digests/</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
-                                    <span>X feed (GraphQL)</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
-                                    <span>Exa search results</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400/50"></div>
-                                    <span>Articles, docs, PDFs</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Layer 2: Wiki -->
-                    <div class="relative">
-                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-cyan-400 tracking-wider uppercase">Karpathy Layer 2</div>
-                        <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 h-full">
-                            <h4 class="font-semibold text-cyan-400 text-sm mb-1">Wiki</h4>
-                            <p class="text-xs text-white/40 mb-3">Synthesized and interlinked, maintained by Claude as it goes.</p>
-                            <div class="space-y-1.5 text-xs font-mono text-white/30">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
-                                    <span>wiki/ (51 pages)</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
-                                    <span>Cross-referenced</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
-                                    <span>Auto-indexed</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></div>
-                                    <span>Lint-checked</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Layer 3: Schema -->
-                    <div class="relative">
-                        <div class="absolute -top-3 left-4 px-2 py-0.5 bg-navy-800 text-[10px] font-mono text-pink-400 tracking-wider uppercase">Karpathy Layer 3</div>
-                        <div class="rounded-xl border border-pink-500/20 bg-pink-500/5 p-5 h-full">
-                            <h4 class="font-semibold text-pink-400 text-sm mb-1">Schema</h4>
-                            <p class="text-xs text-white/40 mb-3">Structure and conventions that the human and Claude co-evolve together.</p>
-                            <div class="space-y-1.5 text-xs font-mono text-white/30">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
-                                    <span>CLAUDE.md</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
-                                    <span>Auto-memory (128 files)</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
-                                    <span>Wiki index + log</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-pink-400/50"></div>
-                                    <span>Rules (10 files)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Operations mapping -->
-                <div class="border-t border-white/5 pt-6">
-                    <h4 class="text-xs font-semibold text-white/40 tracking-wider uppercase mb-4">Operations &mdash; Karpathy Pattern &rarr; Our Implementation</h4>
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div class="flex items-center gap-3 bg-white/[0.02] rounded-lg p-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-violet-600/10 flex items-center justify-center flex-shrink-0">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                            </div>
-                            <div>
-                                <div class="text-xs font-semibold text-white/70">Ingest</div>
-                                <div class="text-[10px] text-white/30 font-mono">/ingest command</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/[0.02] rounded-lg p-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 flex items-center justify-center flex-shrink-0">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                            </div>
-                            <div>
-                                <div class="text-xs font-semibold text-white/70">Query</div>
-                                <div class="text-[10px] text-white/30 font-mono">Every conversation</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/[0.02] rounded-lg p-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500/20 to-pink-600/10 flex items-center justify-center flex-shrink-0">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F472B6" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            </div>
-                            <div>
-                                <div class="text-xs font-semibold text-white/70">Lint</div>
-                                <div class="text-[10px] text-white/30 font-mono">/wiki-lint command</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Key insight -->
-                <div class="mt-6 pt-6 border-t border-white/5">
-                    <p class="text-sm text-white/50 leading-relaxed">
-                        <span class="text-violet-400 font-semibold">The core Karpathy insight</span> is that the maintenance burden is what kills every knowledge system, because the bookkeeping is exactly what people stop doing. Claude handles all of that summarizing, cross-referencing, filing, and consistency-checking while you work, which leaves your job as sourcing, directing, and thinking. The wiki keeps growing on its own, and you never have to organize it.
+                <div class="space-y-5 text-white/60 leading-relaxed">
+                    <p>
+                        Karpathy described the idea, and I tested it and then took it in five directions he hadn't covered when I built this.
                     </p>
-                </div>
-            </div>
-
-            <!-- Filesystem vs RAG callout -->
-            <div class="fade-in mt-8 glass-card rounded-xl p-6 border-l-4 border-violet-500/50">
-                <div class="flex items-start gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-semibold text-violet-400 mb-1">Why flat files instead of vector embeddings?</h4>
-                        <p class="text-sm text-white/40 leading-relaxed">
-                            RAG (retrieval-augmented generation) retrieves by <em>meaning</em>, which is great for searching large datasets you didn't write. Personal context is a different problem, though &mdash; your preferences, your project state, and your corrections all live better in structured markdown files that Claude reads and updates directly, which stays simpler, faster, and truer to the original. So we ended up running both, a flat-file wiki for personal knowledge and pgvector RAG for corporate data like product names, customer stories, and competitive intel.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Beyond the pattern -->
-            <div class="fade-in mt-12">
-                <h3 class="text-xl font-bold text-white mb-2">Beyond the pattern</h3>
-                <p class="text-sm text-white/40 mb-8 max-w-2xl">Karpathy described the idea. We validated it, then extended it in five directions he hasn't addressed.</p>
-
-                <div class="grid md:grid-cols-3 gap-5">
-                    <!-- Extension 1: Token Economics -->
-                    <div class="glass-card rounded-xl p-5 border-t-2 border-cyan-500/50">
-                        <div class="w-9 h-9 rounded-lg bg-cyan-500/10 flex items-center justify-center mb-3">
+                    <p>
+                        <span class="inline-flex w-7 h-7 rounded-md bg-cyan-500/10 items-center justify-center align-middle mr-1">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                        </div>
-                        <h4 class="text-sm font-semibold text-cyan-400 mb-2">Token economics</h4>
-                        <p class="text-xs text-white/40 leading-relaxed">Karpathy doesn't address context window costs at all. We built tiered loading instead, with 2,800 tokens always on and everything else pulled in on demand, which works out to an <span class="text-cyan-400/70 font-semibold">82% reduction</span> against loading the full schema every session.</p>
-                    </div>
-
-                    <!-- Extension 2: Automated Routing -->
-                    <div class="glass-card rounded-xl p-5 border-t-2 border-violet-500/50">
-                        <div class="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center mb-3">
+                        </span>
+                        Cost was the obvious one after that 15,000-token file. Tiered loading keeps 2,800 tokens always on and pulls everything else in on demand, and that's where the <span class="text-cyan-400/80 font-semibold">82% reduction</span> against loading the full schema every session comes from.
+                        <span class="inline-flex w-7 h-7 rounded-md bg-violet-500/10 items-center justify-center align-middle mx-1">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/></svg>
-                        </div>
-                        <h4 class="text-sm font-semibold text-violet-400 mb-2">Automated routing</h4>
-                        <p class="text-xs text-white/40 leading-relaxed">Karpathy's workflow is manual &mdash; you tell the LLM what to do. Our session-init hook <span class="text-violet-400/70 font-semibold">analyzes your git state</span> and auto-suggests which wiki pages to load, with no human in the loop.</p>
-                    </div>
-
-                    <!-- Extension 3: Multi-Modal Persistence -->
-                    <div class="glass-card rounded-xl p-5 border-t-2 border-pink-500/50">
-                        <div class="w-9 h-9 rounded-lg bg-pink-500/10 flex items-center justify-center mb-3">
+                        </span>
+                        Routing was the second. In his workflow you tell the LLM what to do each time, and I wanted that step gone, so the session-init hook reads my git state and suggests which wiki pages to load with no human in the loop.
+                    </p>
+                    <p>
+                        <span class="inline-flex w-7 h-7 rounded-md bg-pink-500/10 items-center justify-center align-middle mr-1">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F472B6" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                        </div>
-                        <h4 class="text-sm font-semibold text-pink-400 mb-2">Multi-modal persistence</h4>
-                        <p class="text-xs text-white/40 leading-relaxed">Karpathy keeps one artifact, the wiki. We split ours into <span class="text-pink-400/70 font-semibold">four types</span> &mdash; wiki for reference, memory for decisions, rules for standards, and schema for routing &mdash; each loaded at a different time for a different reason.</p>
-                    </div>
-                </div>
-
-                <!-- Extensions 4 & 5 -->
-                <div class="grid md:grid-cols-2 gap-5 mt-5">
-                    <!-- Extension 4: Curation & Lifecycle -->
-                    <div class="glass-card rounded-xl p-5 border-t-2 border-amber-500/50">
-                        <div class="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center mb-3">
+                        </span>
+                        He keeps one artifact, the wiki. I split mine into <span class="text-pink-400/80 font-semibold">four types</span> (wiki for reference, memory for decisions, rules for standards, and schema for routing), each loaded at a different time for a different reason.
+                    </p>
+                    <p>
+                        <span class="inline-flex w-7 h-7 rounded-md bg-amber-500/10 items-center justify-center align-middle mr-1">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                        </div>
-                        <h4 class="text-sm font-semibold text-amber-400 mb-2">Curation &amp; lifecycle</h4>
-                        <p class="text-xs text-white/40 leading-relaxed">Karpathy describes a Lint step, and we take it further with a <span class="text-amber-400/70 font-semibold">/curate command</span> that scans memory for staleness, works through the wiki inbox, and flags what needs attention. Because memory files carry decay rates, the system can prune itself instead of only growing the way his does.</p>
-                    </div>
-
-                    <!-- Extension 5: Voluntary to Intrinsic (DDR-001) -->
-                    <div class="glass-card rounded-xl p-5 border-t-2 border-red-500/50">
-                        <div class="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center mb-3">
+                        </span>
+                        He describes a Lint step, and I took it further with a <span class="font-mono text-amber-400/80">/curate</span> command that scans memory for staleness, works through the wiki inbox, and flags what needs attention, and because memory files carry decay rates the system can prune itself instead of only growing the way his does.
+                    </p>
+                    <p>
+                        <span class="inline-flex w-7 h-7 rounded-md bg-red-500/10 items-center justify-center align-middle mr-1">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg>
-                        </div>
-                        <h4 class="text-sm font-semibold text-red-400 mb-2">Voluntary &rarr; intrinsic memory</h4>
-                        <p class="text-xs text-white/40 leading-relaxed">Karpathy&rsquo;s system relies on the LLM voluntarily looking things up. We applied DDR-001 from the Agentforce Agent Harness, which puts it bluntly &mdash; <span class="text-red-400/70 font-semibold">&ldquo;agents forget to remember.&rdquo;</span> So infrastructure constraints load as rules every time, and PreToolUse hooks surface the relevant ADRs before you edit a constrained file, which puts the information in your face exactly when it matters.</p>
-                    </div>
+                        </span>
+                        The fifth came from DDR-001 in the Agentforce Agent Harness. Karpathy's system relies on the LLM voluntarily looking things up, and DDR-001 puts the trouble with that bluntly, <span class="text-red-400/80 font-semibold">&ldquo;agents forget to remember.&rdquo;</span> So infrastructure constraints load as rules every time, and PreToolUse hooks surface the relevant ADRs before you edit a constrained file, which puts that information in front of Claude at the moment it matters instead of hoping it goes looking.
+                    </p>
                 </div>
 
                 <!-- Karpathy quote -->
-                <div class="mt-8 glass-card rounded-xl p-6 bg-gradient-to-r from-violet-500/[0.04] to-pink-500/[0.04]">
+                <div class="mt-10 glass-card rounded-xl p-6 bg-gradient-to-r from-violet-500/[0.04] to-pink-500/[0.04]">
                     <blockquote class="text-sm text-white/60 leading-relaxed italic">
                         &ldquo;I think there is room here for an incredible new product instead of a hacky collection of scripts.&rdquo;
                     </blockquote>
-                    <div class="mt-2 text-xs text-white/30">&mdash; Andrej Karpathy, on the LLM Wiki pattern</div>
-                    <p class="mt-3 text-xs text-white/40">We took that seriously, and what came out is five named tiers, 19 commands, 10 MCP servers, automated context routing, tiered token loading, architecture guardrail hooks, and ADRs &mdash; not a product, but not a hacky collection of scripts either.</p>
+                    <div class="mt-2 text-xs text-white/30">Andrej Karpathy, on the LLM Wiki pattern</div>
+                    <p class="mt-3 text-xs text-white/40">I took that line seriously, and what came out of it is five named tiers, 19 commands, 10 MCP servers, automated context routing, tiered token loading, architecture guardrail hooks, and ADRs. It stopped being a hacky collection of scripts somewhere along the way, though I still wouldn't hand it to anyone as a product.</p>
                 </div>
             </div>
         </div>
@@ -1416,113 +1344,42 @@
     <section id="getting-started" class="py-24 px-6 relative">
         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.02] to-transparent"></div>
         <div class="max-w-5xl mx-auto relative z-10">
-            <div class="fade-in">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Get Started</div>
+            <div class="fade-in max-w-3xl">
                 <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-                    Build Your Own in Stages
+                    Building Your Own, a Stage at a Time
                 </h2>
-                <p class="text-white/50 text-lg max-w-2xl mb-16 leading-relaxed">
-                    You don't need to build the full system on day one. Start with CLAUDE.md, add layers as you go. Each stage delivers value on its own.
+                <p class="text-white/60 text-lg mb-10 leading-relaxed">
+                    You don't need the whole system on day one. I'd start with CLAUDE.md and add the next layer when you feel the one before it running out, since each stage is useful by itself.
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Stage 1 -->
-                <div class="fade-in glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-xs font-bold text-white">1</div>
-                        <div>
-                            <div class="text-sm font-semibold text-white">Day One</div>
-                            <div class="text-xs text-green-400">30 minutes</div>
-                        </div>
-                    </div>
-                    <h3 class="font-semibold text-white mb-3">CLAUDE.md + Rules</h3>
-                    <div class="space-y-2 text-sm text-white/50">
-                        <p>Create CLAUDE.md in your project root with:</p>
-                        <ul class="space-y-1 ml-3 text-xs">
-                            <li>&bull; Your name, role, and what you work on</li>
-                            <li>&bull; Your environment (OS, editor, key tools)</li>
-                            <li>&bull; 3-5 rules Claude should always follow</li>
-                            <li>&bull; Any words or patterns to avoid</li>
-                        </ul>
-                        <p class="text-xs text-green-400/60 mt-3">Add rules files to ~/.claude/rules/ for cross-project standards.</p>
-                    </div>
-                </div>
-
-                <!-- Stage 2 -->
-                <div class="fade-in fade-in-delay-1 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-xs font-bold text-white">2</div>
-                        <div>
-                            <div class="text-sm font-semibold text-white">Week One</div>
-                            <div class="text-xs text-cyan-400">1-2 hours</div>
-                        </div>
-                    </div>
-                    <h3 class="font-semibold text-white mb-3">Memory + Wiki Foundation</h3>
-                    <div class="space-y-2 text-sm text-white/50">
-                        <p>Enable auto-memory in CLAUDE.md instructions. Start a wiki/ directory with:</p>
-                        <ul class="space-y-1 ml-3 text-xs">
-                            <li>&bull; index.md (master catalog)</li>
-                            <li>&bull; 3-5 pages for your main topics</li>
-                            <li>&bull; inbox.md (auto-capture queue)</li>
-                        </ul>
-                        <p class="text-xs text-cyan-400/60 mt-3">Add a routing table to CLAUDE.md mapping work contexts to wiki pages.</p>
-                    </div>
-                </div>
-
-                <!-- Stage 3 -->
-                <div class="fade-in fade-in-delay-2 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-xs font-bold text-white">3</div>
-                        <div>
-                            <div class="text-sm font-semibold text-white">Month One</div>
-                            <div class="text-xs text-violet-400">2-3 hours total</div>
-                        </div>
-                    </div>
-                    <h3 class="font-semibold text-white mb-3">Hooks + Automation</h3>
-                    <div class="space-y-2 text-sm text-white/50">
-                        <p>Add hooks to settings.json for automated behaviors:</p>
-                        <ul class="space-y-1 ml-3 text-xs">
-                            <li>&bull; SessionStart: context routing script</li>
-                            <li>&bull; PostToolUse: code validation</li>
-                            <li>&bull; Notification: OS alerts</li>
-                        </ul>
-                        <p class="text-xs text-violet-400/60 mt-3">Slim down CLAUDE.md as your wiki grows. Move detail out, keep routing in.</p>
-                    </div>
-                </div>
-
-                <!-- Stage 4 -->
-                <div class="fade-in fade-in-delay-2 glass-card rounded-xl p-6 glow-cyan-hover transition-all duration-300 border border-amber-500/20">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-xs font-bold text-white">4</div>
-                        <div>
-                            <div class="text-sm font-semibold text-white">Ongoing</div>
-                            <div class="text-xs text-amber-400">5 min/week</div>
-                        </div>
-                    </div>
-                    <h3 class="font-semibold text-white mb-3">Curation</h3>
-                    <div class="space-y-2 text-sm text-white/50">
-                        <p>Knowledge bases rot without maintenance. Run a weekly <span class="font-mono text-amber-400/70">/curate</span> command:</p>
-                        <ul class="space-y-1 ml-3 text-xs">
-                            <li>&bull; Archive stale session memories</li>
-                            <li>&bull; Process wiki inbox items</li>
-                            <li>&bull; Check index health &amp; routing gaps</li>
-                        </ul>
-                        <p class="text-xs text-amber-400/60 mt-3">Claude does the legwork. You just say keep, update, or delete.</p>
-                    </div>
+            <div class="fade-in glass-card rounded-xl p-8 max-w-3xl">
+                <div class="space-y-6 text-sm text-white/55 leading-relaxed">
+                    <p>
+                        <span class="font-semibold text-green-400">Day one, about 30 minutes.</span> Create CLAUDE.md in your project root with your name, your role, and what you work on, plus your environment (OS, editor, key tools), 3-5 rules Claude should always follow, and any words or patterns to avoid. Standards you want in every project go in rules files under ~/.claude/rules/.
+                    </p>
+                    <p>
+                        <span class="font-semibold text-cyan-400">Week one, 1-2 hours,</span> is memory and the start of a wiki. Enable auto-memory in your CLAUDE.md instructions and start a wiki/ directory with an index.md master catalog, 3-5 pages for your main topics, and an inbox.md auto-capture queue, then add a routing table to CLAUDE.md that maps work contexts to wiki pages.
+                    </p>
+                    <p>
+                        By <span class="font-semibold text-violet-400">month one (2-3 hours total)</span> you can add hooks to settings.json for the automated behaviors, a SessionStart context routing script, PostToolUse code validation, and Notification OS alerts. That's also when CLAUDE.md should start getting slimmer as the wiki grows. Move the detail out and keep the routing in.
+                    </p>
+                    <p>
+                        After that it's <span class="font-semibold text-amber-400">about 5 minutes a week</span>, because knowledge bases rot without maintenance. A weekly <span class="font-mono text-amber-400/80">/curate</span> archives stale session memories, processes wiki inbox items, and checks index health and routing gaps. Claude does the legwork and you just decide what stays and what goes.
+                    </p>
                 </div>
             </div>
 
             <!-- Quick start code -->
             <div class="fade-in mt-12 glass-card rounded-xl p-8">
-                <h3 class="text-sm font-semibold text-white/70 mb-4">Minimal CLAUDE.md to start with</h3>
+                <h3 class="text-sm font-semibold text-white/70 mb-4">A Minimal CLAUDE.md to Start With</h3>
                 <div class="code-block p-5 text-xs leading-relaxed overflow-x-auto">
                     <pre class="text-white/60"><span class="text-cyan-400"># Project Context</span>
 
 <span class="text-cyan-400">## Owner</span>
 - <span class="text-white/80">Name:</span> [Your name]
 - <span class="text-white/80">Role:</span> [Your role and team]
-- <span class="text-white/80">Context:</span> [How you use Claude Code — what are you building?]
+- <span class="text-white/80">Context:</span> [How you use Claude Code. What are you building?]
 
 <span class="text-cyan-400">## Environment</span>
 - <span class="text-white/80">OS:</span> macOS / Windows / Linux
@@ -1530,10 +1387,10 @@
 - <span class="text-white/80">Key tools:</span> [sf CLI, npm, docker, etc.]
 
 <span class="text-cyan-400">## Rules (Always Follow)</span>
-1. [Your most important rule — e.g., "Never use deprecated APIs"]
-2. [Quality standard — e.g., "All Apex must be bulk-safe"]
-3. [Voice rule — e.g., "Write like an SE, not a marketing team"]
-4. [Safety rule — e.g., "Never hardcode IDs or credentials"]
+1. [Your most important rule, e.g., "Never use deprecated APIs"]
+2. [Quality standard, e.g., "All Apex must be bulk-safe"]
+3. [Voice rule, e.g., "Write like an SE, not a marketing team"]
+4. [Safety rule, e.g., "Never hardcode IDs or credentials"]
 
 <span class="text-cyan-400">## Current Projects</span>
 - <span class="text-white/80">[Project 1]:</span> [One-line description + status]
@@ -1552,42 +1409,7 @@
                     Step-by-Step Getting Started Guide
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
-                <p class="text-xs text-white/30 mt-3">Copy-paste templates, code blocks, and a completion checklist. 30 minutes from zero to done.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Results -->
-    <section class="py-24 px-6">
-        <div class="max-w-5xl mx-auto">
-            <div class="fade-in">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-4">Results</div>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-                    What Changes When Claude Remembers
-                </h2>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="fade-in glass-card rounded-xl p-8">
-                    <div class="text-4xl font-bold gradient-text-cyan mb-2">82%</div>
-                    <div class="text-sm font-semibold text-white/70 mb-3">Less context overhead</div>
-                    <p class="text-sm text-white/40">15,000 tokens &rarr; 2,800 tokens loaded at session start. The rest comes in on demand. Your context window stays clear for actual work.</p>
-                </div>
-                <div class="fade-in fade-in-delay-1 glass-card rounded-xl p-8">
-                    <div class="text-4xl font-bold gradient-text-cyan mb-2">0 min</div>
-                    <div class="text-sm font-semibold text-white/70 mb-3">Ramp-up time</div>
-                    <p class="text-sm text-white/40">No more "here's my project, here are my rules, remember that thing from yesterday." Claude knows who you are, what you're working on, and what you've decided.</p>
-                </div>
-                <div class="fade-in fade-in-delay-2 glass-card rounded-xl p-8">
-                    <div class="text-4xl font-bold gradient-text-cyan mb-2">128</div>
-                    <div class="text-sm font-semibold text-white/70 mb-3">Decisions remembered</div>
-                    <p class="text-sm text-white/40">Every correction, every preference, every architectural decision &mdash; saved once, applied forever. Claude stops making the same mistake twice.</p>
-                </div>
-                <div class="fade-in fade-in-delay-3 glass-card rounded-xl p-8">
-                    <div class="text-4xl font-bold gradient-text-cyan mb-2">&infin;</div>
-                    <div class="text-sm font-semibold text-white/70 mb-3">Compound returns</div>
-                    <p class="text-sm text-white/40">The wiki grows and memory accumulates every session, so the system gets measurably better the more you use it, and session 100 is dramatically better than session 1.</p>
-                </div>
+                <p class="text-xs text-white/30 mt-3">It's copy-paste templates and code blocks, plus a completion checklist, and it takes about 30 minutes to go from zero to done.</p>
             </div>
         </div>
     </section>
@@ -1596,9 +1418,9 @@
     <section class="py-16 px-6 border-t border-white/5">
         <div class="max-w-3xl mx-auto text-center">
             <div class="glass-card rounded-xl p-8 border border-cyan-500/20">
-                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-3">New &mdash; May 2026</div>
+                <div class="text-xs font-semibold tracking-widest text-cyan-400/70 uppercase mb-3">May 2026 Follow-Up</div>
                 <h3 class="text-2xl font-bold text-white mb-3">From Memory to Operating System</h3>
-                <p class="text-sm text-white/50 mb-6">Sixty days on, that had grown to 220+ memory files, 186 skills, 14 hooks, 13 MCP servers, and 2.1 GB of local intelligence &mdash; a look at what happens when compound learning doesn't stop.</p>
+                <p class="text-sm text-white/50 mb-6">By May 2026 the system had grown to 220+ memory files, 186 skills, 14 hooks, 13 MCP servers, and 2.1 GB of local intelligence, and the follow-up looks at what happened once the compound learning kept going.</p>
                 <a href="from-memory-to-operating-system.html" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 border border-cyan-500/20 text-cyan-400 font-medium hover:from-cyan-500/20 hover:to-indigo-500/20 transition-all duration-200">
                     Read the Follow-Up
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1613,7 +1435,7 @@
             <div class="text-xs font-mono uppercase tracking-widest text-cyan-400/70 mb-3">Next in the Series</div>
             <p class="text-white/50 text-sm mb-6 leading-relaxed">Once Claude Code remembers who you are, the next question is what you build on top of that memory. Part 2 picks up the thread with AgentScript.</p>
             <a href="https://jtehrani84.github.io/context-engineering-agentscript/" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 border border-cyan-500/20 text-cyan-400 font-medium hover:from-cyan-500/20 hover:to-indigo-500/20 transition-all duration-200">
-                Part 2 &mdash; AgentScript
+                Part 2: AgentScript
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
         </div>
