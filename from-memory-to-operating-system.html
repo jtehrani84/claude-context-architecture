@@ -1485,7 +1485,7 @@
                         <tr><td>"Graph indexing will cause startup latency"</td><td class="highlight">Already measured at 61ms per file and 151ms at session-init, which is imperceptible.</td></tr>
                         <tr><td>"Users will have dependency conflicts"</td><td class="highlight">The starter kit is a clean template with no machine-specific paths.</td></tr>
                         <tr><td>"You need an auth onboarding wizard"</td><td class="highlight">Recipients are Salesforce employees with sf CLI already authenticated.</td></tr>
-                        <tr><td>"Risk of identity/state bleed in the repo"</td><td class="highlight">The starter kit is already scrubbed, and personal data never ships.</td></tr>
+                        <tr><td>"Risk of identity/state bleed in the repo"</td><td class="highlight">The starter kit is scrubbed of customer data, personal paths and IDs.</td></tr>
                     </tbody>
                 </table>
 
@@ -1569,25 +1569,25 @@
         <div class="container">
             <h2 class="fade-in">The Starter Kit</h2>
 
-            <p class="fade-in">It took me 60 days of trial and error to get here, and the whole architecture is packaged as a deployable kit so you can clone the repo, run setup, and start from Day 30 instead of Day 0.</p>
+            <p class="fade-in">It took me 60 days of trial and error to get here, and the architecture's scaffolding is packaged as a kit in two editions, an internal one for Salesforce employees and a provider-agnostic public one for everyone else. Both carry rules, hooks, skills, a voice checker and overnight scripts. You clone the repo, run setup, and start with the structure. The memories, the entity graph, most of my harness code and my MCP server stay with me.</p>
 
             <div class="callout fade-in">
                 <p>The architecture, templates, and feedback loops all transfer. The 220+ specific memories don't, because those are my corrections and my project state and yours will look different, so the kit hands you the scaffolding and compound learning fills it in over time.</p>
             </div>
 
-            <h3 class="fade-in">The Kit (5 Layers, 45 Minutes to Deploy)</h3>
+            <h3 class="fade-in">The Kit (About 30 Minutes to Install)</h3>
 
             <p class="fade-in"><strong>Layer 1, the identity skeleton,</strong> is a template CLAUDE.md with the routing-table structure, role definition, project registry, and essential standards baked in (anti-slop, anti-hallucination), plus a pre-wired wiki index. Filling in your own role, projects, and constraints takes about 10 minutes.</p>
 
-            <p class="fade-in">For <strong>rules and guardrails (layer 2)</strong>, the three starter rules files are communication.md for voice standards and banned patterns, security-governance.md for CRUD/FLS, sharing, and secrets, and architecture.md for the decision framework and preferred patterns. It also ships two hook scripts, session-init for context routing on start and one PreToolUse guardrail that blocks your most expensive recurring mistake.</p>
+            <p class="fade-in">For <strong>rules and guardrails (layer 2)</strong>, the Salesforce edition ships 17 rules, covering communication, security, architecture, the Salesforce platform and its style guide, testing, LWC and SLDS 2, Agent Script, agent security, model selection, the four proof-family rules, and structural voice. It also ships seven wired hooks (context routing on start, a guardrail for destructive commands, a product-name check, a SOQL schema check, two writing-quality gates, and a gate that wants proof before you call something deployed) plus four opt-in. The public edition keeps the generic rules and hooks and leaves the Salesforce ones out.</p>
 
-            <p class="fade-in">Then there's the <strong>SE skill pack</strong>, five production-ready skills that each replace about 30 minutes of manual instruction per use: /account-prep for pre-meeting intelligence, /deal-strategy for competitive positioning and a talk track, /email-draft for anti-slop customer email, /post-meeting for capture, CRM, and follow-up, and /demo-prep for a script built from a brief.</p>
+            <p class="fade-in">Then there's the <strong>SE skill pack</strong>, 31 skills in the Salesforce edition, five of them the core SE workflows that each replace about 30 minutes of manual instruction per use: /account-prep for pre-meeting intelligence, /deal-strategy for competitive positioning and a talk track, /email-draft for anti-slop customer email, /post-meeting for capture, CRM, and follow-up, and /demo-prep for a script built from a brief.</p>
 
-            <p class="fade-in">The fourth layer is <strong>intelligence automation</strong>, a Slack channel roster of 25 pre-mapped internal channels (product, competitive, enablement, win/loss, leadership) and overnight gather scripts that scan Exa, HN, GitHub, X, and Slack and synthesize a morning brief. There's one MCP server (GitHub) in there to prove the action layer works. Swap in your own OU channels and go.</p>
+            <p class="fade-in">The fourth layer is <strong>intelligence automation</strong>, a 15-row Slack channel roster template, overnight scripts that scan Exa, Hacker News, and GitHub, and a digest script that synthesizes them into your wiki inbox. There's a reference MCP config in there too, with Salesforce Docs and the SE grounding service, and you request the grounding token separately. Replace the example roster rows with your own OU channels.</p>
 
             <p class="fade-in">Last come the <strong>entity pages</strong>, a wiki/people/ directory with the two templates, internal and external. You seed your org tree from Slack profiles, with Claude pulling name, title, email, and timezone programmatically, and each page puts org position at the top with an append-only timeline below it. After one session every leader and their reports are mapped, and after a month you've got a relationship graph no CRM captures.</p>
 
-            <h3 class="fade-in">Channel Roster (Pre-Mapped for SE Org)</h3>
+            <h3 class="fade-in">Channel Roster (Template for Your OU)</h3>
 
             <table class="fade-in">
                 <thead>
@@ -1626,7 +1626,7 @@
             <p class="fade-in">You don't need to code any of it. Tell Claude what you want enforced, what workflow you need automated, and which mistake it should never make again, and it'll build the hooks, write the skills, and configure the MCP servers itself. Your part is direction and domain expertise, the same skills that make you good at the job you already have.</p>
 
             <div class="callout fade-in">
-                <p><strong>Get the kit:</strong> <code>git clone https://github.com/jtehrani84/claude-code-se-starter-kit.git && cd claude-code-se-starter-kit && ./setup.sh</code>, or contact John Tehrani (jtehrani@salesforce.com) for access.</p>
+                <p><strong>Get the kit:</strong> Salesforce employees clone the internal edition, <code style="overflow-wrap:anywhere">git clone https://git.soma.salesforce.com/jtehrani/claude-code-se-starter-kit.git && cd claude-code-se-starter-kit && ./setup.sh</code>. Everyone else gets the public edition, <code style="overflow-wrap:anywhere">git clone https://github.com/jtehrani84/context-engineering.git && cd context-engineering && ./setup.sh</code>. If the clone is refused, contact John Tehrani (jtehrani@salesforce.com) for access.</p>
             </div>
         </div>
     </section>
