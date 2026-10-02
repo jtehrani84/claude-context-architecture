@@ -348,7 +348,7 @@
         <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8">
                 <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 pulse-dot"></span>
-                Beginner-Friendly Guide &mdash; Part 1 of 5
+                Beginner-Friendly Guide, Part 1 of 5
             </div>
 
             <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6">
@@ -413,7 +413,7 @@
                     Every time you start a Claude Code session, Claude has no idea who you are, what you're working on, or what you told it yesterday. It's a brilliant collaborator with total amnesia.
                 </p>
                 <p class="text-white/50 leading-relaxed mb-4">
-                    So you end up repeating yourself every session &mdash; "I'm an SE," "this is a Salesforce project," "don't use deprecated APIs," "remember, we decided on approach B last week."
+                    So you end up repeating yourself every session: "I'm an SE," "this is a Salesforce project," "don't use deprecated APIs," "remember, we decided on approach B last week."
                 </p>
                 <p class="text-white/50 leading-relaxed">
                     This guide fixes that. You'll create a small set of files that Claude reads on its own at the start of every session, with no plugins, no external tools, and no code to write. Just the right files, in the right places, with the right content.
@@ -548,7 +548,7 @@ Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
 1. Never hardcode IDs, credentials, or environment-specific values
 2. Explain what you're changing and why before making edits
 3. Don't delete files or code without asking first
-4. Keep responses concise &mdash; skip the preamble
+4. Keep responses concise and skip the preamble
 5. [Add your own rules here]
 
 <span class="text-cyan-400">## Current Work</span>
@@ -615,7 +615,7 @@ Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">What are rules files?</h4>
                             <p class="text-sm text-white/40 leading-relaxed">
-                                CLAUDE.md is project-specific, but rules files are global &mdash; they apply to every project on your machine. Think security standards, coding conventions, and how you want Claude to talk to you. Write them once, and Claude follows them everywhere.
+                                CLAUDE.md is project-specific, but rules files are global, so they apply to every project on your machine. Think security standards, coding conventions, and how you want Claude to talk to you. Write them once, and Claude follows them everywhere.
                             </p>
                         </div>
 
@@ -683,7 +683,7 @@ Include the tech stack if relevant: Salesforce, Node.js, Python, etc.]
                         <!-- Rule file 3: infrastructure constraints -->
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Step 4: Add infrastructure constraints (the most important rule file)</h4>
-                            <p class="text-xs text-white/40 mb-3">This one prevents architectural mistakes &mdash; the kind where Claude builds code that can never work because it violates a hard infrastructure boundary. These constraints stay <strong>loaded in every session and never get cut</strong> from context:</p>
+                            <p class="text-xs text-white/40 mb-3">This one prevents architectural mistakes, the kind where Claude builds code that can never work because it violates a hard infrastructure boundary. These constraints stay <strong>loaded in every session and never get cut</strong> from context:</p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">~/.claude/rules/infrastructure-constraints.md</span>
                                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
@@ -699,11 +699,11 @@ Before adding new auth, connectors, or infrastructure code:
 1. Check this file first
 2. Check decisions/ directory for relevant ADRs
 3. Verify MCP or existing tooling doesn't already connect
-4. If unsure, ask &mdash; don't build and find out later</pre>
+4. If unsure, ask instead of building and finding out later</pre>
                             </div>
                             <div class="bg-red-500/5 rounded-lg p-4 border border-red-500/10 mt-3">
                                 <p class="text-sm text-white/60">
-                                    <span class="text-red-400 font-semibold">Why this matters:</span> Without constraints rules, Claude will pattern-match on local code and build auth/integration paths that look correct but violate infrastructure realities. I learned this the hard way &mdash; Claude built an entire JWT authentication flow to a system that had no Connected App and never could have one. The constraint rule would have prevented it before a single line was written.
+                                    <span class="text-red-400 font-semibold">Why this matters:</span> Without constraints rules, Claude will pattern-match on local code and build auth/integration paths that look correct but violate infrastructure realities. I learned this the hard way: Claude built an entire JWT authentication flow to a system that had no Connected App and never could have one. The constraint rule would have prevented it before a single line was written.
                                 </p>
                             </div>
                         </div>
@@ -719,7 +719,7 @@ Before adding new auth, connectors, or infrastructure code:
 
 <span class="text-cyan-400">## Apex</span>
 - All Apex must be bulk-safe. Never perform SOQL or DML inside loops.
-- One trigger per object. Keep triggers thin &mdash; put logic in service classes.
+- One trigger per object. Keep triggers thin and put logic in service classes.
 - Enforce CRUD/FLS and sharing rules. State the sharing model for every class.
 - Handle governor limits explicitly. Comment when approaching known limits.
 
@@ -871,7 +871,7 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">What is auto-memory?</h4>
                             <p class="text-sm text-white/40 leading-relaxed">
-                                Claude Code has a built-in memory system. When you correct Claude, give it feedback, or make a decision it should remember, it can save that to a MEMORY.md file that persists across sessions. You don't need to install or configure anything &mdash; it's already there.
+                                Claude Code has a built-in memory system. When you correct Claude, give it feedback, or make a decision it should remember, it can save that to a MEMORY.md file that persists across sessions. You don't need to install or configure anything, since it's already there.
                             </p>
                         </div>
 
@@ -899,7 +899,7 @@ Reference pages are in `wiki/`. Load the relevant page when a task requires it.
                                 <div class="bg-white/[0.02] rounded-lg p-4 border border-white/5">
                                     <p class="text-xs text-cyan-400 font-semibold mb-2">When Claude makes a mistake:</p>
                                     <div class="bg-navy-900 rounded-lg p-3 text-xs text-white/50 font-mono">
-                                        "That's wrong &mdash; we're on v2 of the API here, so don't reach for v1. Remember this for next time."
+                                        "That's wrong, we're on v2 of the API here, so don't reach for v1. Remember this for next time."
                                     </div>
                                     <p class="text-xs text-white/30 mt-2">Claude saves the rule "always use API v2 and avoid v1" for every session after this one.</p>
                                 </div>
@@ -1023,8 +1023,12 @@ fi</pre>
   "hooks": {
     "SessionStart": [
       {
-        "type": "command",
-        "command": "~/.claude/hooks/session-init.sh"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/session-init.sh"
+          }
+        ]
       }
     ]
   }
@@ -1036,7 +1040,7 @@ fi</pre>
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Architectural Decision Records (ADRs)</h4>
                             <p class="text-xs text-white/40 mb-3">
-                                When you make a critical architecture decision, capture the <em>why</em> &mdash; not just the <em>what</em>. ADRs prevent future sessions from re-deriving decisions and getting them wrong.
+                                When you make a critical architecture decision, capture the <em>why</em>, not just the <em>what</em>. ADRs prevent future sessions from re-deriving decisions and getting them wrong.
                             </p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">bash</span>
@@ -1065,11 +1069,11 @@ touch decisions/INDEX.md</pre>
 | [Alt B] | [Reason] |
 
 <span class="text-cyan-400">## Consequences</span>
-[What this means going forward &mdash; constraints it creates]</pre>
+[What this means going forward, including constraints it creates]</pre>
                             </div>
                             <div class="bg-violet-500/5 rounded-lg p-4 border border-violet-500/10 mt-3">
                                 <p class="text-sm text-white/60">
-                                    <span class="text-violet-400 font-semibold">When to write an ADR:</span> When choosing between approaches where the wrong choice produces dead code, violates infrastructure constraints, or would take significant effort to reverse. Not every decision needs one &mdash; just the ones where the reasoning needs to survive across sessions.
+                                    <span class="text-violet-400 font-semibold">When to write an ADR:</span> When choosing between approaches where the wrong choice produces dead code, violates infrastructure constraints, or would take significant effort to reverse. Not every decision needs one, just the ones where the reasoning needs to survive across sessions.
                                 </p>
                             </div>
                         </div>
@@ -1081,7 +1085,10 @@ touch decisions/INDEX.md</pre>
                                 A SessionStart hook fires at the beginning of a session, while a <strong>PreToolUse</strong> hook fires <em>before</em> Claude edits a file. That's where you catch an architectural mistake at the moment of action, while the code is still unwritten.
                             </p>
                             <p class="text-xs text-white/40 mb-3">
-                                It works by mapping file patterns to constraints. When Claude is about to edit <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">salesforce.ts</code>, the hook surfaces &ldquo;internal CRM = CLI only.&rdquo; Edit a deployment config instead, and it surfaces the VPC constraint. Either way, the constraint lands in context <em>at the moment it matters.</em>
+                                One pattern is mapping file patterns to constraints. When Claude is about to edit <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">salesforce.ts</code>, a hook can surface &ldquo;internal CRM = CLI only.&rdquo; Edit a deployment config instead, and it can surface the VPC constraint. Either way, the constraint lands in context <em>at the moment it matters.</em>
+                            </p>
+                            <p class="text-xs text-white/40 mb-3">
+                                Both editions of the starter kit ship a guardrail of this kind for shell commands, and setup wires it for you. It denies destructive commands such as a force-push to main. This is its entry with an optional timeout added, and a hook's timeout is in seconds:
                             </p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">~/.claude/settings.json (add to hooks)</span>
@@ -1090,12 +1097,12 @@ touch decisions/INDEX.md</pre>
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/hooks/scripts/architecture-guardrail.py",
-            "timeout": 3000
+            "command": "python3 ~/.claude/hooks/scripts/guardrail.py",
+            "timeout": 10
           }
         ]
       }
@@ -1104,11 +1111,11 @@ touch decisions/INDEX.md</pre>
 }</pre>
                             </div>
                             <p class="text-xs text-white/40 mt-3">
-                                The script reads the file path from stdin (JSON with the tool input), checks it against a registry of constrained file patterns, and prints the relevant constraints + ADR references. Claude sees this output before proceeding with the edit.
+                                The script reads the tool call from stdin as JSON and answers in JSON. To block a call it returns a <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">hookSpecificOutput</code> object with <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">permissionDecision</code> set to deny and a <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">permissionDecisionReason</code>. To nudge instead, it returns <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">additionalContext</code> in that same object, and Claude sees it before proceeding.
                             </p>
                             <div class="bg-cyan-500/5 rounded-lg p-4 border border-cyan-500/10 mt-3">
                                 <p class="text-sm text-white/60">
-                                    <span class="text-cyan-400 font-semibold">DDR-001 principle:</span> this applies a lesson from the Agentforce Agent Harness &mdash; &ldquo;agents forget to remember.&rdquo; Memory retrieval has to be <strong>intrinsic</strong> and automatic rather than <strong>voluntary</strong>, where the agent has to choose to go look. So the constraints rules load on their own and the hook fires on its own, which puts the information in Claude&rsquo;s face at the moment it matters instead of leaving it buried in a wiki page it might never open.
+                                    <span class="text-cyan-400 font-semibold">DDR-001 principle:</span> this applies a lesson from the Agentforce Agent Harness: &ldquo;agents forget to remember.&rdquo; Memory retrieval has to be <strong>intrinsic</strong> and automatic rather than <strong>voluntary</strong>, where the agent has to choose to go look. So the constraints rules load on their own and the hook fires on its own, which puts the information in Claude&rsquo;s face at the moment it matters instead of leaving it buried in a wiki page it might never open.
                                 </p>
                             </div>
                         </div>
@@ -1117,7 +1124,7 @@ touch decisions/INDEX.md</pre>
                         <div>
                             <h4 class="text-sm font-semibold text-white/70 mb-3">Entity Pages: People Directory</h4>
                             <p class="text-xs text-white/40 mb-3">
-                                Memory stores your corrections and the wiki stores your knowledge. Entity pages store <em>people</em> &mdash; one structured page per person that compounds across every interaction you have with them.
+                                Memory stores your corrections and the wiki stores your knowledge. Entity pages store <em>people</em>, one structured page per person that compounds across every interaction you have with them.
                             </p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">bash</span>
@@ -1125,7 +1132,7 @@ touch decisions/INDEX.md</pre>
                                 <pre class="text-white/60 mt-4">mkdir -p wiki/people</pre>
                             </div>
                             <p class="text-xs text-white/40 mt-3 mb-3">
-                                Two templates &mdash; one for internal colleagues, one for external contacts:
+                                Two templates, one for internal colleagues and one for external contacts:
                             </p>
                             <div class="code-block p-4 text-xs">
                                 <span class="lang-label">wiki/people/_template-internal.md</span>
@@ -1150,7 +1157,7 @@ touch decisions/INDEX.md</pre>
 <span class="text-white/30">&lt;!-- Append after every interaction. Newest at top. --&gt;</span></pre>
                             </div>
                             <p class="text-xs text-white/40 mt-3">
-                                You can seed them fast by asking Claude to search Slack profiles for your team and build the pages programmatically. A single session maps your whole org tree &mdash; leaders, reports, coverage areas, Slack IDs. From then on, every meeting and collaboration appends to the timeline, and six months later you're holding a relationship graph no CRM captures.
+                                You can seed them fast by asking Claude to search Slack profiles for your team and build the pages programmatically. A single session maps your whole org tree: leaders, reports, coverage areas, Slack IDs. From then on, every meeting and collaboration appends to the timeline, and six months later you're holding a relationship graph no CRM captures.
                             </p>
                         </div>
 
@@ -1163,15 +1170,15 @@ touch decisions/INDEX.md</pre>
                             <ul class="space-y-2 text-sm text-white/40">
                                 <li class="flex items-start gap-2">
                                     <span class="text-amber-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span>Check <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">wiki/inbox.md</code> &mdash; anything there worth promoting to a full page?</span>
+                                    <span>Check <code class="text-cyan-400/60 bg-cyan-500/5 px-1 rounded">wiki/inbox.md</code>: anything there worth promoting to a full page?</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-amber-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span>Skim CLAUDE.md &mdash; is the "Current Work" section still accurate?</span>
+                                    <span>Skim CLAUDE.md: is the "Current Work" section still accurate?</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-amber-400 mt-0.5 flex-shrink-0">&bull;</span>
-                                    <span>Scan memory files &mdash; any facts that have changed? Old project decisions that no longer apply?</span>
+                                    <span>Scan memory files: any facts that have changed? Old project decisions that no longer apply?</span>
                                 </li>
                             </ul>
                             <p class="text-xs text-white/40 mt-3">
@@ -1267,7 +1274,7 @@ touch decisions/INDEX.md</pre>
                         </label>
                         <label class="check-item flex items-center gap-3 cursor-pointer mt-3">
                             <input type="checkbox" id="check-11">
-                            <span class="text-sm text-amber-400/60">Bonus: PreToolUse architecture guardrail hook configured</span>
+                            <span class="text-sm text-amber-400/60">Bonus: PreToolUse guardrail hook configured</span>
                         </label>
                     </div>
                 </div>
@@ -1287,7 +1294,7 @@ touch decisions/INDEX.md</pre>
             <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div class="text-center sm:text-left">
                     <p class="text-white/30 text-sm mb-1">
-                        Built by John Tehrani &mdash; Principal Solutions Engineer, Salesforce
+                        Built by John Tehrani, Principal Solutions Engineer, Salesforce
                     </p>
                     <p class="text-white/20 text-xs">
                         Part 1 of 5: Foundation. Written collaboratively with Claude Code.
